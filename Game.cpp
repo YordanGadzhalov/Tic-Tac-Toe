@@ -2,7 +2,6 @@
 #include "Grid.h"
 #include <iostream>
 
-bool isAlreadyClicked; // to be made in Grid.h bool func
 
 
 bool Game::init(const char* title, int xpos,
@@ -34,7 +33,6 @@ bool Game::init(const char* title, int xpos,
 				TextureManager::Instance()->loadTexture("assets/player1.png", "player1", renderer);
 				TextureManager::Instance()->loadTexture("assets/player2.png", "player2", renderer);
 			}
-
 			else {
 				std::cout << "renderer init failed\n";
 				return false;
@@ -75,7 +73,6 @@ void Game::render() {
 		TextureManager::Instance()->drawTexture("startButton2", 650, 350, 200, 206, renderer);
 		TextureManager::Instance()->drawTexture("ready2", 650, 150, 190, 170, renderer);
 	}
-	//TextureManager::Instance()->drawTexture("startButton2", 650, 350, 200, 206, renderer);
 	TextureManager::Instance()->drawTexture("grid2", 50, 50, 500, 501, renderer);
 	TextureManager::Instance()->drawTexture("info2", 930, 20, 60, 60, renderer);
 	
@@ -182,13 +179,15 @@ void Game::handleEvents() {
 		case SDL_MOUSEBUTTONDOWN: {
 			int mouseX = event.button.x;
 			int mouseY = event.button.y;
+			if(isGameOver()) {
+				std::cout << "Game over!" << std::endl;
+			}
 				if (readyButton.contains(mouseX, mouseY)){
 					std::cout << "CLICKED!" << std::endl;
 					isPlayerOneOrTwo = !isPlayerOneOrTwo;
 				}
-				if (grid1.isInside(mouseX, mouseY) && !isAlreadyClicked) {
+				if (grid1.isInside(mouseX, mouseY)) {
 					drawnShapes.push_back(1);
-					isAlreadyClicked = true;
 					grid1.setXorO(isPlayerOneOrTwo);
 					std::cout << "Grid 1 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
@@ -249,9 +248,6 @@ void Game::handleEvents() {
 					grid9.setXorO(isPlayerOneOrTwo);
 					std::cout << "Grid 9 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
-				if (isGameOver()) {
-					std::cout << "Game over!" << std::endl;
-				}
 				cout << "X: " << mouseX << "Y: " << mouseY << endl;
 			}
 		default:
@@ -272,41 +268,13 @@ void Game::clean() {
 bool Game::isRunning() {
 	return Game::running;
 }
-bool Game::isGameOver() {
 
-	if (drawnShapes.size() <= 5) {
-		return false;
-	}
-
-	// Player 1 wins
-	if ((grid1.getXorO() && grid2.getXorO() && grid3.getXorO()) ||
-		(grid4.getXorO() && grid5.getXorO() && grid6.getXorO()) ||
-		(grid7.getXorO() && grid8.getXorO() && grid9.getXorO()) ||
-		(grid2.getXorO() && grid5.getXorO() && grid8.getXorO()) ||
-		(grid3.getXorO() && grid6.getXorO() && grid9.getXorO()) ||
-		(grid1.getXorO() && grid5.getXorO() && grid9.getXorO()) ||
-		(grid7.getXorO() && grid5.getXorO() && grid3.getXorO()) ||
-		(grid1.getXorO() && grid4.getXorO() && grid7.getXorO())) {
-		return true; 
-	}
-
-	// Player 2 wins
-	if ((!grid1.getXorO() && !grid2.getXorO() && !grid3.getXorO()) ||
-		(!grid4.getXorO() && !grid5.getXorO() && !grid6.getXorO()) ||
-		(!grid7.getXorO() && !grid8.getXorO() && !grid9.getXorO()) ||
-		(!grid2.getXorO() && !grid5.getXorO() && !grid8.getXorO()) ||
-		(!grid3.getXorO() && !grid6.getXorO() && !grid9.getXorO()) ||
-		(!grid1.getXorO() && !grid5.getXorO() && !grid9.getXorO()) ||
-		(!grid7.getXorO() && !grid5.getXorO() && !grid3.getXorO()) ||
-		(!grid1.getXorO() && !grid4.getXorO() && !grid7.getXorO())) {
-		return true; 
-	}
-
-	if (drawnShapes.size() == 9) {
+bool Game::isGameOver()
+{
+	if (grid1.getState() == grid2.getState() == grid3.getState()) {
+		std::cout << "Game over" << std::endl;
 		return true;
 	}
-
-	return false;
 }
 
 

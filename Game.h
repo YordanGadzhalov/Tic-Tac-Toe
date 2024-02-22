@@ -6,6 +6,7 @@
 #include "Grid.h"
 #include "Button.h"
 
+
 class Game {
 public:
 	Game();
@@ -26,15 +27,15 @@ private:
 	bool isPlayerOneOrTwo = true;
 	bool isInfoClicked = false;
 	std::vector<int> drawnShapes; //Holds the shapes we want to draw and redraws them everytime it renders
-	Grid grid1 = Grid(55, 205, 55, 205); 
-	Grid grid2 = Grid(225, 375, 55, 205);
-	Grid grid3 = Grid(390, 540, 55, 205);
-	Grid grid4 = Grid(55, 205, 225, 370); // vector ?
-	Grid grid5 = Grid(225, 375, 225, 370); 
-	Grid grid6 = Grid(390, 550, 225, 370);
-	Grid grid7 = Grid(50, 205, 390, 550);
-	Grid grid8 = Grid(225, 377, 390, 550);
-	Grid grid9 = Grid(390, 550, 390, 550);
+	Grid grid1 = Grid(55, 205, 55, 205, EMPTY); 
+	Grid grid2 = Grid(225, 375, 55, 205, EMPTY);
+	Grid grid3 = Grid(390, 540, 55, 205, EMPTY);
+	Grid grid4 = Grid(55, 205, 225, 370, EMPTY); // vector ?
+	Grid grid5 = Grid(225, 375, 225, 370, EMPTY); 
+	Grid grid6 = Grid(390, 550, 225, 370, EMPTY);
+	Grid grid7 = Grid(50, 205, 390, 550, EMPTY);
+	Grid grid8 = Grid(225, 377, 390, 550, EMPTY);
+	Grid grid9 = Grid(390, 550, 390, 550, EMPTY);
 	Button readyButton = Button(674, 200, 820, 284);
 	Button infoButton = Button(935, 28, 980, 80);
 

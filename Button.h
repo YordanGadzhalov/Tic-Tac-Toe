@@ -11,6 +11,4 @@ private:
 public:
 	Button(int x, int y, int width, int height);
 	bool contains(int mouseX, int mouseY);
-
-
 };

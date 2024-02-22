@@ -4,7 +4,7 @@ Grid::Grid(){}
 
 Grid::~Grid(){}
 
-Grid::Grid(int x, int y, int w, int h) : gridX1(x), gridX2(y), gridY1(w), gridY2(h) {}
+Grid::Grid(int x, int y, int w, int h, GridState state) : gridX1(x), gridX2(y), gridY1(w), gridY2(h), state(state) {}
 
 bool Grid::isInside(int mouseX, int mouseY) {
     // Check if the mouse click is inside this grid
@@ -22,5 +22,15 @@ void Grid::setXorO(bool isIt)
 bool Grid::getXorO()
 {
     return this->isXorO;
+}
+
+void Grid::setState(GridState newState)
+{
+    this->state = newState;
+}
+
+GridState Grid::getState()
+{
+    return this->state;
 }
 
