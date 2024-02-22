@@ -89,9 +89,12 @@ void Game::render() {
 		if (startButton.getState() == CLICKED) {
 			TextureManager::Instance()->drawTexture("startButtonClicked", 650, 430, 258, 138, renderer);
 			SDL_Delay(200);
-			startButton.setState(STATIC);
+		}
+		if (isGameOver) {
+			TextureManager::Instance()->drawTexture("startButtonInactive", 650, 430, 258, 138, renderer);
 		}
 	}
+	
 
 	//Draws the grid and the info button
 	TextureManager::Instance()->drawTexture("grid2", 50, 50, 500, 501, renderer);
@@ -201,15 +204,8 @@ void Game::handleEvents() {
 		case SDL_MOUSEBUTTONDOWN: {
 			int mouseX = event.button.x;
 			int mouseY = event.button.y;
-			if(isGameOver()) {
-				if (playerOneWins) {
-					std::cout << "Player 1 wins" << std::endl;
-				}
-				else {
-					std::cout << "Player 2 wins" << std::endl;
-				}
-				std::cout << "Game over!" << std::endl;
-			}
+			if(isGameOver()){}
+
 			if (startButton.contains(mouseX, mouseY)) {
 				std::cout << "Start button clicked " << std::endl;
 				startButton.setState(CLICKED);
@@ -332,6 +328,10 @@ void Game::handleEvents() {
 			}
 		default:
 			break;
+			case SDL_MOUSEBUTTONUP:
+				if (startButton.getState() == CLICKED) {
+					startButton.setState(STATIC); // Returns the button state back to static
+				}
 		}
 	}
 }

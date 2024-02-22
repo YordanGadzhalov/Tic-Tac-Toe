@@ -11,7 +11,6 @@ private:
     int gridY1;
     int gridX2;
     int gridY2;
-    bool isXorO = false;
     GridState state;
 
 public:
@@ -19,8 +18,6 @@ public:
     ~Grid();
     Grid(int x, int y, int w, int h, GridState state); // each grid has a default state EMPTY
     bool isInside(int mouseX, int mouseY);
-    void setXorO(bool isIt);
-    bool getXorO();
     void setState(GridState newState);
     GridState getState();
 };

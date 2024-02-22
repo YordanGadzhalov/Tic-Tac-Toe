@@ -14,16 +14,6 @@ bool Grid::isInside(int mouseX, int mouseY) {
     return false;
 }
 
-void Grid::setXorO(bool isIt)
-{
-    this->isXorO = isIt;
-}
-
-bool Grid::getXorO()
-{
-    return this->isXorO;
-}
-
 void Grid::setState(GridState newState)
 {
     this->state = newState;
