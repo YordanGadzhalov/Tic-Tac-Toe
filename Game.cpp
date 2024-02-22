@@ -32,6 +32,8 @@ bool Game::init(const char* title, int xpos,
 				TextureManager::Instance()->loadTexture("assets/text2.png", "text2", renderer);
 				TextureManager::Instance()->loadTexture("assets/player1.png", "player1", renderer);
 				TextureManager::Instance()->loadTexture("assets/player2.png", "player2", renderer);
+				TextureManager::Instance()->loadTexture("assets/player1wins.png", "player1wins", renderer);
+				TextureManager::Instance()->loadTexture("assets/player2wins.png", "player2wins", renderer);
 			}
 			else {
 				std::cout << "renderer init failed\n";
@@ -57,19 +59,26 @@ void Game::render() {
 
 	SDL_RenderClear(renderer);
 
-	if (isPlayerOneOrTwo) {
+	if(playerOneWins) {
+		TextureManager::Instance()->drawTexture("player1wins", 650, 50, 200, 31, renderer);
+	}
+
+	if(playerTwoWins) {
+		TextureManager::Instance()->drawTexture("player2wins", 650, 50, 200, 29, renderer);
+	}
+
+	if(isPlayerOneOrTwo) {
 		TextureManager::Instance()->drawTexture("player1", 233, 7, 135, 22, renderer);
 	}
 	else {
 		TextureManager::Instance()->drawTexture("player2", 233, 7, 135, 22, renderer);
 	}
 
-	if (isInfoClicked) {
+	if(isInfoClicked) {
 		TextureManager::Instance()->drawTexture("text2", 650, 100, 250, 358, renderer);
 	}
 	
-
-	if (!isInfoClicked) {
+	if(!isInfoClicked) {
 		TextureManager::Instance()->drawTexture("startButton2", 650, 350, 200, 206, renderer);
 		TextureManager::Instance()->drawTexture("ready2", 650, 150, 190, 170, renderer);
 	}
