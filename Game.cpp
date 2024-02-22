@@ -78,7 +78,7 @@ void Game::render() {
 	
 		for (auto shape : drawnShapes) {
 			if (shape == 1) {
-				if (grid1.getXorO()) {
+				if (grid1.getState() == O) {
 					TextureManager::Instance()->drawTexture("circle2", 65, 65, 125, 125, renderer);
 				}
 				else {
@@ -86,7 +86,7 @@ void Game::render() {
 				}
 			}
 			if (shape == 2) {
-				if (grid2.getXorO()) {
+				if (grid2.getState() == O) {
 					TextureManager::Instance()->drawTexture("circle2", 240, 65, 125, 125, renderer);
 				}
 				else {
@@ -94,7 +94,7 @@ void Game::render() {
 				}
 			}
 			if (shape == 3) {
-				if (grid3.getXorO()) {
+				if (grid3.getState() == O) {
 					TextureManager::Instance()->drawTexture("circle2", 410, 65, 125, 125, renderer);
 				}
 				else {
@@ -102,7 +102,7 @@ void Game::render() {
 				}
 			}
 			if (shape == 4) {
-				if (grid4.getXorO()) {
+				if (grid4.getState() == O) {
 					TextureManager::Instance()->drawTexture("circle2", 65, 235, 125, 125, renderer);
 				}
 				else {
@@ -110,7 +110,7 @@ void Game::render() {
 				}
 			}
 			if (shape == 5) {
-				if (grid5.getXorO()) {
+				if (grid1.getState() == O) {
 					TextureManager::Instance()->drawTexture("circle2", 240, 235, 125, 125, renderer);
 				}
 				else {
@@ -118,7 +118,7 @@ void Game::render() {
 				}
 			}
 			if (shape == 6) {
-				if (grid6.getXorO()) {
+				if (grid6.getState() == O) {
 					TextureManager::Instance()->drawTexture("circle2", 410, 235, 125, 125, renderer);
 				}
 				else {
@@ -126,7 +126,7 @@ void Game::render() {
 				}
 			}
 			if (shape == 7) {
-				if (grid7.getXorO()) {
+				if (grid7.getState() == O) {
 					TextureManager::Instance()->drawTexture("circle2", 65, 410, 125, 125, renderer);
 				}
 				else {
@@ -134,7 +134,7 @@ void Game::render() {
 				}
 			}
 			if (shape == 8) {
-				if (grid8.getXorO()) {
+				if (grid8.getState() == O) {
 					TextureManager::Instance()->drawTexture("circle2", 240, 410, 125, 125, renderer);
 				}
 				else {
@@ -142,7 +142,7 @@ void Game::render() {
 				}
 			}
 			if (shape == 9) {
-				if (grid9.getXorO()) {
+				if (grid9.getState() == O) {
 					TextureManager::Instance()->drawTexture("circle2", 410, 410, 125, 125, renderer);
 				}
 				else {
@@ -183,69 +183,105 @@ void Game::handleEvents() {
 				std::cout << "Game over!" << std::endl;
 			}
 				if (readyButton.contains(mouseX, mouseY)){
-					std::cout << "CLICKED!" << std::endl;
+					std::cout << "READY CLICKED!" << std::endl;
 					isPlayerOneOrTwo = !isPlayerOneOrTwo;
 				}
 				if (grid1.isInside(mouseX, mouseY)) {
 					drawnShapes.push_back(1);
-					grid1.setXorO(isPlayerOneOrTwo);
+					if (isPlayerOneOrTwo) {
+						grid1.setState(O);
+					}
+					else {
+						grid1.setState(X);
+					}
 					std::cout << "Grid 1 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
-		
 
 				if (grid2.isInside(mouseX, mouseY)) {
 					drawnShapes.push_back(2);
-					grid2.setXorO(isPlayerOneOrTwo);
-					std::cout << "Grid 1 " << "Player: " << isPlayerOneOrTwo << std::endl;
+					if (isPlayerOneOrTwo) {
+						grid2.setState(O);
+					}
+					else {
+						grid2.setState(X);
+					}
+					std::cout << "Grid 2 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
-
 
 				if (grid3.isInside(mouseX, mouseY)) {
 					drawnShapes.push_back(3);
-					grid3.setXorO(isPlayerOneOrTwo);
+					if (isPlayerOneOrTwo) {
+						grid3.setState(O);
+					}
+					else {
+						grid3.setState(X);
+					}
 					std::cout << "Grid 3 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
-
 				if (grid4.isInside(mouseX, mouseY)) {
 					drawnShapes.push_back(4);
-					grid4.setXorO(isPlayerOneOrTwo);
+					if (isPlayerOneOrTwo) {
+						grid4.setState(O);
+					}
+					else {
+						grid4.setState(X);
+					}
 					std::cout << "Grid 4 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
-
 				if (grid5.isInside(mouseX, mouseY)) {
 					drawnShapes.push_back(5);
-					grid5.setXorO(isPlayerOneOrTwo);
+					if (isPlayerOneOrTwo) {
+						grid5.setState(O);
+					}
+					else {
+						grid5.setState(X);
+					}
 					std::cout << "Grid 5 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
-
 				if (grid6.isInside(mouseX, mouseY)) {
 					drawnShapes.push_back(6);
-					grid6.setXorO(isPlayerOneOrTwo);
+					if (isPlayerOneOrTwo) {
+						grid6.setState(O);
+					}
+					else {
+						grid6.setState(X);
+					}
 					std::cout << "Grid 6 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
-
 				if (grid7.isInside(mouseX, mouseY)) {
 					drawnShapes.push_back(7);
-					grid7.setXorO(isPlayerOneOrTwo);
+					if (isPlayerOneOrTwo) {
+						grid7.setState(O);
+					}
+					else {
+						grid7.setState(X);
+					}
 					std::cout << "Grid 7 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
-
 				if (grid8.isInside(mouseX, mouseY)) {
 					drawnShapes.push_back(8);
-					grid8.setXorO(isPlayerOneOrTwo);
+					if (isPlayerOneOrTwo) {
+						grid8.setState(O);
+					}
+					else {
+						grid8.setState(X);
+					}
 					std::cout << "Grid 8 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
-
 				if (grid9.isInside(mouseX, mouseY)) {
-
 					drawnShapes.push_back(9);
-					grid9.setXorO(isPlayerOneOrTwo);
+					if (isPlayerOneOrTwo) {
+						grid9.setState(O);
+					}
+					else {
+						grid9.setState(X);
+					}
 					std::cout << "Grid 9 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 				cout << "X: " << mouseX << "Y: " << mouseY << endl;
@@ -271,8 +307,8 @@ bool Game::isRunning() {
 
 bool Game::isGameOver()
 {
-	if (grid1.getState() == grid2.getState() == grid3.getState()) {
-		std::cout << "Game over" << std::endl;
+	if (grid1.getState() == O &&  grid2.getState() == O && grid3.getState() == O) {
+		std::cout << "Player 1 wins" << std::endl;
 		return true;
 	}
 }

@@ -12,7 +12,7 @@ private:
     int gridX2;
     int gridY2;
     bool isXorO = false;
-    GridState state = EMPTY;
+    GridState state;
 
 public:
     Grid();
