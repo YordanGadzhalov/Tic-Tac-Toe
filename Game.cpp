@@ -110,7 +110,7 @@ void Game::render() {
 				}
 			}
 			if (shape == 5) {
-				if (grid1.getState() == O) {
+				if (grid5.getState() == O) {
 					TextureManager::Instance()->drawTexture("circle2", 240, 235, 125, 125, renderer);
 				}
 				else {
@@ -180,6 +180,12 @@ void Game::handleEvents() {
 			int mouseX = event.button.x;
 			int mouseY = event.button.y;
 			if(isGameOver()) {
+				if (playerOneWins) {
+					std::cout << "Player 1 wins" << std::endl;
+				}
+				else {
+					std::cout << "Player 2 wins" << std::endl;
+				}
 				std::cout << "Game over!" << std::endl;
 			}
 				if (readyButton.contains(mouseX, mouseY)){
@@ -194,6 +200,7 @@ void Game::handleEvents() {
 					else {
 						grid1.setState(X);
 					}
+					std::cout << "Grid 1 " << "STATE: " << grid1.getState() << std::endl;
 					std::cout << "Grid 1 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
@@ -205,6 +212,7 @@ void Game::handleEvents() {
 					else {
 						grid2.setState(X);
 					}
+					std::cout << "Grid 2 " << "STATE: " << grid2.getState() << std::endl;
 					std::cout << "Grid 2 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
@@ -216,6 +224,7 @@ void Game::handleEvents() {
 					else {
 						grid3.setState(X);
 					}
+					std::cout << "Grid 3 " << "STATE: " << grid3.getState() << std::endl;
 					std::cout << "Grid 3 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
@@ -227,6 +236,7 @@ void Game::handleEvents() {
 					else {
 						grid4.setState(X);
 					}
+					std::cout << "Grid 4 " << "STATE: " << grid4.getState() << std::endl;
 					std::cout << "Grid 4 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
@@ -238,6 +248,7 @@ void Game::handleEvents() {
 					else {
 						grid5.setState(X);
 					}
+					std::cout << "Grid 5 " << "STATE: " << grid5.getState() << std::endl;
 					std::cout << "Grid 5 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
@@ -249,6 +260,7 @@ void Game::handleEvents() {
 					else {
 						grid6.setState(X);
 					}
+					std::cout << "Grid 6 " << "STATE: " << grid6.getState() << std::endl;
 					std::cout << "Grid 6 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
@@ -260,6 +272,7 @@ void Game::handleEvents() {
 					else {
 						grid7.setState(X);
 					}
+					std::cout << "Grid 7 " << "STATE: " << grid7.getState() << std::endl;
 					std::cout << "Grid 7 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
@@ -271,6 +284,7 @@ void Game::handleEvents() {
 					else {
 						grid8.setState(X);
 					}
+					std::cout << "Grid 8 " << "STATE: " << grid8.getState() << std::endl;
 					std::cout << "Grid 8 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 
@@ -282,9 +296,13 @@ void Game::handleEvents() {
 					else {
 						grid9.setState(X);
 					}
+					std::cout << "Grid 9 " << "STATE: " << grid9.getState() << std::endl;
 					std::cout << "Grid 9 " << "Player: " << isPlayerOneOrTwo << std::endl;
 				}
 				cout << "X: " << mouseX << "Y: " << mouseY << endl;
+				/*std::cout << "Grid 1 " << "STATE: " << grid1.getState() << std::endl;
+				std::cout << "Grid 2 " << "STATE: " << grid2.getState() << std::endl;   // Checking grid states between 0/1/2 - EMPTY/O/X
+				std::cout << "Grid 3 " << "STATE: " << grid3.getState() << std::endl;*/
 			}
 		default:
 			break;
@@ -307,10 +325,47 @@ bool Game::isRunning() {
 
 bool Game::isGameOver()
 {
-	if (grid1.getState() == O &&  grid2.getState() == O && grid3.getState() == O) {
-		std::cout << "Player 1 wins" << std::endl;
-		return true;
+	//Checking Horizontal winning condition for O
+	if (grid1.getState() == O && grid2.getState() == O && grid3.getState() == O ||
+		grid4.getState() == O && grid5.getState() == O && grid6.getState() == O ||
+		grid7.getState() == O && grid8.getState() == O && grid9.getState() == O){
+		return playerOneWins = true;
 	}
+
+	//Checking Vertical winning condition for O
+	if (grid1.getState() == O && grid4.getState() == O && grid7.getState() == O ||
+		grid2.getState() == O && grid5.getState() == O && grid8.getState() == O ||
+		grid3.getState() == O && grid6.getState() == O && grid9.getState() == O) {
+		return playerOneWins = true;
+	}
+
+	//Checking Diagonal winning condition for O
+	if (grid1.getState() == O && grid5.getState() == O && grid9.getState() == O ||
+		grid3.getState() == O && grid5.getState() == O && grid7.getState() == O) {
+		return playerOneWins = true;
+	}
+
+	//Checking Horizontal winning condition for X
+	if (grid1.getState() == X && grid2.getState() == X && grid3.getState() == X ||
+		grid4.getState() == X && grid5.getState() == X && grid6.getState() == X ||
+		grid7.getState() == X && grid8.getState() == X && grid9.getState() == X) {
+		return playerTwoWins = true;
+	}
+
+	//Checking Vertical winning condition for X
+	if (grid1.getState() == X && grid4.getState() == X && grid7.getState() == X ||
+		grid2.getState() == X && grid5.getState() == X && grid8.getState() == X ||
+		grid3.getState() == X && grid6.getState() == X && grid9.getState() == X) {
+		return playerTwoWins = true;
+	}
+
+	//Checking Diagonal winning condition for X
+	if (grid1.getState() == X && grid5.getState() == X && grid9.getState() == X ||
+		grid3.getState() == X && grid5.getState() == X && grid7.getState() == X) {
+		return playerTwoWins = true;
+	}
+
+	return false;
 }
 
 

@@ -23,6 +23,8 @@ public:
 private:
 	SDL_Window* window = NULL;
 	SDL_Renderer* renderer = NULL;
+	bool playerOneWins;
+	bool playerTwoWins;
 	bool running;
 	bool isPlayerOneOrTwo = true;
 	bool isInfoClicked = false;
