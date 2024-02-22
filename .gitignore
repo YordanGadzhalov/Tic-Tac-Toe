@@ -6,6 +6,7 @@
 
 *x64/
 *Debug/
+*.vs/
 
 
 # Unignore source code files and txt
