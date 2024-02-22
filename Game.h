@@ -19,6 +19,7 @@ public:
 	void clean();
 	bool isRunning();
 	bool isGameOver();
+	void restartGame();
 
 private:
 	SDL_Window* window = NULL;
@@ -38,7 +39,7 @@ private:
 	Grid grid7 = Grid(50, 205, 390, 550, EMPTY);
 	Grid grid8 = Grid(225, 377, 390, 550, EMPTY);
 	Grid grid9 = Grid(390, 550, 390, 550, EMPTY);
-	Button startButton = Button(663, 440, 895, 560, STATIC);
-	Button readyButton = Button(674, 200, 820, 284, STATIC);
+	Button startButton = Button(660, 440, 885, 507, STATIC);
+	Button readyButton = Button(690, 167, 850, 350, STATIC);
 	Button infoButton = Button(935, 28, 980, 80, STATIC);
 };

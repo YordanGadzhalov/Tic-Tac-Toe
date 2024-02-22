@@ -25,11 +25,12 @@ bool Game::init(const char* title, int xpos,
 				TextureManager::Instance()->loadTexture("assets/grid2.png", "grid2", renderer);
 				TextureManager::Instance()->loadTexture("assets/Ximage2.png", "Ximage2", renderer);
 				TextureManager::Instance()->loadTexture("assets/circle2.png", "circle2", renderer);
-				TextureManager::Instance()->loadTexture("assets/startButtonNotClicked.png", "startNotClicked", renderer);
-				TextureManager::Instance()->loadTexture("assets/startButtonClicked.png", "startButtonClicked", renderer);
-				TextureManager::Instance()->loadTexture("assets/startButtonInactive.png", "startButtonInactive", renderer);
+				TextureManager::Instance()->loadTexture("assets/ButtonStatic.png", "ButtonStatic", renderer);
+				TextureManager::Instance()->loadTexture("assets/ButtonClicked.png", "startButtonClicked", renderer);
+				TextureManager::Instance()->loadTexture("assets/ButtonInactive.png", "startButtonInactive", renderer);
 				TextureManager::Instance()->loadTexture("assets/info2.png", "info2", renderer);
-				TextureManager::Instance()->loadTexture("assets/ready2.png", "ready2", renderer);
+				TextureManager::Instance()->loadTexture("assets/ReadyButtonStatic.png", "ReadyStatic", renderer);
+				TextureManager::Instance()->loadTexture("assets/ReadyButtonClicked.png", "ReadyClicked", renderer);
 				TextureManager::Instance()->loadTexture("assets/text2.png", "text2", renderer);
 				TextureManager::Instance()->loadTexture("assets/player1.png", "player1", renderer);
 				TextureManager::Instance()->loadTexture("assets/player2.png", "player2", renderer);
@@ -84,14 +85,17 @@ void Game::render() {
 	
 	if(!isInfoClicked) {
 		//TextureManager::Instance()->drawTexture("startButton2", 650, 350, 200, 206, renderer);
-		TextureManager::Instance()->drawTexture("ready2", 650, 150, 190, 170, renderer);
-		TextureManager::Instance()->drawTexture("startNotClicked", 650, 430, 258, 138, renderer);
+		TextureManager::Instance()->drawTexture("ReadyStatic", 665, 150, 220, 220, renderer);
+		TextureManager::Instance()->drawTexture("ButtonStatic", 650, 430, 250, 80, renderer);
 		if (startButton.getState() == CLICKED) {
-			TextureManager::Instance()->drawTexture("startButtonClicked", 650, 430, 258, 138, renderer);
+			TextureManager::Instance()->drawTexture("startButtonClicked", 650, 430, 250, 80, renderer);
 			SDL_Delay(200);
 		}
-		if (isGameOver) {
-			TextureManager::Instance()->drawTexture("startButtonInactive", 650, 430, 258, 138, renderer);
+		if (startButton.getState() == INACTIVE) {
+			TextureManager::Instance()->drawTexture("startButtonInactive", 650, 430, 250, 80, renderer);
+		}
+		if (readyButton.getState() == CLICKED) {
+			TextureManager::Instance()->drawTexture("ReadyClicked", 665, 150, 220, 220, renderer);
 		}
 	}
 	
@@ -204,14 +208,21 @@ void Game::handleEvents() {
 		case SDL_MOUSEBUTTONDOWN: {
 			int mouseX = event.button.x;
 			int mouseY = event.button.y;
-			if(isGameOver()){}
+			if(!isGameOver()){
+				startButton.setState(INACTIVE);
+			}
+			else {
+				startButton.setState(STATIC);
+			}
 
 			if (startButton.contains(mouseX, mouseY)) {
 				std::cout << "Start button clicked " << std::endl;
 				startButton.setState(CLICKED);
+				restartGame();
 			}
 				if (readyButton.contains(mouseX, mouseY)){
 					std::cout << "READY CLICKED!" << std::endl;
+					readyButton.setState(CLICKED);
 					isPlayerOneOrTwo = !isPlayerOneOrTwo;
 				}
 				if (grid1.isInside(mouseX, mouseY)) {
@@ -332,6 +343,9 @@ void Game::handleEvents() {
 				if (startButton.getState() == CLICKED) {
 					startButton.setState(STATIC); // Returns the button state back to static
 				}
+				if (readyButton.getState() == CLICKED) {
+					readyButton.setState(STATIC);
+				}
 		}
 	}
 }
@@ -392,6 +406,23 @@ bool Game::isGameOver()
 	}
 
 	return false;
+}
+
+void Game::restartGame()
+{
+	grid1.setState(EMPTY);
+	grid2.setState(EMPTY);
+	grid3.setState(EMPTY);
+	grid4.setState(EMPTY);
+	grid5.setState(EMPTY);
+	grid6.setState(EMPTY);
+	grid7.setState(EMPTY);
+	grid8.setState(EMPTY);
+	grid9.setState(EMPTY);
+	drawnShapes.clear(); // clears vector
+	playerOneWins = false;
+	playerTwoWins = false;
+	isPlayerOneOrTwo = true;
 }
 
 
