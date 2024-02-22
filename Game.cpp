@@ -7,7 +7,6 @@
 bool Game::init(const char* title, int xpos,
 	int ypos, int width, int height, int flags) {
 	drawnShapes.clear(); // clears vector
-	//Coordinates of each grid 1-9
 	
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
@@ -26,7 +25,9 @@ bool Game::init(const char* title, int xpos,
 				TextureManager::Instance()->loadTexture("assets/grid2.png", "grid2", renderer);
 				TextureManager::Instance()->loadTexture("assets/Ximage2.png", "Ximage2", renderer);
 				TextureManager::Instance()->loadTexture("assets/circle2.png", "circle2", renderer);
-				TextureManager::Instance()->loadTexture("assets/startButton2.png", "startButton2", renderer);
+				TextureManager::Instance()->loadTexture("assets/startButtonNotClicked.png", "startNotClicked", renderer);
+				TextureManager::Instance()->loadTexture("assets/startButtonClicked.png", "startButtonClicked", renderer);
+				TextureManager::Instance()->loadTexture("assets/startButtonInactive.png", "startButtonInactive", renderer);
 				TextureManager::Instance()->loadTexture("assets/info2.png", "info2", renderer);
 				TextureManager::Instance()->loadTexture("assets/ready2.png", "ready2", renderer);
 				TextureManager::Instance()->loadTexture("assets/text2.png", "text2", renderer);
@@ -59,6 +60,7 @@ void Game::render() {
 
 	SDL_RenderClear(renderer);
 
+	//Shows image of which player won
 	if(playerOneWins) {
 		TextureManager::Instance()->drawTexture("player1wins", 650, 50, 200, 31, renderer);
 	}
@@ -67,6 +69,7 @@ void Game::render() {
 		TextureManager::Instance()->drawTexture("player2wins", 650, 50, 200, 29, renderer);
 	}
 
+	//Draws image of which player's turn it is
 	if(isPlayerOneOrTwo) {
 		TextureManager::Instance()->drawTexture("player1", 233, 7, 135, 22, renderer);
 	}
@@ -74,17 +77,27 @@ void Game::render() {
 		TextureManager::Instance()->drawTexture("player2", 233, 7, 135, 22, renderer);
 	}
 
+	//Shows info on the screen
 	if(isInfoClicked) {
 		TextureManager::Instance()->drawTexture("text2", 650, 100, 250, 358, renderer);
 	}
 	
 	if(!isInfoClicked) {
-		TextureManager::Instance()->drawTexture("startButton2", 650, 350, 200, 206, renderer);
+		//TextureManager::Instance()->drawTexture("startButton2", 650, 350, 200, 206, renderer);
 		TextureManager::Instance()->drawTexture("ready2", 650, 150, 190, 170, renderer);
+		TextureManager::Instance()->drawTexture("startNotClicked", 650, 430, 258, 138, renderer);
+		if (startButton.getState() == CLICKED) {
+			TextureManager::Instance()->drawTexture("startButtonClicked", 650, 430, 258, 138, renderer);
+			SDL_Delay(200);
+			startButton.setState(STATIC);
+		}
 	}
+
+	//Draws the grid and the info button
 	TextureManager::Instance()->drawTexture("grid2", 50, 50, 500, 501, renderer);
 	TextureManager::Instance()->drawTexture("info2", 930, 20, 60, 60, renderer);
-	
+		
+		//Draws O/X based on clicked grid and current player
 		for (auto shape : drawnShapes) {
 			if (shape == 1) {
 				if (grid1.getState() == O) {
@@ -196,6 +209,10 @@ void Game::handleEvents() {
 					std::cout << "Player 2 wins" << std::endl;
 				}
 				std::cout << "Game over!" << std::endl;
+			}
+			if (startButton.contains(mouseX, mouseY)) {
+				std::cout << "Start button clicked " << std::endl;
+				startButton.setState(CLICKED);
 			}
 				if (readyButton.contains(mouseX, mouseY)){
 					std::cout << "READY CLICKED!" << std::endl;

@@ -38,7 +38,7 @@ private:
 	Grid grid7 = Grid(50, 205, 390, 550, EMPTY);
 	Grid grid8 = Grid(225, 377, 390, 550, EMPTY);
 	Grid grid9 = Grid(390, 550, 390, 550, EMPTY);
-	Button readyButton = Button(674, 200, 820, 284);
-	Button infoButton = Button(935, 28, 980, 80);
-
+	Button startButton = Button(663, 440, 895, 560, STATIC);
+	Button readyButton = Button(674, 200, 820, 284, STATIC);
+	Button infoButton = Button(935, 28, 980, 80, STATIC);
 };
