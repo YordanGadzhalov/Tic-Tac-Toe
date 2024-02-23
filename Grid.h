@@ -12,6 +12,7 @@ private:
     int gridX2;
     int gridY2;
     GridState state;
+    bool isClicked = false;
 
 public:
     Grid();
@@ -20,4 +21,7 @@ public:
     bool isInside(int mouseX, int mouseY);
     void setState(GridState newState);
     GridState getState();
+    void setIsClicked(bool isClicked);
+    bool getIsClicked();
+    void clear(); // Clears the grids after restart
 };

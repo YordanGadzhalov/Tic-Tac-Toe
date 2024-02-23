@@ -24,3 +24,19 @@ GridState Grid::getState()
     return this->state;
 }
 
+void Grid::setIsClicked(bool isClicked)
+{
+    this->isClicked = isClicked;
+}
+
+bool Grid::getIsClicked()
+{
+    return this->isClicked;
+}
+
+void Grid::clear()
+{
+    this->setState(EMPTY);
+    this->isClicked = false;
+}
+

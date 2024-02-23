@@ -22,6 +22,8 @@ public:
 	void restartGame();
 
 private:
+	int counter;
+	bool isPlayerDone = true;
 	SDL_Window* window = NULL;
 	SDL_Renderer* renderer = NULL;
 	bool playerOneWins;
@@ -29,8 +31,6 @@ private:
 	bool running;
 	bool isPlayerOneOrTwo = true;
 	bool isInfoClicked = false;
-	const bool gameStart = true;
-	const bool gameEnds = false;
 	std::vector<int> drawnShapes; //Holds the shapes we want to draw and redraws them everytime it renders
 	Grid grid1 = Grid(55, 205, 55, 205, EMPTY); 
 	Grid grid2 = Grid(225, 375, 55, 205, EMPTY);
@@ -41,7 +41,7 @@ private:
 	Grid grid7 = Grid(50, 205, 390, 550, EMPTY);
 	Grid grid8 = Grid(225, 377, 390, 550, EMPTY);
 	Grid grid9 = Grid(390, 550, 390, 550, EMPTY);
-	Button startButton = Button(660, 440, 885, 507, INACTIVE);
+	Button restartButton = Button(660, 440, 885, 507, INACTIVE);
 	Button readyButton = Button(690, 167, 850, 350, ACTIVE);
 	Button infoButton = Button(935, 28, 980, 80, ACTIVE);
 };
