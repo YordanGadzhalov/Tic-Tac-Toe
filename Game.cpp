@@ -25,7 +25,7 @@ bool Game::init(const char* title, int xpos,
 				TextureManager::Instance()->loadTexture("assets/grid2.png", "grid2", renderer);
 				TextureManager::Instance()->loadTexture("assets/Ximage2.png", "Ximage2", renderer);
 				TextureManager::Instance()->loadTexture("assets/circle2.png", "circle2", renderer);
-				TextureManager::Instance()->loadTexture("assets/ButtonStatic.png", "ButtonStatic", renderer);
+				TextureManager::Instance()->loadTexture("assets/ButtonActive.png", "ButtonActive", renderer);
 				TextureManager::Instance()->loadTexture("assets/ButtonClicked.png", "startButtonClicked", renderer);
 				TextureManager::Instance()->loadTexture("assets/ButtonInactive.png", "startButtonInactive", renderer);
 				TextureManager::Instance()->loadTexture("assets/info2.png", "info2", renderer);
@@ -84,21 +84,22 @@ void Game::render() {
 	}
 	
 	if(!isInfoClicked) {
-		//TextureManager::Instance()->drawTexture("startButton2", 650, 350, 200, 206, renderer);
 		TextureManager::Instance()->drawTexture("ReadyStatic", 665, 150, 220, 220, renderer);
-		TextureManager::Instance()->drawTexture("ButtonStatic", 650, 430, 250, 80, renderer);
-		if (startButton.getState() == CLICKED) {
-			TextureManager::Instance()->drawTexture("startButtonClicked", 650, 430, 250, 80, renderer);
-			SDL_Delay(200);
-		}
 		if (startButton.getState() == INACTIVE) {
 			TextureManager::Instance()->drawTexture("startButtonInactive", 650, 430, 250, 80, renderer);
 		}
+		if (startButton.getState() == CLICKED){
+			TextureManager::Instance()->drawTexture("startButtonClicked", 650, 430, 250, 80, renderer);
+		}
+		if (startButton.getState() == ACTIVE) {
+			TextureManager::Instance()->drawTexture("ButtonActive", 650, 430, 250, 80, renderer);
+		}
+		 
 		if (readyButton.getState() == CLICKED) {
 			TextureManager::Instance()->drawTexture("ReadyClicked", 665, 150, 220, 220, renderer);
 		}
 	}
-	
+
 
 	//Draws the grid and the info button
 	TextureManager::Instance()->drawTexture("grid2", 50, 50, 500, 501, renderer);
@@ -183,19 +184,22 @@ void Game::render() {
 	SDL_RenderPresent(renderer);
 }
 
+
 //Manages all events
 void Game::handleEvents() {
-	SDL_Event event;
 
+	
+	SDL_Event event;
+	int mouseX = 0;
+	int mouseY = 0;
 	if (SDL_PollEvent(&event)) {
 		switch (event.type) {
 		case SDL_QUIT:
 			running = false;
 			break;
 		case SDL_MOUSEMOTION:
-			{
-			int mouseX = event.button.x;
-			int mouseY = event.button.y;
+			mouseX = event.button.x;
+			mouseY = event.button.y;
 			if (infoButton.contains(mouseX, mouseY)) {
 				isInfoClicked = true;
 			}
@@ -204,148 +208,141 @@ void Game::handleEvents() {
 				isInfoClicked = false;
 			}
 			break;
-		}
-		case SDL_MOUSEBUTTONDOWN: {
-			int mouseX = event.button.x;
-			int mouseY = event.button.y;
-			if(!isGameOver()){
-				startButton.setState(INACTIVE);
-			}
-			else {
-				startButton.setState(STATIC);
-			}
-
+		case SDL_MOUSEBUTTONDOWN:
+			mouseX = event.button.x;
+			mouseY = event.button.y;
 			if (startButton.contains(mouseX, mouseY)) {
 				std::cout << "Start button clicked " << std::endl;
 				startButton.setState(CLICKED);
-				restartGame();
 			}
-				if (readyButton.contains(mouseX, mouseY)){
-					std::cout << "READY CLICKED!" << std::endl;
-					readyButton.setState(CLICKED);
-					isPlayerOneOrTwo = !isPlayerOneOrTwo;
-				}
-				if (grid1.isInside(mouseX, mouseY)) {
-					drawnShapes.push_back(1);
-					if (isPlayerOneOrTwo) {
-						grid1.setState(O);
-					}
-					else {
-						grid1.setState(X);
-					}
-					std::cout << "Grid 1 " << "STATE: " << grid1.getState() << std::endl;
-					std::cout << "Grid 1 " << "Player: " << isPlayerOneOrTwo << std::endl;
-				}
-
-				if (grid2.isInside(mouseX, mouseY)) {
-					drawnShapes.push_back(2);
-					if (isPlayerOneOrTwo) {
-						grid2.setState(O);
-					}
-					else {
-						grid2.setState(X);
-					}
-					std::cout << "Grid 2 " << "STATE: " << grid2.getState() << std::endl;
-					std::cout << "Grid 2 " << "Player: " << isPlayerOneOrTwo << std::endl;
-				}
-
-				if (grid3.isInside(mouseX, mouseY)) {
-					drawnShapes.push_back(3);
-					if (isPlayerOneOrTwo) {
-						grid3.setState(O);
-					}
-					else {
-						grid3.setState(X);
-					}
-					std::cout << "Grid 3 " << "STATE: " << grid3.getState() << std::endl;
-					std::cout << "Grid 3 " << "Player: " << isPlayerOneOrTwo << std::endl;
-				}
-
-				if (grid4.isInside(mouseX, mouseY)) {
-					drawnShapes.push_back(4);
-					if (isPlayerOneOrTwo) {
-						grid4.setState(O);
-					}
-					else {
-						grid4.setState(X);
-					}
-					std::cout << "Grid 4 " << "STATE: " << grid4.getState() << std::endl;
-					std::cout << "Grid 4 " << "Player: " << isPlayerOneOrTwo << std::endl;
-				}
-
-				if (grid5.isInside(mouseX, mouseY)) {
-					drawnShapes.push_back(5);
-					if (isPlayerOneOrTwo) {
-						grid5.setState(O);
-					}
-					else {
-						grid5.setState(X);
-					}
-					std::cout << "Grid 5 " << "STATE: " << grid5.getState() << std::endl;
-					std::cout << "Grid 5 " << "Player: " << isPlayerOneOrTwo << std::endl;
-				}
-
-				if (grid6.isInside(mouseX, mouseY)) {
-					drawnShapes.push_back(6);
-					if (isPlayerOneOrTwo) {
-						grid6.setState(O);
-					}
-					else {
-						grid6.setState(X);
-					}
-					std::cout << "Grid 6 " << "STATE: " << grid6.getState() << std::endl;
-					std::cout << "Grid 6 " << "Player: " << isPlayerOneOrTwo << std::endl;
-				}
-
-				if (grid7.isInside(mouseX, mouseY)) {
-					drawnShapes.push_back(7);
-					if (isPlayerOneOrTwo) {
-						grid7.setState(O);
-					}
-					else {
-						grid7.setState(X);
-					}
-					std::cout << "Grid 7 " << "STATE: " << grid7.getState() << std::endl;
-					std::cout << "Grid 7 " << "Player: " << isPlayerOneOrTwo << std::endl;
-				}
-
-				if (grid8.isInside(mouseX, mouseY)) {
-					drawnShapes.push_back(8);
-					if (isPlayerOneOrTwo) {
-						grid8.setState(O);
-					}
-					else {
-						grid8.setState(X);
-					}
-					std::cout << "Grid 8 " << "STATE: " << grid8.getState() << std::endl;
-					std::cout << "Grid 8 " << "Player: " << isPlayerOneOrTwo << std::endl;
-				}
-
-				if (grid9.isInside(mouseX, mouseY)) {
-					drawnShapes.push_back(9);
-					if (isPlayerOneOrTwo) {
-						grid9.setState(O);
-					}
-					else {
-						grid9.setState(X);
-					}
-					std::cout << "Grid 9 " << "STATE: " << grid9.getState() << std::endl;
-					std::cout << "Grid 9 " << "Player: " << isPlayerOneOrTwo << std::endl;
-				}
-				cout << "X: " << mouseX << "Y: " << mouseY << endl;
-				/*std::cout << "Grid 1 " << "STATE: " << grid1.getState() << std::endl;
-				std::cout << "Grid 2 " << "STATE: " << grid2.getState() << std::endl;   // Checking grid states between 0/1/2 - EMPTY/O/X
-				std::cout << "Grid 3 " << "STATE: " << grid3.getState() << std::endl;*/
+			if (readyButton.contains(mouseX, mouseY)){
+				std::cout << "READY CLICKED!" << std::endl;
+				readyButton.setState(CLICKED);
+				isPlayerOneOrTwo = !isPlayerOneOrTwo;
 			}
+			if (grid1.isInside(mouseX, mouseY)) {
+				drawnShapes.push_back(1);
+				if (isPlayerOneOrTwo) {
+					grid1.setState(O);
+				}
+				else
+				{
+					grid1.setState(X);
+				}
+				std::cout << "Grid 1 " << "STATE: " << grid1.getState() << std::endl;
+				std::cout << "Grid 1 " << "Player: " << isPlayerOneOrTwo << std::endl;
+			}
+			if (grid2.isInside(mouseX, mouseY)) {
+				drawnShapes.push_back(2);
+				if (isPlayerOneOrTwo) {
+					grid2.setState(O);
+				}
+				else
+				{
+					grid2.setState(X);
+				}
+				std::cout << "Grid 2 " << "STATE: " << grid1.getState() << std::endl;
+				std::cout << "Grid 2 " << "Player: " << isPlayerOneOrTwo << std::endl;
+			}
+			if (grid3.isInside(mouseX, mouseY)) {
+				drawnShapes.push_back(3);
+				if (isPlayerOneOrTwo) {
+					grid3.setState(O);
+				}
+				else
+				{
+					grid3.setState(X);
+				}
+				std::cout << "Grid 3 " << "STATE: " << grid1.getState() << std::endl;
+				std::cout << "Grid 3 " << "Player: " << isPlayerOneOrTwo << std::endl;
+			}
+			if (grid4.isInside(mouseX, mouseY)) {
+				drawnShapes.push_back(4);
+				if (isPlayerOneOrTwo) {
+					grid4.setState(O);
+				}
+				else
+				{
+					grid4.setState(X);
+				}
+				std::cout << "Grid 4 " << "STATE: " << grid1.getState() << std::endl;
+				std::cout << "Grid 4 " << "Player: " << isPlayerOneOrTwo << std::endl;
+			}
+			if (grid5.isInside(mouseX, mouseY)) {
+				drawnShapes.push_back(5);
+				if (isPlayerOneOrTwo) {
+					grid5.setState(O);
+				}
+				else
+				{
+					grid5.setState(X);
+				}
+				std::cout << "Grid 5 " << "STATE: " << grid1.getState() << std::endl;
+				std::cout << "Grid 5 " << "Player: " << isPlayerOneOrTwo << std::endl;
+			}
+			if (grid6.isInside(mouseX, mouseY)) {
+				drawnShapes.push_back(6);
+				if (isPlayerOneOrTwo) {
+					grid6.setState(O);
+				}
+				else
+				{
+					grid6.setState(X);
+				}
+				std::cout << "Grid 6 " << "STATE: " << grid1.getState() << std::endl;
+				std::cout << "Grid 6 " << "Player: " << isPlayerOneOrTwo << std::endl;
+			}
+			if (grid7.isInside(mouseX, mouseY)) {
+				drawnShapes.push_back(7);
+				if (isPlayerOneOrTwo) {
+					grid7.setState(O);
+				}
+				else
+				{
+					grid7.setState(X);
+				}
+				std::cout << "Grid 7 " << "STATE: " << grid1.getState() << std::endl;
+				std::cout << "Grid 7 " << "Player: " << isPlayerOneOrTwo << std::endl;
+			}
+			if (grid8.isInside(mouseX, mouseY)) {
+				drawnShapes.push_back(8);
+				if (isPlayerOneOrTwo) {
+					grid8.setState(O);
+				}
+				else
+				{
+					grid8.setState(X);
+				}
+				std::cout << "Grid 8 " << "STATE: " << grid1.getState() << std::endl;
+				std::cout << "Grid 8 " << "Player: " << isPlayerOneOrTwo << std::endl;
+			}
+			if (grid9.isInside(mouseX, mouseY)) {
+				drawnShapes.push_back(9);
+				if (isPlayerOneOrTwo) {
+					grid9.setState(O);
+				}
+				else
+				{
+					grid9.setState(X);
+				}
+				std::cout << "Grid 9 " << "STATE: " << grid1.getState() << std::endl;
+				std::cout << "Grid 9 " << "Player: " << isPlayerOneOrTwo << std::endl;
+			}
+			break;
+
+		case SDL_MOUSEBUTTONUP:
+			if (startButton.getState() == CLICKED) {
+				std::cout << "Mouse button UP" << std::endl;
+				restartGame(); // Call your restart function here
+			}
+			if (readyButton.getState() == CLICKED) {
+				readyButton.setState(ACTIVE);
+			}
+			break;
+
+
 		default:
 			break;
-			case SDL_MOUSEBUTTONUP:
-				if (startButton.getState() == CLICKED) {
-					startButton.setState(STATIC); // Returns the button state back to static
-				}
-				if (readyButton.getState() == CLICKED) {
-					readyButton.setState(STATIC);
-				}
 		}
 	}
 }
@@ -369,44 +366,46 @@ bool Game::isGameOver()
 	if (grid1.getState() == O && grid2.getState() == O && grid3.getState() == O ||
 		grid4.getState() == O && grid5.getState() == O && grid6.getState() == O ||
 		grid7.getState() == O && grid8.getState() == O && grid9.getState() == O){
-		return playerOneWins = true;
-	}
+		playerOneWins = true;
+		return true;
 
+	}
 	//Checking Vertical winning condition for O
 	if (grid1.getState() == O && grid4.getState() == O && grid7.getState() == O ||
 		grid2.getState() == O && grid5.getState() == O && grid8.getState() == O ||
 		grid3.getState() == O && grid6.getState() == O && grid9.getState() == O) {
-		return playerOneWins = true;
+		playerOneWins = true;
+		return true;
 	}
-
 	//Checking Diagonal winning condition for O
 	if (grid1.getState() == O && grid5.getState() == O && grid9.getState() == O ||
 		grid3.getState() == O && grid5.getState() == O && grid7.getState() == O) {
-		return playerOneWins = true;
+		playerOneWins = true;
+		return true;
 	}
-
 	//Checking Horizontal winning condition for X
 	if (grid1.getState() == X && grid2.getState() == X && grid3.getState() == X ||
 		grid4.getState() == X && grid5.getState() == X && grid6.getState() == X ||
 		grid7.getState() == X && grid8.getState() == X && grid9.getState() == X) {
-		return playerTwoWins = true;
+		playerTwoWins = true;
+		return true;
 	}
-
 	//Checking Vertical winning condition for X
 	if (grid1.getState() == X && grid4.getState() == X && grid7.getState() == X ||
 		grid2.getState() == X && grid5.getState() == X && grid8.getState() == X ||
 		grid3.getState() == X && grid6.getState() == X && grid9.getState() == X) {
-		return playerTwoWins = true;
+		playerTwoWins = true;
+		return true;
 	}
-
 	//Checking Diagonal winning condition for X
 	if (grid1.getState() == X && grid5.getState() == X && grid9.getState() == X ||
 		grid3.getState() == X && grid5.getState() == X && grid7.getState() == X) {
-		return playerTwoWins = true;
+		playerTwoWins = true;
+		return true;
 	}
 
-
 	return false;
+	
 }
 
 void Game::restartGame()
@@ -421,6 +420,8 @@ void Game::restartGame()
 	grid8.setState(EMPTY);
 	grid9.setState(EMPTY);
 	drawnShapes.clear(); // clears vector
+	startButton.setState(INACTIVE);
+	readyButton.setState(ACTIVE);
 	playerOneWins = false;
 	playerTwoWins = false;
 	isPlayerOneOrTwo = true;

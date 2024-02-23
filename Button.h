@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 
-enum ButtonState{STATIC, CLICKED, INACTIVE};
+enum ButtonState{ACTIVE, CLICKED, INACTIVE};
 
 class Button {
 private:
