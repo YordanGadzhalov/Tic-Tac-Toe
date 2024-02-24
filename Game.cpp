@@ -40,6 +40,7 @@ bool Game::init(const char* title, int xpos,
 				TextureManager::Instance()->loadTexture("assets/player2.png", "player2", renderer);
 				TextureManager::Instance()->loadTexture("assets/player1wins.png", "player1wins", renderer);
 				TextureManager::Instance()->loadTexture("assets/player2wins.png", "player2wins", renderer);
+				TextureManager::Instance()->loadTexture("assets/DRAW.png", "DRAW", renderer);
 			}
 			else {
 				std::cout << "renderer init failed\n";
@@ -66,16 +67,11 @@ void Game::render() {
 	SDL_RenderClear(renderer);
 
 	//Shows image of which player won
-
-
-	if (counter == 9 && !isGameOver()) {
-		TextureManager::Instance()->drawTexture("player2wins", 650, 50, 200, 29, renderer);
-	}
 	if(playerOneWins) {
-		TextureManager::Instance()->drawTexture("player1wins", 650, 50, 200, 31, renderer);
+		TextureManager::Instance()->drawTexture("player1wins", 670, 50, 200, 31, renderer);
 	}
 	if(playerTwoWins) {
-		TextureManager::Instance()->drawTexture("player2wins", 650, 50, 200, 29, renderer);
+		TextureManager::Instance()->drawTexture("player2wins", 670, 50, 200, 29, renderer);
 	}
 
 	//Draws image of which player's turn it is
@@ -105,6 +101,9 @@ void Game::render() {
 		 
 		if (readyButton.getState() == CLICKED) {
 			TextureManager::Instance()->drawTexture("ReadyClicked", 665, 150, 220, 220, renderer);
+		}
+		if (!isGameOver() && counter == 9) {
+			TextureManager::Instance()->drawTexture("DRAW", 690, 20, 178, 103, renderer);
 		}
 	}
 
@@ -189,10 +188,10 @@ void Game::render() {
 				}
 			}
 		}
-
-		if (isGameOver() && !restartButton.getState() == CLICKED) {
+		
+	/*	if (isGameOver() && !restartButton.getState() == CLICKED) {
 			TextureManager::Instance()->drawTexture("gameover", 50, 50, 885, 445, renderer);
-		}
+		}*/
 
 	SDL_RenderPresent(renderer);
 }
@@ -226,6 +225,7 @@ void Game::handleEvents() {
 			if (restartButton.contains(mouseX, mouseY) && restartButton.getState() == ACTIVE) {
 				std::cout << "Start button clicked " << std::endl;
 				restartButton.setState(CLICKED);
+				//loadAndPlaySound();
 			}
 			if (readyButton.contains(mouseX, mouseY)){
 				std::cout << "READY CLICKED!" << std::endl;
@@ -486,6 +486,15 @@ void Game::restartGame()
 	isPlayerDone = true;
 	counter = 0;
 	
+}
+
+void Game::loadAndPlaySound() {
+
+	SoundManager::Instance()->load("music/gamemusic.mp3", "gamemusic", 1);
+
+	SoundManager::Instance()->playMusic("gamemusic", 0, 5000);
+
+
 }
 
 

@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 		WINDOW_WIDTH, WINDOW_HEIGHT,
 		SDL_WINDOW_RESIZABLE);
 
-
+	//game->loadAndPlaySound();
 	while (game->isRunning()) {
 		game->handleEvents();
 		game->render();

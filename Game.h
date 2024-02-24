@@ -1,10 +1,13 @@
 #pragma once
-#include <SDL.h>
 #include <SDL_image.h>
 #include "TextureManager.h"
 #include <vector>
 #include "Grid.h"
 #include "Button.h"
+#include <SDL.h>
+#include <SDL_mixer.h>
+#include "SoundManager.h"
+
 
 
 class Game {
@@ -20,6 +23,7 @@ public:
 	bool isRunning();
 	bool isGameOver();
 	void restartGame();
+	void loadAndPlaySound();
 
 private:
 	int counter;
