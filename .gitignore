@@ -11,6 +11,8 @@
 
 # Unignore source code files and txt
 !**.gitignore
+!**.wav
+!**.mp3
 !**.cpp
 !**.h
 !**.txt
