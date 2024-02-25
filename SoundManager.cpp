@@ -5,7 +5,18 @@ using namespace std;
 
 SoundManager::SoundManager() {
     Mix_OpenAudio(48000, AUDIO_S16SYS, 2, 4096);
-    //  Herz
+}
+
+SoundManager::~SoundManager(){
+    for (auto& pair : s_mMusic) {
+        Mix_FreeMusic(pair.second);
+    }
+    s_mMusic.clear();
+
+    for (auto& pair : s_mSfxs) {
+        Mix_FreeChunk(pair.second);
+    }
+    s_mSfxs.clear();
 }
 
 bool SoundManager::load(const char* fileName, string id, int type) {
@@ -32,7 +43,7 @@ bool SoundManager::load(const char* fileName, string id, int type) {
         }
     }
 }
-//funkcii za play-vane na muzika i sound-ove:
+
 void SoundManager::playMusic(string id, int loop, int ms) {
     Mix_FadeInMusic(s_mMusic[id], loop, ms);
 }
@@ -68,4 +79,19 @@ void SoundManager::setMusicPosition(double pos)
         cout << "Something failed: " << Mix_GetError() << endl;
     }
 }
+void SoundManager::playClickSound()
+{
+    SoundManager::Instance()->playMusic("clicksound", 0, 2000);
+    SoundManager::Instance()->changeVolume(-125);
+}
+
+void SoundManager::playMainMusic()
+{
+    SoundManager::Instance()->playMusic("gamemusic", 0, 5000);
+    SoundManager::Instance()->changeVolume(-125);
+}
+
+
+
+
 SoundManager* SoundManager::s_mInstance = 0;

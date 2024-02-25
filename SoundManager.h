@@ -23,12 +23,14 @@ public:
     void pauseOrPlay();
     void changeVolumeSfx(string id, int c);
     void setMusicPosition(double pos);
+    void playClickSound();
+    void playMainMusic();
 
 private:
     static SoundManager* s_mInstance;
     map<string, Mix_Chunk*> s_mSfxs;
     map<string, Mix_Music*> s_mMusic;
-    //mix_chunk durji zvucite, a mix_musix durji muzikalnite failove
+ 
     SoundManager();
     ~SoundManager();
 };

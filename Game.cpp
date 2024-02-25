@@ -24,7 +24,7 @@ bool Game::init(const char* title, int xpos,
 			{
 				std::cout << "renderer creation success\n";
 				SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
+				
 				TextureManager::Instance()->loadTexture("assets/gameover.png", "gameover", renderer);
 				TextureManager::Instance()->loadTexture("assets/grid2.png", "grid2", renderer);
 				TextureManager::Instance()->loadTexture("assets/Ximage2.png", "Ximage2", renderer);
@@ -41,6 +41,9 @@ bool Game::init(const char* title, int xpos,
 				TextureManager::Instance()->loadTexture("assets/player1wins.png", "player1wins", renderer);
 				TextureManager::Instance()->loadTexture("assets/player2wins.png", "player2wins", renderer);
 				TextureManager::Instance()->loadTexture("assets/DRAW.png", "DRAW", renderer);
+				SoundManager::Instance()->load("music/gamemusic.mp3", "gamemusic", 1);
+				SoundManager::Instance()->load("music/clicksound.mp3", "clicksound", 1);
+				SoundManager::Instance()->playMainMusic();
 			}
 			else {
 				std::cout << "renderer init failed\n";
@@ -213,6 +216,7 @@ void Game::handleEvents() {
 			mouseY = event.button.y;
 			if (infoButton.contains(mouseX, mouseY)) {
 				isInfoClicked = true;
+
 			}
 			else
 			{
@@ -225,13 +229,14 @@ void Game::handleEvents() {
 			if (restartButton.contains(mouseX, mouseY) && restartButton.getState() == ACTIVE) {
 				std::cout << "Start button clicked " << std::endl;
 				restartButton.setState(CLICKED);
-				//loadAndPlaySound();
+				SoundManager::Instance()->playClickSound();
 			}
 			if (readyButton.contains(mouseX, mouseY)){
 				std::cout << "READY CLICKED!" << std::endl;
 				readyButton.setState(CLICKED);
 				isPlayerDone = true;
 				isPlayerOneOrTwo = !isPlayerOneOrTwo;
+				SoundManager::Instance()->playClickSound();
 			}
 			if (grid1.isInside(mouseX, mouseY) && !grid1.getIsClicked() && isPlayerDone == true) { 
 				drawnShapes.push_back(1);
@@ -486,15 +491,6 @@ void Game::restartGame()
 	isPlayerDone = true;
 	counter = 0;
 	
-}
-
-void Game::loadAndPlaySound() {
-
-	SoundManager::Instance()->load("music/gamemusic.mp3", "gamemusic", 1);
-
-	SoundManager::Instance()->playMusic("gamemusic", 0, 5000);
-
-
 }
 
 
