@@ -23,7 +23,6 @@ public:
 	bool isRunning();
 	bool isGameOver();
 	void restartGame();
-	void drawWinLine();
 	void undoLast();
 
 private:

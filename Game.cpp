@@ -2,9 +2,6 @@
 #include "Grid.h"
 #include <iostream>
 
-//isClicked - isReady
-
-
 
 bool Game::init(const char* title, int xpos,
 	int ypos, int width, int height, int flags) {
@@ -69,9 +66,36 @@ bool Game::init(const char* title, int xpos,
 //Draws the picture
 void Game::render() {
 
+
 	SDL_RenderClear(renderer);
+	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	if (grid1.getState() == grid2.getState() && grid2.getState() == grid3.getState() && grid1.getState() != EMPTY) {
+		SDL_RenderDrawLine(renderer, 50, 125, 540, 125);
+	}
+	else if (grid4.getState() == grid5.getState() && grid5.getState() == grid6.getState() && grid4.getState() != EMPTY) {
+		SDL_RenderDrawLine(renderer, 50, 300, 540, 300);
+	}
+	else if (grid7.getState() == grid8.getState() && grid8.getState() == grid9.getState() && grid7.getState() != EMPTY) {
+		SDL_RenderDrawLine(renderer, 50, 470, 540, 470);
+	}
+	else if (grid1.getState() == grid4.getState() && grid4.getState() == grid7.getState() && grid1.getState() != EMPTY) {
+		SDL_RenderDrawLine(renderer, 130, 50, 130, 540);
+	}
+	else if (grid2.getState() == grid5.getState() && grid5.getState() == grid8.getState() && grid2.getState() != EMPTY) {
+		SDL_RenderDrawLine(renderer, 300, 50, 300, 540);
+	}
+	else if (grid3.getState() == grid6.getState() && grid6.getState() == grid9.getState() && grid3.getState() != EMPTY) {
+		SDL_RenderDrawLine(renderer, 465, 50, 465, 540);
+	}
+	else if (grid1.getState() == grid5.getState() && grid5.getState() == grid9.getState() && grid1.getState() != EMPTY) {
+		SDL_RenderDrawLine(renderer, 90, 70, 500, 500);
+	}
+	else if (grid3.getState() == grid5.getState() && grid5.getState() == grid7.getState() && grid3.getState() != EMPTY) {
+		SDL_RenderDrawLine(renderer, 520, 70, 110, 500);
+	}
 
 
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	//Shows image of which player won
 	if(playerOneWins) {
 		TextureManager::Instance()->drawTexture("player1wins", 670, 50, 200, 31, renderer);
@@ -199,11 +223,6 @@ void Game::render() {
 			}
 		}
 
-		
-	/*	if (isGameOver() && !restartButton.getState() == CLICKED) {
-			TextureManager::Instance()->drawTexture("gameover", 50, 50, 885, 445, renderer);
-		}*/
-
 	SDL_RenderPresent(renderer);
 }
 
@@ -247,7 +266,7 @@ void Game::handleEvents() {
 				isPlayerOneOrTwo = !isPlayerOneOrTwo;
 				SoundManager::Instance()->playClickSound();
 			}
-			if (undoButton.contains(mouseX, mouseY) && !isGameOver()) {
+			if (undoButton.contains(mouseX, mouseY) && !isGameOver() && counter != 9) {
 				undoButton.setState(CLICKED);
 				SoundManager::Instance()->playClickSound();
 			}
@@ -508,15 +527,12 @@ void Game::restartGame()
 	
 }
 
-void Game::drawWinLine()
-{
-}
 
 
 //Removes the last int in the vector and clears the grid
 void Game::undoLast()
 {
-	if (!drawnShapes.empty()) {
+	if (!drawnShapes.empty() && counter != 9) {
 		int lastShape = drawnShapes.back();
 		drawnShapes.pop_back();
 
@@ -563,11 +579,14 @@ void Game::undoLast()
 	}
 }
 
+
 Game::Game() {
 	Game::window = NULL;
 	Game::renderer = NULL;
 	Game::running = true;
 }
+
+
 
 
 Game::~Game() {}
