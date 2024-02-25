@@ -249,6 +249,7 @@ void Game::handleEvents() {
 			}
 			if (undoButton.contains(mouseX, mouseY) && !isGameOver()) {
 				undoButton.setState(CLICKED);
+				SoundManager::Instance()->playClickSound();
 			}
 			if (grid1.isInside(mouseX, mouseY) && !grid1.getIsClicked() && isPlayerDone == true) { 
 				drawnShapes.push_back(1);
@@ -522,30 +523,39 @@ void Game::undoLast()
 		switch (lastShape) {
 		case 1:
 			grid1.clear();
+			counter--;
 			break;
 		case 2:
 			grid2.clear();
+			counter--;
 			break;
 		case 3:
 			grid3.clear();
+			counter--;
 			break;
 		case 4:
 			grid4.clear();
+			counter--;
 			break;
 		case 5:
 			grid5.clear();
+			counter--;
 			break;
 		case 6:
 			grid6.clear();
+			counter--;
 			break;
 		case 7:
 			grid7.clear();
+			counter--;
 			break;
 		case 8:
 			grid8.clear();
+			counter--;
 			break;
 		case 9:
 			grid9.clear();
+			counter--;
 			break;
 		}
 		isPlayerDone = true;
