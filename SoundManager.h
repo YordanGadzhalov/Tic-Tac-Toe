@@ -17,7 +17,7 @@ public:
     }
 
     bool load(const char* fileName, string id, int type);
-    void playSound(string id, int loop, int ms = 0);
+    void playSound(string id, int loop, int ms, int volume);
     void playMusic(string id, int loop, int ms = 0);
     void changeVolume(int change);
     void pauseOrPlay();

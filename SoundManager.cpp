@@ -48,7 +48,8 @@ void SoundManager::playMusic(string id, int loop, int ms) {
     Mix_FadeInMusic(s_mMusic[id], loop, ms);
 }
 
-void SoundManager::playSound(string id, int loop, int ms) {
+void SoundManager::playSound(string id, int loop, int ms, int volume) {
+    Mix_VolumeChunk(s_mSfxs[id], volume); 
     Mix_FadeInChannel(-1, s_mSfxs[id], loop, ms);
 }
 
@@ -79,15 +80,13 @@ void SoundManager::setMusicPosition(double pos)
         cout << "Something failed: " << Mix_GetError() << endl;
     }
 }
-void SoundManager::playClickSound()
-{
-    SoundManager::Instance()->playMusic("clicksound", 0, 2000);
-    SoundManager::Instance()->changeVolume(-125);
+void SoundManager::playClickSound() {
+    SoundManager::Instance()->playSound("clicksound", 0, 0, 5);
 }
 
 void SoundManager::playMainMusic()
 {
-    SoundManager::Instance()->playMusic("gamemusic", 0, 5000);
+    SoundManager::Instance()->playMusic("gamemusic", 0, 2000);
     SoundManager::Instance()->changeVolume(-125);
 }
 

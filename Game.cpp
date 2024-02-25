@@ -28,6 +28,8 @@ bool Game::init(const char* title, int xpos,
 				TextureManager::Instance()->loadTexture("assets/gameover.png", "gameover", renderer);
 				TextureManager::Instance()->loadTexture("assets/grid2.png", "grid2", renderer);
 				TextureManager::Instance()->loadTexture("assets/Ximage2.png", "Ximage2", renderer);
+				TextureManager::Instance()->loadTexture("assets/undo1.png", "undo1", renderer);
+				TextureManager::Instance()->loadTexture("assets/undo2.png", "undo2", renderer);
 				TextureManager::Instance()->loadTexture("assets/circle2.png", "circle2", renderer);
 				TextureManager::Instance()->loadTexture("assets/ButtonActive.png", "ButtonActive", renderer);
 				TextureManager::Instance()->loadTexture("assets/ButtonClicked.png", "restartButtonClicked", renderer);
@@ -42,7 +44,7 @@ bool Game::init(const char* title, int xpos,
 				TextureManager::Instance()->loadTexture("assets/player2wins.png", "player2wins", renderer);
 				TextureManager::Instance()->loadTexture("assets/DRAW.png", "DRAW", renderer);
 				SoundManager::Instance()->load("music/gamemusic.mp3", "gamemusic", 1);
-				SoundManager::Instance()->load("music/clicksound.mp3", "clicksound", 1);
+				SoundManager::Instance()->load("music/clicksound.wav", "clicksound", 0);
 				SoundManager::Instance()->playMainMusic();
 			}
 			else {
@@ -69,6 +71,7 @@ void Game::render() {
 
 	SDL_RenderClear(renderer);
 
+
 	//Shows image of which player won
 	if(playerOneWins) {
 		TextureManager::Instance()->drawTexture("player1wins", 670, 50, 200, 31, renderer);
@@ -90,6 +93,7 @@ void Game::render() {
 		TextureManager::Instance()->drawTexture("text2", 650, 100, 250, 358, renderer);
 	}
 	
+	//Changes the button images based on their STATE
 	if(!isInfoClicked) {
 		TextureManager::Instance()->drawTexture("ReadyStatic", 665, 150, 220, 220, renderer);
 		if (restartButton.getState() == INACTIVE) {
@@ -101,16 +105,19 @@ void Game::render() {
 		if (restartButton.getState() == ACTIVE) {
 			TextureManager::Instance()->drawTexture("ButtonActive", 650, 430, 250, 80, renderer);
 		}
-		 
 		if (readyButton.getState() == CLICKED) {
 			TextureManager::Instance()->drawTexture("ReadyClicked", 665, 150, 220, 220, renderer);
+		}
+		if (undoButton.getState() == ACTIVE) {
+			TextureManager::Instance()->drawTexture("undo1", 900, 500, 100, 100, renderer);
+		}
+		if (undoButton.getState() == CLICKED) {
+			TextureManager::Instance()->drawTexture("undo2", 900, 500, 100, 100, renderer);
 		}
 		if (!isGameOver() && counter == 9) {
 			TextureManager::Instance()->drawTexture("DRAW", 690, 20, 178, 103, renderer);
 		}
 	}
-
-
 
 	//Draws the grid and the info button
 	TextureManager::Instance()->drawTexture("grid2", 50, 50, 500, 501, renderer);
@@ -191,6 +198,7 @@ void Game::render() {
 				}
 			}
 		}
+
 		
 	/*	if (isGameOver() && !restartButton.getState() == CLICKED) {
 			TextureManager::Instance()->drawTexture("gameover", 50, 50, 885, 445, renderer);
@@ -226,6 +234,7 @@ void Game::handleEvents() {
 		case SDL_MOUSEBUTTONDOWN:
 			mouseX = event.button.x;
 			mouseY = event.button.y;
+			std::cout << "X: " << mouseX << "Y: " << mouseY << std::endl;
 			if (restartButton.contains(mouseX, mouseY) && restartButton.getState() == ACTIVE) {
 				std::cout << "Start button clicked " << std::endl;
 				restartButton.setState(CLICKED);
@@ -237,6 +246,9 @@ void Game::handleEvents() {
 				isPlayerDone = true;
 				isPlayerOneOrTwo = !isPlayerOneOrTwo;
 				SoundManager::Instance()->playClickSound();
+			}
+			if (undoButton.contains(mouseX, mouseY) && !isGameOver()) {
+				undoButton.setState(CLICKED);
 			}
 			if (grid1.isInside(mouseX, mouseY) && !grid1.getIsClicked() && isPlayerDone == true) { 
 				drawnShapes.push_back(1);
@@ -401,8 +413,10 @@ void Game::handleEvents() {
 			if (readyButton.getState() == CLICKED) {
 				readyButton.setState(ACTIVE);
 			}
+			if (undoButton.getState() == CLICKED) {
+				undoLast();
+			}
 			break;
-
 
 		default:
 			break;
@@ -493,6 +507,51 @@ void Game::restartGame()
 	
 }
 
+void Game::drawWinLine()
+{
+}
+
+
+//Removes the last int in the vector and clears the grid
+void Game::undoLast()
+{
+	if (!drawnShapes.empty()) {
+		int lastShape = drawnShapes.back();
+		drawnShapes.pop_back();
+
+		switch (lastShape) {
+		case 1:
+			grid1.clear();
+			break;
+		case 2:
+			grid2.clear();
+			break;
+		case 3:
+			grid3.clear();
+			break;
+		case 4:
+			grid4.clear();
+			break;
+		case 5:
+			grid5.clear();
+			break;
+		case 6:
+			grid6.clear();
+			break;
+		case 7:
+			grid7.clear();
+			break;
+		case 8:
+			grid8.clear();
+			break;
+		case 9:
+			grid9.clear();
+			break;
+		}
+		isPlayerDone = true;
+		undoButton.setState(ACTIVE);
+	}
+}
 
 Game::Game() {
 	Game::window = NULL;

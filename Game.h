@@ -23,7 +23,8 @@ public:
 	bool isRunning();
 	bool isGameOver();
 	void restartGame();
-	void loadAndPlaySound();
+	void drawWinLine();
+	void undoLast();
 
 private:
 	int counter;
@@ -48,4 +49,5 @@ private:
 	Button restartButton = Button(660, 440, 885, 507, INACTIVE);
 	Button readyButton = Button(690, 167, 850, 350, ACTIVE);
 	Button infoButton = Button(935, 28, 980, 80, ACTIVE);
+	Button undoButton = Button(920, 520, 980, 580, ACTIVE);
 };
