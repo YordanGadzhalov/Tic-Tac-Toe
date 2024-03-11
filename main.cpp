@@ -2,12 +2,12 @@
 #include <iostream>
 using namespace std;
 
+
 Game* game = NULL;
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 600;
 
 int main(int argc, char* argv[]) {
-
 	game = new Game();
 	game->init("Tic-Tac-Toe",
 		SDL_WINDOWPOS_CENTERED,
