@@ -39,4 +39,3 @@ void Square::clear()
     this->setState(EMPTY);
     this->isClicked = false;
 }
-

@@ -3,6 +3,7 @@
 #include "Button.h"
 
 enum SquareState { EMPTY, O, X };
+const int SIZE = 125;
 
 class Square {
 
@@ -14,7 +15,6 @@ private:
     SquareState state;
     bool isClicked = false;
 
-
 public:
     Square();
     ~Square();
@@ -25,5 +25,4 @@ public:
     void setIsClicked(bool isClicked);
     bool getIsClicked();
     void clear();
-    const int SIZE = 125;
 };

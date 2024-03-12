@@ -24,7 +24,7 @@ public:
     bool isGameOver();
 	void restartGame();
 	void undoLast();
-    void handleGridEvent(Square& square, int index, int mouseX, int mouseY);
+    void handleSquareEvent(Square& square, int index, int mouseX, int mouseY);
     void InitGrid();
 
 private:
@@ -37,7 +37,7 @@ private:
 	bool isPlayerOneOrTwo = true;
 	bool isInfoClicked = false;
     std::vector<int> drawnShapes;
-    std::vector<Square> grid;
+    std::vector<Square> m_grid;
     Button restartButton = Button(660, 440, 885, 507, INACTIVE);
 	Button readyButton = Button(690, 167, 850, 350, ACTIVE);
 	Button infoButton = Button(935, 28, 980, 80, ACTIVE);
