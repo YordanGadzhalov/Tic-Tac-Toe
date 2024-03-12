@@ -16,11 +16,11 @@ int main(int argc, char* argv[]) {
 		SDL_WINDOW_RESIZABLE);
 
 
-	while (game->isRunning()) {
-		game->handleEvents();
-		game->render();
+    while (game->IsRunning()) {
+        game->HandleEvents();
+        game->Render();
 	}
 
-	game->clean();
+    game->Clean();
 	return 0;
 }

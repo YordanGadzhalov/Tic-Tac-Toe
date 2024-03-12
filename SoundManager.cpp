@@ -8,18 +8,18 @@ SoundManager::SoundManager() {
 }
 
 SoundManager::~SoundManager(){
-    for (auto& pair : s_mMusic) {
+    for (auto& pair : m_Music) {
         Mix_FreeMusic(pair.second);
     }
-    s_mMusic.clear();
+    m_Music.clear();
 
-    for (auto& pair : s_mSfxs) {
+    for (auto& pair : m_Sfxs) {
         Mix_FreeChunk(pair.second);
     }
-    s_mSfxs.clear();
+    m_Sfxs.clear();
 }
 
-bool SoundManager::load(const char* fileName, string id, int type) {
+bool SoundManager::Load(const char* fileName, string id, int type) {
     //type1 -> music
     //type2 -> sound effect (sfx)
     if (type == 1) {    //music
@@ -28,7 +28,7 @@ bool SoundManager::load(const char* fileName, string id, int type) {
             cout << "Could not load music" << Mix_GetError() << endl;
             return false;
         }
-        s_mMusic[id] = music;
+        m_Music[id] = music;
         return true;
     }
     else {
@@ -38,29 +38,29 @@ bool SoundManager::load(const char* fileName, string id, int type) {
                 cout << "Could not load sfx" << Mix_GetError() << endl;
                 return false;
             }
-            s_mSfxs[id] = chunk;
+            m_Sfxs[id] = chunk;
             return true;
         }
     }
 }
 
-void SoundManager::playMusic(string id, int loop, int ms) {
-    Mix_FadeInMusic(s_mMusic[id], loop, ms);
+void SoundManager::PlayMusic(string id, int loop, int ms) {
+    Mix_FadeInMusic(m_Music[id], loop, ms);
 }
 
-void SoundManager::playSound(string id, int loop, int ms, int volume) {
-    Mix_VolumeChunk(s_mSfxs[id], volume); 
-    Mix_FadeInChannel(-1, s_mSfxs[id], loop, ms);
+void SoundManager::PlaySound(string id, int loop, int ms, int volume) {
+    Mix_VolumeChunk(m_Sfxs[id], volume);
+    Mix_FadeInChannel(-1, m_Sfxs[id], loop, ms);
 }
 
-void SoundManager::changeVolume(int c) {
+void SoundManager::ChangeVolume(int c) {
     int currentVolume = Mix_VolumeMusic(-1);
     cout << currentVolume << " " << Mix_VolumeMusic(-1) << endl;
     currentVolume += c;
     Mix_VolumeMusic(currentVolume);
 }
 
-void SoundManager::pauseOrPlay() {
+void SoundManager::PauseOrPlay() {
     cout << Mix_PlayingMusic() << endl;
     if (Mix_PausedMusic() == 0) {
         Mix_PauseMusic();
@@ -69,28 +69,28 @@ void SoundManager::pauseOrPlay() {
         Mix_ResumeMusic();
     }
 }
-void SoundManager::changeVolumeSfx(std::string id, int c) {
-    int currentVolume = Mix_VolumeChunk(s_mSfxs[id], -1);
+void SoundManager::ChangeVolumeSfx(std::string id, int c) {
+    int currentVolume = Mix_VolumeChunk(m_Sfxs[id], -1);
     currentVolume += c;
-    Mix_VolumeChunk(s_mSfxs[id], currentVolume);
+    Mix_VolumeChunk(m_Sfxs[id], currentVolume);
 }
-void SoundManager::setMusicPosition(double pos)
+void SoundManager::SetMusicPosition(double pos)
 {
     if (Mix_SetMusicPosition(pos) == -1) {
         cout << "Something failed: " << Mix_GetError() << endl;
     }
 }
-void SoundManager::playClickSound() {
-    SoundManager::Instance()->playSound("clicksound", 0, 0, 5);
+void SoundManager::PlayClickSound() {
+    SoundManager::Instance()->PlaySound("clicksound", 0, 0, 5);
 }
 
-void SoundManager::playMainMusic()
+void SoundManager::PlayMainMusic()
 {
-    SoundManager::Instance()->playMusic("gamemusic", 0, 2000);
-    SoundManager::Instance()->changeVolume(-125);
+    SoundManager::Instance()->PlayMusic("gamemusic", 0, 2000);
+    SoundManager::Instance()->ChangeVolume(-125);
 }
 
 
 
 
-SoundManager* SoundManager::s_mInstance = 0;
+SoundManager* SoundManager::m_Instance = 0;

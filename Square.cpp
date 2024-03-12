@@ -4,9 +4,9 @@ Square::Square(){}
 
 Square::~Square(){}
 
-Square::Square(int x, int y, int w, int h, SquareState state) : m_x(x), m_w(y), m_y(w), m_h(h), state(state) {}
+Square::Square(int x, int y, int w, int h, SquareState state) : m_x(x), m_w(y), m_y(w), m_h(h), m_state(state) {}
 
-bool Square::isInside(int mouseX, int mouseY) {
+bool Square::IsInside(int mouseX, int mouseY) {
     // Check if the mouse click is inside this grid
     if (mouseX >= m_x && mouseX <= m_w && mouseY >= m_y && mouseY <= m_h) {
         return true;
@@ -14,28 +14,28 @@ bool Square::isInside(int mouseX, int mouseY) {
     return false;
 }
 
-void Square::setState(SquareState newState)
+void Square::SetState(SquareState newState)
 {
-    this->state = newState;
+    this->m_state = newState;
 }
 
-SquareState Square::getState()
+SquareState Square::GetState()
 {
-    return this->state;
+    return this->m_state;
 }
 
-void Square::setIsClicked(bool isClicked)
+void Square::SetIsClicked(bool isClicked)
 {
-    this->isClicked = isClicked;
+    this->m_isClicked = isClicked;
 }
 
-bool Square::getIsClicked()
+bool Square::GetIsClicked()
 {
-    return this->isClicked;
+    return this->m_isClicked;
 }
 
-void Square::clear()
+void Square::Clear()
 {
-    this->setState(EMPTY);
-    this->isClicked = false;
+    this->SetState(EMPTY);
+    this->m_isClicked = false;
 }

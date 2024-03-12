@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-bool TextureManager::loadTexture(const char* fileName,
+bool TextureManager::LoadTexture(const char* fileName,
     string id, SDL_Renderer* ren)
 {
     SDL_Surface* tempSurface = IMG_Load(fileName); //Load the image
@@ -13,7 +13,7 @@ bool TextureManager::loadTexture(const char* fileName,
     SDL_FreeSurface(tempSurface);
 
     if (tex != 0) {
-        textureMap[id] = tex;  // Insert the texture into the map to have a list of all images
+        m_textureMap[id] = tex;  // Insert the texture into the map to have a list of all images
         return true;
     }
 
@@ -22,7 +22,7 @@ bool TextureManager::loadTexture(const char* fileName,
 
 
 
-void TextureManager::drawTexture(string id, int x, int y,
+void TextureManager::DrawTexture(string id, int x, int y,
     int width, int height, SDL_Renderer* ren,
     SDL_RendererFlip flip)
 {
@@ -34,9 +34,9 @@ void TextureManager::drawTexture(string id, int x, int y,
     destRect.x = x;
     destRect.y = y;
 
-    SDL_RenderCopyEx(ren, textureMap[id], &srcRect, &destRect, 0, 0, flip);
+    SDL_RenderCopyEx(ren, m_textureMap[id], &srcRect, &destRect, 0, 0, flip);
 
 }
 
 
-TextureManager* TextureManager::instance = 0;
+TextureManager* TextureManager::m_instance = 0;

@@ -9,28 +9,27 @@ class SoundManager {
 
 public:
     static SoundManager* Instance() {
-        if (s_mInstance == 0) {
-            s_mInstance = new SoundManager();
-            return s_mInstance;
+        if (m_Instance == 0) {
+            m_Instance = new SoundManager();
+            return m_Instance;
         }
-        return s_mInstance;
+        return m_Instance;
     }
 
-    bool load(const char* fileName, string id, int type);
-    void playSound(string id, int loop, int ms, int volume);
-    void playMusic(string id, int loop, int ms = 0);
-    void changeVolume(int change);
-    void pauseOrPlay();
-    void changeVolumeSfx(string id, int c);
-    void setMusicPosition(double pos);
-    void playClickSound();
-    void playMainMusic();
+    bool Load(const char* fileName, string id, int type);
+    void PlaySound(string id, int loop, int ms, int volume);
+    void PlayMusic(string id, int loop, int ms = 0);
+    void ChangeVolume(int change);
+    void PauseOrPlay();
+    void ChangeVolumeSfx(string id, int c);
+    void SetMusicPosition(double pos);
+    void PlayClickSound();
+    void PlayMainMusic();
 
 private:
-    static SoundManager* s_mInstance;
-    map<string, Mix_Chunk*> s_mSfxs;
-    map<string, Mix_Music*> s_mMusic;
- 
+    static SoundManager* m_Instance;
+    map<string, Mix_Chunk*> m_Sfxs;
+    map<string, Mix_Music*> m_Music;
     SoundManager();
     ~SoundManager();
 };

@@ -12,17 +12,17 @@ private:
     int m_y;
     int m_w;
     int m_h;
-    SquareState state;
-    bool isClicked = false;
+    SquareState m_state;
+    bool m_isClicked = false;
 
 public:
     Square();
     ~Square();
     Square(int x, int y, int w, int h, SquareState state);
-    bool isInside(int mouseX, int mouseY);
-    void setState(SquareState newState);
-    SquareState getState();
-    void setIsClicked(bool isClicked);
-    bool getIsClicked();
-    void clear();
+    bool IsInside(int mouseX, int mouseY);
+    void SetState(SquareState newState);
+    SquareState GetState();
+    void SetIsClicked(bool isClicked);
+    bool GetIsClicked();
+    void Clear();
 };

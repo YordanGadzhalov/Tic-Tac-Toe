@@ -9,37 +9,37 @@ bool Game::init(const char* title, int xpos,
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
 		std::cout << "SDL init success\n";
 
-		window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
-		if (window != 0) //window init success
+        m_window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
+        if (m_window != 0) //window init success
 		{
 			std::cout << "window creation success\n";
-			renderer = SDL_CreateRenderer(window, -1, 0);
-			if (renderer != 0) //renderer init success
+            m_renderer = SDL_CreateRenderer(m_window, -1, 0);
+            if (m_renderer != 0) //renderer init success
 			{
 				std::cout << "renderer creation success\n";
-				SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
 
-                TextureManager::Instance()->loadTexture("assets/gameover.png", "gameover", renderer);
-				TextureManager::Instance()->loadTexture("assets/grid2.png", "grid2", renderer);
-				TextureManager::Instance()->loadTexture("assets/Ximage2.png", "Ximage2", renderer);
-				TextureManager::Instance()->loadTexture("assets/undo1.png", "undo1", renderer);
-				TextureManager::Instance()->loadTexture("assets/undo2.png", "undo2", renderer);
-				TextureManager::Instance()->loadTexture("assets/circle2.png", "circle2", renderer);
-				TextureManager::Instance()->loadTexture("assets/ButtonActive.png", "ButtonActive", renderer);
-				TextureManager::Instance()->loadTexture("assets/ButtonClicked.png", "restartButtonClicked", renderer);
-				TextureManager::Instance()->loadTexture("assets/ButtonInactive.png", "restartButtonInactive", renderer);
-				TextureManager::Instance()->loadTexture("assets/info2.png", "info2", renderer);
-				TextureManager::Instance()->loadTexture("assets/ReadyButtonStatic.png", "ReadyStatic", renderer);
-				TextureManager::Instance()->loadTexture("assets/ReadyButtonClicked.png", "ReadyClicked", renderer);
-				TextureManager::Instance()->loadTexture("assets/text2.png", "text2", renderer);
-				TextureManager::Instance()->loadTexture("assets/player1.png", "player1", renderer);
-				TextureManager::Instance()->loadTexture("assets/player2.png", "player2", renderer);
-				TextureManager::Instance()->loadTexture("assets/player1wins.png", "player1wins", renderer);
-				TextureManager::Instance()->loadTexture("assets/player2wins.png", "player2wins", renderer);
-				TextureManager::Instance()->loadTexture("assets/DRAW.png", "DRAW", renderer);
-				SoundManager::Instance()->load("music/gamemusic.mp3", "gamemusic", 1);
-				SoundManager::Instance()->load("music/clicksound.wav", "clicksound", 0);
-				SoundManager::Instance()->playMainMusic();
+                TextureManager::Instance()->LoadTexture("assets/gameover.png", "gameover", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/grid2.png", "grid2", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/Ximage2.png", "Ximage2", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/undo1.png", "undo1", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/undo2.png", "undo2", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/circle2.png", "circle2", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/ButtonActive.png", "ButtonActive", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/ButtonClicked.png", "restartButtonClicked", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/ButtonInactive.png", "restartButtonInactive", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/info2.png", "info2", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/ReadyButtonStatic.png", "ReadyStatic", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/ReadyButtonClicked.png", "ReadyClicked", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/text2.png", "text2", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/player1.png", "player1", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/player2.png", "player2", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/player1wins.png", "player1wins", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/player2wins.png", "player2wins", m_renderer);
+                TextureManager::Instance()->LoadTexture("assets/DRAW.png", "DRAW", m_renderer);
+                SoundManager::Instance()->Load("music/gamemusic.mp3", "gamemusic", 1);
+                SoundManager::Instance()->Load("music/clicksound.wav", "clicksound", 0);
+                SoundManager::Instance()->PlayMainMusic();
 			}
 			else {
 				std::cout << "renderer init failed\n";
@@ -56,171 +56,173 @@ bool Game::init(const char* title, int xpos,
 		return false;
 	}
 	std::cout << "init success\n";
-	running = true;
+    m_running = true;
 	return true;
 }
 
-void Game::render() {
+void Game::Render() {
 
-	SDL_RenderClear(renderer);
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    if (m_grid.at(0).getState() == m_grid.at(1).getState() && m_grid.at(1).getState() == m_grid.at(2).getState() && m_grid.at(0).getState() != EMPTY) {
-		SDL_RenderDrawLine(renderer, 50, 125, 540, 125);
+    SDL_RenderClear(m_renderer);
+    SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
+    if (m_grid.at(0).GetState() == m_grid.at(1).GetState() && m_grid.at(1).GetState() == m_grid.at(2).GetState() && m_grid.at(0).GetState() != EMPTY) {
+        SDL_RenderDrawLine(m_renderer, 50, 125, 540, 125);
 	}
-    else if (m_grid.at(3).getState() == m_grid.at(4).getState() && m_grid.at(4).getState() == m_grid.at(5).getState() && m_grid.at(3).getState() != EMPTY) {
-		SDL_RenderDrawLine(renderer, 50, 300, 540, 300);
+    else if (m_grid.at(3).GetState() == m_grid.at(4).GetState() && m_grid.at(4).GetState() == m_grid.at(5).GetState() && m_grid.at(3).GetState() != EMPTY) {
+        SDL_RenderDrawLine(m_renderer, 50, 300, 540, 300);
 	}
-    else if (m_grid.at(6).getState() == m_grid.at(7).getState() && m_grid.at(7).getState() == m_grid.at(8).getState() && m_grid.at(6).getState() != EMPTY) {
-		SDL_RenderDrawLine(renderer, 50, 470, 540, 470);
+    else if (m_grid.at(6).GetState() == m_grid.at(7).GetState() && m_grid.at(7).GetState() == m_grid.at(8).GetState() && m_grid.at(6).GetState() != EMPTY) {
+        SDL_RenderDrawLine(m_renderer, 50, 470, 540, 470);
 	}
-    else if (m_grid.at(0).getState() == m_grid.at(3).getState() && m_grid.at(3).getState() == m_grid.at(6).getState() && m_grid.at(0).getState() != EMPTY) {
-		SDL_RenderDrawLine(renderer, 130, 50, 130, 540);
+    else if (m_grid.at(0).GetState() == m_grid.at(3).GetState() && m_grid.at(3).GetState() == m_grid.at(6).GetState() && m_grid.at(0).GetState() != EMPTY) {
+        SDL_RenderDrawLine(m_renderer, 130, 50, 130, 540);
 	}
-    else if (m_grid.at(1).getState() == m_grid.at(4).getState() && m_grid.at(4).getState() == m_grid.at(7).getState() && m_grid.at(1).getState() != EMPTY) {
-		SDL_RenderDrawLine(renderer, 300, 50, 300, 540);
+    else if (m_grid.at(1).GetState() == m_grid.at(4).GetState() && m_grid.at(4).GetState() == m_grid.at(7).GetState() && m_grid.at(1).GetState() != EMPTY) {
+        SDL_RenderDrawLine(m_renderer, 300, 50, 300, 540);
 	}
-    else if (m_grid.at(2).getState() == m_grid.at(5).getState() && m_grid.at(5).getState() == m_grid.at(8).getState() && m_grid.at(2).getState() != EMPTY) {
-		SDL_RenderDrawLine(renderer, 465, 50, 465, 540);
+    else if (m_grid.at(2).GetState() == m_grid.at(5).GetState() && m_grid.at(5).GetState() == m_grid.at(8).GetState() && m_grid.at(2).GetState() != EMPTY) {
+        SDL_RenderDrawLine(m_renderer, 465, 50, 465, 540);
 	}
-    else if (m_grid.at(0).getState() == m_grid.at(4).getState() && m_grid.at(4).getState() == m_grid.at(8).getState() && m_grid.at(0).getState() != EMPTY) {
-		SDL_RenderDrawLine(renderer, 90, 70, 500, 500);
+    else if (m_grid.at(0).GetState() == m_grid.at(4).GetState() && m_grid.at(4).GetState() == m_grid.at(8).GetState() && m_grid.at(0).GetState() != EMPTY) {
+        SDL_RenderDrawLine(m_renderer, 90, 70, 500, 500);
 	}
-    else if (m_grid.at(2).getState() == m_grid.at(4).getState() && m_grid.at(4).getState() == m_grid.at(6).getState() && m_grid.at(2).getState() != EMPTY) {
-		SDL_RenderDrawLine(renderer, 520, 70, 110, 500);
-	}
-
-
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    if(result == P1WINS) {
-		TextureManager::Instance()->drawTexture("player1wins", 670, 50, 200, 31, renderer);
-	}
-    if(result == P2WINS) {
-		TextureManager::Instance()->drawTexture("player2wins", 670, 50, 200, 29, renderer);
+    else if (m_grid.at(2).GetState() == m_grid.at(4).GetState() && m_grid.at(4).GetState() == m_grid.at(6).GetState() && m_grid.at(2).GetState() != EMPTY) {
+        SDL_RenderDrawLine(m_renderer, 520, 70, 110, 500);
 	}
 
-	if(isPlayerOneOrTwo) {
-		TextureManager::Instance()->drawTexture("player1", 233, 7, 135, 22, renderer);
+    //Shows image of which player won
+    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+    if(m_result == P1WINS) {
+        TextureManager::Instance()->DrawTexture("player1wins", 670, 50, 200, 31, m_renderer);
+	}
+    if(m_result == P2WINS) {
+        TextureManager::Instance()->DrawTexture("player2wins", 670, 50, 200, 29, m_renderer);
+	}
+
+
+    //Draws image of which player's turn it is
+    if(m_isPlayerOneOrTwo) {
+        TextureManager::Instance()->DrawTexture("player1", 233, 7, 135, 22, m_renderer);
 	}
 	else {
-		TextureManager::Instance()->drawTexture("player2", 233, 7, 135, 22, renderer);
+        TextureManager::Instance()->DrawTexture("player2", 233, 7, 135, 22, m_renderer);
 	}
 
-	if(isInfoClicked) {
-		TextureManager::Instance()->drawTexture("text2", 650, 100, 250, 358, renderer);
+    if(m_isInfoClicked) {
+        TextureManager::Instance()->DrawTexture("text2", 650, 100, 250, 358, m_renderer);
 	}
 
 
-	if(!isInfoClicked) {
-		TextureManager::Instance()->drawTexture("ReadyStatic", 665, 150, 220, 220, renderer);
-        if(restartButton.getState() == INACTIVE) {
-			TextureManager::Instance()->drawTexture("restartButtonInactive", 650, 430, 250, 80, renderer);
+    if(!m_isInfoClicked) {
+        TextureManager::Instance()->DrawTexture("ReadyStatic", 665, 150, 220, 220, m_renderer);
+        if(m_restartButton.getState() == INACTIVE) {
+            TextureManager::Instance()->DrawTexture("restartButtonInactive", 650, 430, 250, 80, m_renderer);
 		}
-        if(restartButton.getState() == CLICKED){
-			TextureManager::Instance()->drawTexture("restartButtonClicked", 650, 430, 250, 80, renderer);
+        if(m_restartButton.getState() == CLICKED){
+            TextureManager::Instance()->DrawTexture("restartButtonClicked", 650, 430, 250, 80, m_renderer);
 		}
-        if(restartButton.getState() == ACTIVE) {
-			TextureManager::Instance()->drawTexture("ButtonActive", 650, 430, 250, 80, renderer);
+        if(m_restartButton.getState() == ACTIVE) {
+            TextureManager::Instance()->DrawTexture("ButtonActive", 650, 430, 250, 80, m_renderer);
 		}
-        if(readyButton.getState() == CLICKED) {
-			TextureManager::Instance()->drawTexture("ReadyClicked", 665, 150, 220, 220, renderer);
+        if(m_readyButton.getState() == CLICKED) {
+            TextureManager::Instance()->DrawTexture("ReadyClicked", 665, 150, 220, 220, m_renderer);
 		}
-        if(undoButton.getState() == ACTIVE) {
-            TextureManager::Instance()->drawTexture("undo1", 900, 500, 100, 100, renderer);
+        if(m_undoButton.getState() == ACTIVE) {
+            TextureManager::Instance()->DrawTexture("undo1", 900, 500, 100, 100, m_renderer);
 		}
-        if(undoButton.getState() == INACTIVE){
-            TextureManager::Instance()->drawTexture("undo2", 900, 500, 100, 100, renderer);
+        if(m_undoButton.getState() == INACTIVE){
+            TextureManager::Instance()->DrawTexture("undo2", 900, 500, 100, 100, m_renderer);
         }
-        if(undoButton.getState() == CLICKED) {
-			TextureManager::Instance()->drawTexture("undo2", 900, 500, 100, 100, renderer);
+        if(m_undoButton.getState() == CLICKED) {
+            TextureManager::Instance()->DrawTexture("undo2", 900, 500, 100, 100, m_renderer);
 		}
-        if(!isGameOver() && counter == 9) {
-			TextureManager::Instance()->drawTexture("DRAW", 690, 20, 178, 103, renderer);
+        if(!IsGameOver() && m_counter == 9) {
+            TextureManager::Instance()->DrawTexture("DRAW", 690, 20, 178, 103, m_renderer);
 		}
 	}
 
-	TextureManager::Instance()->drawTexture("grid2", 50, 50, 500, 501, renderer);
-	TextureManager::Instance()->drawTexture("info2", 930, 20, 60, 60, renderer);
+    TextureManager::Instance()->DrawTexture("grid2", 50, 50, 500, 501, m_renderer);
+    TextureManager::Instance()->DrawTexture("info2", 930, 20, 60, 60, m_renderer);
 
 
-        for (const auto shape : drawnShapes) {
+    for (const auto shape : m_drawnShapes) {
 			if (shape == 1) {
-                if (m_grid.at(shape - 1).getState() == O) {
-                    TextureManager::Instance()->drawTexture("circle2", 65, 65, SIZE, SIZE, renderer);
+            if (m_grid.at(shape - 1).GetState() == O) {
+                    TextureManager::Instance()->DrawTexture("circle2", 65, 65, SIZE, SIZE, m_renderer);
 				}
 				else {
-                    TextureManager::Instance()->drawTexture("Ximage2", 65, 65, SIZE, SIZE, renderer);
+                    TextureManager::Instance()->DrawTexture("Ximage2", 65, 65, SIZE, SIZE, m_renderer);
 				}
 			}
 			if (shape == 2) {
-                if (m_grid.at(shape - 1).getState() == O) {
-                    TextureManager::Instance()->drawTexture("circle2", 240, 65, SIZE, SIZE, renderer);
+                if (m_grid.at(shape - 1).GetState() == O) {
+                    TextureManager::Instance()->DrawTexture("circle2", 240, 65, SIZE, SIZE, m_renderer);
 				}
 				else {
-                    TextureManager::Instance()->drawTexture("Ximage2", 240, 65, SIZE, SIZE, renderer);
+                    TextureManager::Instance()->DrawTexture("Ximage2", 240, 65, SIZE, SIZE, m_renderer);
 				}
 			}
 			if (shape == 3) {
-                if (m_grid.at(shape - 1).getState() == O) {
-                    TextureManager::Instance()->drawTexture("circle2", 410, 65, SIZE, SIZE, renderer);
+                if (m_grid.at(shape - 1).GetState() == O) {
+                    TextureManager::Instance()->DrawTexture("circle2", 410, 65, SIZE, SIZE, m_renderer);
 				}
 				else {
-                    TextureManager::Instance()->drawTexture("Ximage2", 410, 65, SIZE, SIZE, renderer);
+                    TextureManager::Instance()->DrawTexture("Ximage2", 410, 65, SIZE, SIZE, m_renderer);
 				}
 			}
 			if (shape == 4) {
-                if (m_grid.at(shape - 1).getState() == O) {
-                    TextureManager::Instance()->drawTexture("circle2", 65, 235, SIZE, SIZE, renderer);
+                if (m_grid.at(shape - 1).GetState() == O) {
+                    TextureManager::Instance()->DrawTexture("circle2", 65, 235, SIZE, SIZE, m_renderer);
 				}
 				else {
-                    TextureManager::Instance()->drawTexture("Ximage2", 65, 235, SIZE, SIZE, renderer);
+                    TextureManager::Instance()->DrawTexture("Ximage2", 65, 235, SIZE, SIZE, m_renderer);
 				}
 			}
 			if (shape == 5) {
-                if (m_grid.at(shape - 1).getState() == O) {
-                    TextureManager::Instance()->drawTexture("circle2", 240, 235, SIZE, SIZE, renderer);
+                if (m_grid.at(shape - 1).GetState() == O) {
+                    TextureManager::Instance()->DrawTexture("circle2", 240, 235, SIZE, SIZE, m_renderer);
 				}
 				else {
-                    TextureManager::Instance()->drawTexture("Ximage2", 240, 235, SIZE, SIZE, renderer);
+                    TextureManager::Instance()->DrawTexture("Ximage2", 240, 235, SIZE, SIZE, m_renderer);
 				}
 			}
 			if (shape == 6) {
-                if (m_grid.at(shape - 1).getState() == O) {
-                    TextureManager::Instance()->drawTexture("circle2", 410, 235, SIZE, SIZE, renderer);
+                if (m_grid.at(shape - 1).GetState() == O) {
+                    TextureManager::Instance()->DrawTexture("circle2", 410, 235, SIZE, SIZE, m_renderer);
 				}
 				else {
-                    TextureManager::Instance()->drawTexture("Ximage2", 410, 235, SIZE, SIZE, renderer);
+                    TextureManager::Instance()->DrawTexture("Ximage2", 410, 235, SIZE, SIZE, m_renderer);
 				}
 			}
 			if (shape == 7) {
-                if (m_grid.at(shape - 1).getState() == O) {
-                    TextureManager::Instance()->drawTexture("circle2", 65, 410, SIZE, SIZE, renderer);
+                if (m_grid.at(shape - 1).GetState() == O) {
+                    TextureManager::Instance()->DrawTexture("circle2", 65, 410, SIZE, SIZE, m_renderer);
 				}
 				else {
-                    TextureManager::Instance()->drawTexture("Ximage2", 65, 410, SIZE, SIZE, renderer);
+                    TextureManager::Instance()->DrawTexture("Ximage2", 65, 410, SIZE, SIZE, m_renderer);
 				}
 			}
 			if (shape == 8) {
-                if (m_grid.at(shape - 1).getState() == O) {
-                    TextureManager::Instance()->drawTexture("circle2", 240, 410, SIZE, SIZE, renderer);
+                if (m_grid.at(shape - 1).GetState() == O) {
+                    TextureManager::Instance()->DrawTexture("circle2", 240, 410, SIZE, SIZE, m_renderer);
 				}
 				else {
-                    TextureManager::Instance()->drawTexture("Ximage2", 240, 410, SIZE, SIZE, renderer);
+                    TextureManager::Instance()->DrawTexture("Ximage2", 240, 410, SIZE, SIZE, m_renderer);
 				}
 			}
 			if (shape == 9) {
-                if (m_grid.at(shape - 1).getState() == O) {
-                    TextureManager::Instance()->drawTexture("circle2", 410, 410, SIZE, SIZE, renderer);
+                if (m_grid.at(shape - 1).GetState() == O) {
+                    TextureManager::Instance()->DrawTexture("circle2", 410, 410, SIZE, SIZE, m_renderer);
 				}
 				else {
-                    TextureManager::Instance()->drawTexture("Ximage2", 410, 410, SIZE, SIZE, renderer);
+                    TextureManager::Instance()->DrawTexture("Ximage2", 410, 410, SIZE, SIZE, m_renderer);
 				}
 			}
 		}
 
-	SDL_RenderPresent(renderer);
+        SDL_RenderPresent(m_renderer);
 }
 
-void Game::handleEvents() {
+void Game::HandleEvents() {
 
 	SDL_Event event;
 	int mouseX = 0;
@@ -228,60 +230,61 @@ void Game::handleEvents() {
 	if (SDL_PollEvent(&event)) {
 		switch (event.type) {
 		case SDL_QUIT:
-			running = false;
+            m_running = false;
 			break;
 		case SDL_MOUSEMOTION:
 			mouseX = event.button.x;
 			mouseY = event.button.y;
-			if (infoButton.contains(mouseX, mouseY)) {
-                isInfoClicked = true;
+            if (m_infoButton.contains(mouseX, mouseY)) {
+                m_isInfoClicked = true;
 			}
 			else
 			{
-				isInfoClicked = false;
+                m_isInfoClicked = false;
 			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			mouseX = event.button.x;
             mouseY = event.button.y;
-            if (restartButton.contains(mouseX, mouseY) && restartButton.getState() == ACTIVE){
+            if (m_restartButton.contains(mouseX, mouseY) && m_restartButton.getState() == ACTIVE){
 				std::cout << "Start button clicked " << std::endl;
-				restartButton.setState(CLICKED);
-				SoundManager::Instance()->playClickSound();
+                m_restartButton.setState(CLICKED);
+                SoundManager::Instance()->PlayClickSound();
 			}
-            if (readyButton.contains(mouseX, mouseY) && readyButton.getState() != INACTIVE){
+            if (m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE && !IsGameOver() && m_counter != 9){
 				std::cout << "READY CLICKED!" << std::endl;
-				readyButton.setState(CLICKED);
-				isPlayerDone = true;
-				isPlayerOneOrTwo = !isPlayerOneOrTwo;
-                std::cout << isPlayerOneOrTwo << std::endl;
-				SoundManager::Instance()->playClickSound();
+                m_readyButton.setState(CLICKED);
+                m_isPlayerDone = true;
+                m_isPlayerOneOrTwo = !m_isPlayerOneOrTwo;
+                std::cout << m_isPlayerOneOrTwo << std::endl;
+                SoundManager::Instance()->PlayClickSound();
 			}
-            if (undoButton.contains(mouseX, mouseY) && !isGameOver() && counter != 9 && undoButton.getState() != INACTIVE) {
-                undoButton.setState(CLICKED);
-				SoundManager::Instance()->playClickSound();
+            if (m_undoButton.contains(mouseX, mouseY) && !IsGameOver() && m_counter != 9 && m_undoButton.getState() != INACTIVE) {
+                m_undoButton.setState(CLICKED);
+                SoundManager::Instance()->PlayClickSound();
 			}
-            handleSquareEvent(m_grid.at(0), 1, mouseX, mouseY);
-            handleSquareEvent(m_grid.at(1), 2, mouseX, mouseY);
-            handleSquareEvent(m_grid.at(2), 3, mouseX, mouseY);
-            handleSquareEvent(m_grid.at(3), 4, mouseX, mouseY);
-            handleSquareEvent(m_grid.at(4), 5, mouseX, mouseY);
-            handleSquareEvent(m_grid.at(5), 6, mouseX, mouseY);
-            handleSquareEvent(m_grid.at(6), 7, mouseX, mouseY);
-            handleSquareEvent(m_grid.at(7), 8, mouseX, mouseY);
-            handleSquareEvent(m_grid.at(8), 9, mouseX, mouseY);
+            HandleSquareEvent(m_grid.at(0), 1, mouseX, mouseY);
+            HandleSquareEvent(m_grid.at(1), 2, mouseX, mouseY);
+            HandleSquareEvent(m_grid.at(2), 3, mouseX, mouseY);
+            HandleSquareEvent(m_grid.at(3), 4, mouseX, mouseY);
+            HandleSquareEvent(m_grid.at(4), 5, mouseX, mouseY);
+            HandleSquareEvent(m_grid.at(5), 6, mouseX, mouseY);
+            HandleSquareEvent(m_grid.at(6), 7, mouseX, mouseY);
+            HandleSquareEvent(m_grid.at(7), 8, mouseX, mouseY);
+            HandleSquareEvent(m_grid.at(8), 9, mouseX, mouseY);
 			break;
 
 		case SDL_MOUSEBUTTONUP:
-            if (restartButton.getState() == CLICKED) {
-                restartGame();
+            if (m_restartButton.getState() == CLICKED) {
+                RestartGame();
 			}
-			if (readyButton.getState() == CLICKED) {
-                readyButton.setState(INACTIVE);
+            if (m_readyButton.getState() == CLICKED) {
+                m_readyButton.setState(INACTIVE);
 			}
-			if (undoButton.getState() == CLICKED) {
-                undoButton.setState(INACTIVE);
-				undoLast();
+            if (m_undoButton.getState() == CLICKED) {
+                m_readyButton.setState(INACTIVE);
+                m_undoButton.setState(INACTIVE);
+                UndoLast();
 			}
 			break;
 
@@ -291,96 +294,96 @@ void Game::handleEvents() {
 	}
 }
 
-void Game::handleSquareEvent(Square& grid, int index, int mouseX, int mouseY){
-    if (grid.isInside(mouseX, mouseY) && !grid.getIsClicked() && isPlayerDone == true) {
-        drawnShapes.push_back(index);
-        isPlayerDone = false;
-        counter++;
-        readyButton.setState(ACTIVE);
-        undoButton.setState(ACTIVE);
-        grid.setIsClicked(true);
-        if (isPlayerOneOrTwo) {
-            grid.setState(O);
+void Game::HandleSquareEvent(Square& grid, int index, int mouseX, int mouseY){
+    if (grid.IsInside(mouseX, mouseY) && !grid.GetIsClicked() && m_isPlayerDone == true) {
+        m_drawnShapes.push_back(index);
+        m_isPlayerDone = false;
+        m_counter++;
+        m_readyButton.setState(ACTIVE);
+        m_undoButton.setState(ACTIVE);
+        grid.SetIsClicked(true);
+        if (m_isPlayerOneOrTwo) {
+            grid.SetState(O);
         }
         else
         {
-            grid.setState(X);
+            grid.SetState(X);
         }
         // if ((counter > 4 && isGameOver()) || (counter == 9 && !isGameOver())) {
-            restartButton.setState(ACTIVE);
+        m_restartButton.setState(ACTIVE);
         // }
     }
 }
 
-void Game::clean() {
+void Game::Clean() {
 	std::cout << "cleaning game\n";
-	SDL_DestroyWindow(window);
-	SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(m_window);
+    SDL_DestroyRenderer(m_renderer);
 	SDL_Quit();
 }
 
 
-bool Game::isRunning() {
-	return Game::running;
+bool Game::IsRunning() {
+    return Game::m_running;
 }
 
-bool Game::isGameOver()
+bool Game::IsGameOver()
 {
 
     //Checking Horizontal winning condition for O
-    if (m_grid.at(0).getState() == O && m_grid.at(1).getState() == O && m_grid.at(2).getState() == O ||
-        m_grid.at(3).getState() == O && m_grid.at(4).getState() == O && m_grid.at(5).getState() == O ||
-        m_grid.at(6).getState() == O && m_grid.at(7).getState() == O && m_grid.at(8).getState() == O){
-        result = P1WINS;
+    if (m_grid.at(0).GetState() == O && m_grid.at(1).GetState() == O && m_grid.at(2).GetState() == O ||
+        m_grid.at(3).GetState() == O && m_grid.at(4).GetState() == O && m_grid.at(5).GetState() == O ||
+        m_grid.at(6).GetState() == O && m_grid.at(7).GetState() == O && m_grid.at(8).GetState() == O){
+        m_result = P1WINS;
         return true;
     }
     //Checking Vertical winning condition for O
-    if (m_grid.at(0).getState() == O && m_grid.at(3).getState() == O && m_grid.at(6).getState() == O ||
-        m_grid.at(1).getState() == O && m_grid.at(4).getState() == O && m_grid.at(7).getState() == O ||
-        m_grid.at(2).getState() == O && m_grid.at(5).getState() == O && m_grid.at(8).getState() == O) {
-        result = P1WINS;
+    if (m_grid.at(0).GetState() == O && m_grid.at(3).GetState() == O && m_grid.at(6).GetState() == O ||
+        m_grid.at(1).GetState() == O && m_grid.at(4).GetState() == O && m_grid.at(7).GetState() == O ||
+        m_grid.at(2).GetState() == O && m_grid.at(5).GetState() == O && m_grid.at(8).GetState() == O) {
+        m_result = P1WINS;
         return true;
     }
     //Checking Diagonal winning condition for O
-    if (m_grid.at(0).getState() == O && m_grid.at(4).getState() == O && m_grid.at(8).getState() == O ||
-        m_grid.at(2).getState() == O && m_grid.at(4).getState() == O && m_grid.at(6).getState() == O) {
-        result = P1WINS;
+    if (m_grid.at(0).GetState() == O && m_grid.at(4).GetState() == O && m_grid.at(8).GetState() == O ||
+        m_grid.at(2).GetState() == O && m_grid.at(4).GetState() == O && m_grid.at(6).GetState() == O) {
+        m_result = P1WINS;
         return true;
     }
     //Checking Horizontal winning condition for X
-    if (m_grid.at(0).getState() == X && m_grid.at(1).getState() == X && m_grid.at(2).getState() == X ||
-        m_grid.at(3).getState() == X && m_grid.at(4).getState() == X && m_grid.at(5).getState() == X ||
-        m_grid.at(6).getState() == X && m_grid.at(7).getState() == X && m_grid.at(8).getState() == X){
-        result = P2WINS;
+    if (m_grid.at(0).GetState() == X && m_grid.at(1).GetState() == X && m_grid.at(2).GetState() == X ||
+        m_grid.at(3).GetState() == X && m_grid.at(4).GetState() == X && m_grid.at(5).GetState() == X ||
+        m_grid.at(6).GetState() == X && m_grid.at(7).GetState() == X && m_grid.at(8).GetState() == X){
+        m_result = P2WINS;
         return true;
     }
     //Checking Vertical winning condition for O
-    if (m_grid.at(0).getState() == X && m_grid.at(3).getState() == X && m_grid.at(6).getState() == X ||
-        m_grid.at(1).getState() == X && m_grid.at(4).getState() == X && m_grid.at(7).getState() == X ||
-        m_grid.at(2).getState() == X && m_grid.at(5).getState() == X && m_grid.at(8).getState() == X) {
-        result = P2WINS;
+    if (m_grid.at(0).GetState() == X && m_grid.at(3).GetState() == X && m_grid.at(6).GetState() == X ||
+        m_grid.at(1).GetState() == X && m_grid.at(4).GetState() == X && m_grid.at(7).GetState() == X ||
+        m_grid.at(2).GetState() == X && m_grid.at(5).GetState() == X && m_grid.at(8).GetState() == X) {
+        m_result = P2WINS;
         return true;
     }
     //Checking Diagonal winning condition for O
-    if (m_grid.at(0).getState() == X && m_grid.at(4).getState() == X && m_grid.at(8).getState() == X ||
-        m_grid.at(2).getState() == X && m_grid.at(4).getState() == X && m_grid.at(6).getState() == X) {
-        result = P2WINS;
+    if (m_grid.at(0).GetState() == X && m_grid.at(4).GetState() == X && m_grid.at(8).GetState() == X ||
+        m_grid.at(2).GetState() == X && m_grid.at(4).GetState() == X && m_grid.at(6).GetState() == X) {
+        m_result = P2WINS;
         return true;
     }
     return false;
 }
 
-void Game::restartGame()
+void Game::RestartGame()
 {
     InitGrid();
-	drawnShapes.clear(); // clears vector
-	restartButton.setState(INACTIVE);
-	readyButton.setState(ACTIVE);
-    undoButton.setState(INACTIVE);
-	isPlayerOneOrTwo = true;
-	isPlayerDone = true;
-    result = NOWINNER;
-    counter = 0;
+    m_drawnShapes.clear(); // clears vector
+    m_restartButton.setState(INACTIVE);
+    m_readyButton.setState(INACTIVE);
+    m_undoButton.setState(INACTIVE);
+    m_isPlayerOneOrTwo = true;
+    m_isPlayerDone = true;
+    m_result = NOWINNER;
+    m_counter = 0;
 }
 
 
@@ -400,26 +403,30 @@ void Game::InitGrid(){
 
 
 
-void Game::undoLast()
+void Game::UndoLast()
 {
-	if (!drawnShapes.empty() && counter != 9) {
-		int lastShape = drawnShapes.back();
-		drawnShapes.pop_back();
+    if (!m_drawnShapes.empty() && m_counter != 9) {
+        int lastShape = m_drawnShapes.back();
+        m_drawnShapes.pop_back();
 
-        m_grid.at(lastShape - 1).clear();
-        counter--;
+        m_grid.at(lastShape - 1).Clear();
+        m_counter--;
 
-		isPlayerDone = true;
-        setIsClicked(false);
+        m_isPlayerDone = true;
+        SetIsClicked(false);
 	}
 }
 
 
 Game::Game() {
+    m_restartButton = Button(660, 440, 885, 507, INACTIVE);
+    m_readyButton = Button(690, 167, 850, 350, INACTIVE);
+    m_infoButton = Button(935, 28, 980, 80, ACTIVE);
+    m_undoButton = Button(920, 520, 980, 580, ACTIVE);
     InitGrid();
-	Game::window = NULL;
-	Game::renderer = NULL;
-	Game::running = true;
+    Game::m_window = NULL;
+    Game::m_renderer = NULL;
+    Game::m_running = true;
 }
 
 

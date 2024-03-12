@@ -9,9 +9,11 @@ private:
 	int m_y;
 	int m_width;
 	int m_height;
-	ButtonState state;
+    ButtonState m_state;
 
 public:
+    Button();
+    ~Button();
 	Button(int x, int y, int width, int height, ButtonState state);
 	bool contains(int mouseX, int mouseY);
 	void setState(ButtonState newState);

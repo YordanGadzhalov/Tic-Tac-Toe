@@ -1,12 +1,16 @@
 #include "Button.h"
 
+Button::Button(){}
+
+Button::~Button(){}
+
 Button::Button(int x, int y, int width, int height, ButtonState state)
 {
 	this->m_x = x;
 	this->m_y = y;
 	this->m_width = width;
 	this->m_height = height;
-	this->state = state;
+    this->m_state = state;
 }
 
 bool Button::contains(int mouseX, int mouseY)
@@ -18,10 +22,10 @@ bool Button::contains(int mouseX, int mouseY)
 
 void Button::setState(ButtonState newState)
 {
-	this->state = newState;
+    this->m_state = newState;
 }
 
 ButtonState Button::getState()
 {
-	return this->state;
+    return this->m_state;
 }

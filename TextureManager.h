@@ -6,24 +6,24 @@ using namespace std;
 
 class TextureManager {
 public:
-	bool loadTexture(const char* fileName,
+    bool LoadTexture(const char* fileName,
 		string id, SDL_Renderer* ren);
 
-	void drawTexture(string id, int x, int y,
+    void DrawTexture(string id, int x, int y,
 		int width, int height, SDL_Renderer* ren,
 		SDL_RendererFlip flip = SDL_FLIP_NONE);
 
 	static TextureManager* Instance() {
-		if (instance == 0) {
-			instance = new TextureManager();
-			return instance;
+        if (m_instance == 0) {
+            m_instance = new TextureManager();
+            return m_instance;
 		}
-		return instance;
+        return m_instance;
 	}
 
 private:
-	map <string, SDL_Texture*> textureMap;
+    map <string, SDL_Texture*> m_textureMap;
 	TextureManager() {}
-	static TextureManager* instance;
+    static TextureManager* m_instance;
 };
 

@@ -17,29 +17,34 @@ public:
 	bool init(const char* title, int xpos,
 		int ypos, int width, int height, int flags);
 
-	void render();
-	void handleEvents();
-	void clean();
-	bool isRunning();
-    bool isGameOver();
-	void restartGame();
-	void undoLast();
-    void handleSquareEvent(Square& square, int index, int mouseX, int mouseY);
+    void Render();
+    void HandleEvents();
+    void Clean();
+    bool IsRunning();
+    bool IsGameOver();
+    void RestartGame();
+    void UndoLast();
+    void HandleSquareEvent(Square& square, int index, int mouseX, int mouseY);
     void InitGrid();
 
 private:
-    SDL_Window* window = NULL;
-    SDL_Renderer* renderer = NULL;
-	int counter;
-    GameState result = NOWINNER;
-    bool isPlayerDone = true;
-	bool running;
-	bool isPlayerOneOrTwo = true;
-	bool isInfoClicked = false;
-    std::vector<int> drawnShapes;
+    SDL_Window* m_window = NULL;
+    SDL_Renderer* m_renderer = NULL;
+    int m_counter;
+    GameState m_result = NOWINNER;
+    bool m_isPlayerDone = true;
+    bool m_running;
+    bool m_isPlayerOneOrTwo = true;
+    bool m_isInfoClicked = false;
+    std::vector<int> m_drawnShapes;
     std::vector<Square> m_grid;
-    Button restartButton = Button(660, 440, 885, 507, INACTIVE);
-	Button readyButton = Button(690, 167, 850, 350, ACTIVE);
-	Button infoButton = Button(935, 28, 980, 80, ACTIVE);
-	Button undoButton = Button(920, 520, 980, 580, ACTIVE);
+    Button m_restartButton;
+    Button m_readyButton;
+    Button m_infoButton;
+    Button m_undoButton;
 };
+
+//members start with m_
+//private functions start with lowercase
+//public functions start with uppercase
+//camelcase
