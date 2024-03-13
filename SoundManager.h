@@ -15,8 +15,8 @@ public:
         }
         return m_Instance;
     }
-
-    bool Load(const char* fileName, string id, int type);
+    bool LoadChunk(const char* fileName, string id);
+    bool LoadMusic(const char* fileName, string id);
     void PlaySound(string id, int loop, int ms, int volume);
     void PlayMusic(string id, int loop, int ms = 0);
     void ChangeVolume(int change);

@@ -12,12 +12,35 @@ bool TextureManager::LoadTexture(const char* fileName,
     SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, tempSurface);
     SDL_FreeSurface(tempSurface);
 
+
     if (tex != 0) {
         m_textureMap[id] = tex;  // Insert the texture into the map to have a list of all images
         return true;
     }
 
     return false; // something went wrong
+}
+
+
+void TextureManager::LoadImages(SDL_Renderer* ren){
+    Instance()->LoadTexture("assets/gameover.png", "gameover", ren);
+    Instance()->LoadTexture("assets/grid2.png", "grid2", ren);
+    Instance()->LoadTexture("assets/Ximage2.png", "Ximage2", ren);
+    Instance()->LoadTexture("assets/undo1.png", "undo1", ren);
+    Instance()->LoadTexture("assets/undo2.png", "undo2", ren);
+    Instance()->LoadTexture("assets/circle2.png", "circle2", ren);
+    Instance()->LoadTexture("assets/ButtonActive.png", "ButtonActive", ren);
+    Instance()->LoadTexture("assets/ButtonClicked.png", "restartButtonClicked", ren);
+    Instance()->LoadTexture("assets/ButtonInactive.png", "restartButtonInactive", ren);
+    Instance()->LoadTexture("assets/info2.png", "info2", ren);
+    Instance()->LoadTexture("assets/ReadyButtonStatic.png", "ReadyStatic", ren);
+    Instance()->LoadTexture("assets/ReadyButtonClicked.png", "ReadyClicked", ren);
+    Instance()->LoadTexture("assets/text2.png", "text2", ren);
+    Instance()->LoadTexture("assets/player1.png", "player1", ren);
+    Instance()->LoadTexture("assets/player2.png", "player2", ren);
+    Instance()->LoadTexture("assets/player1wins.png", "player1wins", ren);
+    Instance()->LoadTexture("assets/player2wins.png", "player2wins", ren);
+    Instance()->LoadTexture("assets/DRAW.png", "DRAW", ren);
 }
 
 

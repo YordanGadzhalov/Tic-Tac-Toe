@@ -20,12 +20,14 @@ public:
     void Render();
     void HandleEvents();
     void Clean();
-    bool IsRunning();
+    bool IsRunning() const;
     bool IsGameOver();
     void RestartGame();
     void UndoLast();
     void HandleSquareEvent(Square& square, int index, int mouseX, int mouseY);
     void InitGrid();
+    void DeleteInit();
+    void DrawTextureXorO(int shape, int x, int y);
 
 private:
     SDL_Window* m_window = NULL;
@@ -37,7 +39,7 @@ private:
     bool m_isPlayerOneOrTwo = true;
     bool m_isInfoClicked = false;
     std::vector<int> m_drawnShapes;
-    std::vector<Square> m_grid;
+    std::vector<Square*> m_grid;
     Button m_restartButton;
     Button m_readyButton;
     Button m_infoButton;

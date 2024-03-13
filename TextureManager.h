@@ -6,6 +6,9 @@ using namespace std;
 
 class TextureManager {
 public:
+
+    void LoadImages(SDL_Renderer* ren);
+
     bool LoadTexture(const char* fileName,
 		string id, SDL_Renderer* ren);
 

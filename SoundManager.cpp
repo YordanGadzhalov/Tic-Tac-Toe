@@ -19,10 +19,18 @@ SoundManager::~SoundManager(){
     m_Sfxs.clear();
 }
 
-bool SoundManager::Load(const char* fileName, string id, int type) {
-    //type1 -> music
-    //type2 -> sound effect (sfx)
-    if (type == 1) {    //music
+bool SoundManager::LoadChunk(const char* fileName, string id) {
+        Mix_Chunk* chunk = Mix_LoadWAV(fileName);
+        if (chunk == 0) {
+            cout << "Could not load sfx" << Mix_GetError() << endl;
+            return false;
+        }
+        m_Sfxs[id] = chunk;
+        return true;
+}
+
+
+bool SoundManager::LoadMusic(const char* fileName, string id) {
         Mix_Music* music = Mix_LoadMUS(fileName);
         if (music == 0) {
             cout << "Could not load music" << Mix_GetError() << endl;
@@ -30,19 +38,8 @@ bool SoundManager::Load(const char* fileName, string id, int type) {
         }
         m_Music[id] = music;
         return true;
-    }
-    else {
-        if (type == 0) {    //sfx
-            Mix_Chunk* chunk = Mix_LoadWAV(fileName);
-            if (chunk == 0) {
-                cout << "Could not load sfx" << Mix_GetError() << endl;
-                return false;
-            }
-            m_Sfxs[id] = chunk;
-            return true;
-        }
-    }
 }
+
 
 void SoundManager::PlayMusic(string id, int loop, int ms) {
     Mix_FadeInMusic(m_Music[id], loop, ms);
