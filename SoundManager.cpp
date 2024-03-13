@@ -20,24 +20,24 @@ SoundManager::~SoundManager(){
 }
 
 bool SoundManager::LoadChunk(const char* fileName, string id) {
-        Mix_Chunk* chunk = Mix_LoadWAV(fileName);
-        if (chunk == 0) {
-            cout << "Could not load sfx" << Mix_GetError() << endl;
-            return false;
-        }
-        m_Sfxs[id] = chunk;
-        return true;
+    Mix_Chunk* chunk = Mix_LoadWAV(fileName);
+    if (chunk == 0) {
+        cout << "Could not load sfx" << Mix_GetError() << endl;
+        return false;
+    }
+    m_Sfxs[id] = chunk;
+    return true;
 }
 
 
 bool SoundManager::LoadMusic(const char* fileName, string id) {
-        Mix_Music* music = Mix_LoadMUS(fileName);
-        if (music == 0) {
-            cout << "Could not load music" << Mix_GetError() << endl;
-            return false;
-        }
-        m_Music[id] = music;
-        return true;
+    Mix_Music* music = Mix_LoadMUS(fileName);
+    if (music == 0) {
+        cout << "Could not load music" << Mix_GetError() << endl;
+        return false;
+    }
+    m_Music[id] = music;
+    return true;
 }
 
 
@@ -57,36 +57,9 @@ void SoundManager::ChangeVolume(int c) {
     Mix_VolumeMusic(currentVolume);
 }
 
-void SoundManager::PauseOrPlay() {
-    cout << Mix_PlayingMusic() << endl;
-    if (Mix_PausedMusic() == 0) {
-        Mix_PauseMusic();
-    }
-    else {
-        Mix_ResumeMusic();
-    }
-}
-void SoundManager::ChangeVolumeSfx(std::string id, int c) {
-    int currentVolume = Mix_VolumeChunk(m_Sfxs[id], -1);
-    currentVolume += c;
-    Mix_VolumeChunk(m_Sfxs[id], currentVolume);
-}
-void SoundManager::SetMusicPosition(double pos)
-{
-    if (Mix_SetMusicPosition(pos) == -1) {
-        cout << "Something failed: " << Mix_GetError() << endl;
-    }
-}
 void SoundManager::PlayClickSound() {
     SoundManager::Instance()->PlaySound("clicksound", 0, 0, 5);
 }
-
-void SoundManager::PlayMainMusic()
-{
-    SoundManager::Instance()->PlayMusic("gamemusic", 0, 2000);
-    SoundManager::Instance()->ChangeVolume(-125);
-}
-
 
 
 

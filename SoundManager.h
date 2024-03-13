@@ -20,11 +20,11 @@ public:
     void PlaySound(string id, int loop, int ms, int volume);
     void PlayMusic(string id, int loop, int ms = 0);
     void ChangeVolume(int change);
-    void PauseOrPlay();
-    void ChangeVolumeSfx(string id, int c);
-    void SetMusicPosition(double pos);
+
+
+
     void PlayClickSound();
-    void PlayMainMusic();
+
 
 private:
     static SoundManager* m_Instance;

@@ -20,11 +20,8 @@ bool Game::init(const char* title, int xpos,
                 SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
 
                 TextureManager::Instance()->LoadImages(m_renderer);
-
                 SoundManager::Instance()->LoadMusic("music/gamemusic.mp3", "gamemusic");
                 SoundManager::Instance()->LoadChunk("music/clicksound.wav", "clicksound");
-                SoundManager::Instance()->PlayMainMusic();
-
 			}
 			else {
 				std::cout << "renderer init failed\n";
@@ -96,6 +93,16 @@ void Game::Render() {
         TextureManager::Instance()->DrawTexture("text2", 650, 100, 250, 358, m_renderer);
 	}
 
+    if(m_isSquareHovered)
+    {
+        if(m_isPlayerOneOrTwo){
+            TextureManager::Instance()->DrawTexture("circle2", 65, 65, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
+        }
+        else
+        {
+            TextureManager::Instance()->DrawTexture("Ximage2", 65, 65, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
+        }
+    }
 
     if(!m_isInfoClicked) {
         TextureManager::Instance()->DrawTexture("ReadyStatic", 665, 150, 220, 220, m_renderer);
@@ -120,7 +127,7 @@ void Game::Render() {
         if(m_undoButton.getState() == CLICKED) {
             TextureManager::Instance()->DrawTexture("undo2", 900, 500, 100, 100, m_renderer);
 		}
-        if(!IsGameOver() && m_counter == 9) {
+        if(!IsGameOver() && m_squareCounter == 9) {
             TextureManager::Instance()->DrawTexture("DRAW", 690, 20, 178, 103, m_renderer);
 		}
 	}
@@ -130,35 +137,43 @@ void Game::Render() {
 
 
     for (const auto shape : m_drawnShapes) {
-			if (shape == 1) {
+            if (shape == 1)
+            {
                 DrawTextureXorO(shape, 65, 65);
 			}
-			if (shape == 2) {
+            if (shape == 2)
+            {
                 DrawTextureXorO(shape, 240, 65);
 			}
-			if (shape == 3) {
+            if (shape == 3)
+            {
                 DrawTextureXorO(shape, 410, 65);
-			}
-			if (shape == 4) {
+            }
+            if (shape == 4)
+            {
                 DrawTextureXorO(shape, 65, 235);
 			}
-			if (shape == 5) {
+            if (shape == 5)
+            {
                 DrawTextureXorO(shape, 240, 235);
 			}
-			if (shape == 6) {
+            if (shape == 6)
+            {
                 DrawTextureXorO(shape, 410, 235);
 			}
-			if (shape == 7) {
+            if (shape == 7)
+            {
                 DrawTextureXorO(shape, 65, 410);
 			}
-			if (shape == 8) {
+            if (shape == 8)
+            {
                 DrawTextureXorO(shape, 240, 410);
 			}
-			if (shape == 9) {
+            if (shape == 9)
+            {
                 DrawTextureXorO(shape, 410, 410);
 			}
 		}
-
         SDL_RenderPresent(m_renderer);
 }
 
@@ -174,44 +189,48 @@ void Game::HandleEvents() {
 			break;
 		case SDL_MOUSEMOTION:
 			mouseX = event.button.x;
-			mouseY = event.button.y;
+            mouseY = event.button.y;
             if (m_infoButton.contains(mouseX, mouseY)) {
                 m_isInfoClicked = true;
 			}
-			else
+            else
 			{
                 m_isInfoClicked = false;
 			}
-			break;
+
+            // for(const auto& square : m_grid){
+            //     if(square->IsInside(mouseX, mouseY)){
+            //         m_isSquareHovered = true;
+            //     }
+            //     else
+            //     {
+            //         m_isSquareHovered = false;
+            //     }
+            // }
+
+            break;
+
 		case SDL_MOUSEBUTTONDOWN:
 			mouseX = event.button.x;
             mouseY = event.button.y;
             if (m_restartButton.contains(mouseX, mouseY) && m_restartButton.getState() == ACTIVE){
-				std::cout << "Start button clicked " << std::endl;
                 m_restartButton.setState(CLICKED);
                 SoundManager::Instance()->PlayClickSound();
 			}
-            if (m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE && !IsGameOver() && m_counter != 9){
-				std::cout << "READY CLICKED!" << std::endl;
+            if (m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE && !IsGameOver() && m_squareCounter != 9){
                 m_readyButton.setState(CLICKED);
                 m_isPlayerDone = true;
                 m_isPlayerOneOrTwo = !m_isPlayerOneOrTwo;
-                std::cout << m_isPlayerOneOrTwo << std::endl;
                 SoundManager::Instance()->PlayClickSound();
 			}
-            if (m_undoButton.contains(mouseX, mouseY) && !IsGameOver() && m_counter != 9 && m_undoButton.getState() != INACTIVE) {
+            if (m_undoButton.contains(mouseX, mouseY) && !IsGameOver() && m_squareCounter != 9 && m_undoButton.getState() != INACTIVE) {
                 m_undoButton.setState(CLICKED);
                 SoundManager::Instance()->PlayClickSound();
 			}
-            HandleSquareEvent(*m_grid.at(0), 1, mouseX, mouseY);
-            HandleSquareEvent(*m_grid.at(1), 2, mouseX, mouseY);
-            HandleSquareEvent(*m_grid.at(2), 3, mouseX, mouseY);
-            HandleSquareEvent(*m_grid.at(3), 4, mouseX, mouseY);
-            HandleSquareEvent(*m_grid.at(4), 5, mouseX, mouseY);
-            HandleSquareEvent(*m_grid.at(5), 6, mouseX, mouseY);
-            HandleSquareEvent(*m_grid.at(6), 7, mouseX, mouseY);
-            HandleSquareEvent(*m_grid.at(7), 8, mouseX, mouseY);
-            HandleSquareEvent(*m_grid.at(8), 9, mouseX, mouseY);
+
+             for(int i = 0; i <= 8; i++){
+                 HandleSquareEvent(*m_grid.at(i), i + 1, mouseX, mouseY);
+             }
 			break;
 
 		case SDL_MOUSEBUTTONUP:
@@ -234,27 +253,28 @@ void Game::HandleEvents() {
 	}
 }
 
-void Game::HandleSquareEvent(Square& grid, int index, int mouseX, int mouseY){
-    if (grid.IsInside(mouseX, mouseY) && !grid.GetIsClicked() && m_isPlayerDone == true) {
+void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY){
+    if (square.IsInside(mouseX, mouseY) && !square.GetIsClicked() && m_isPlayerDone == true) {
         m_drawnShapes.push_back(index);
         m_isPlayerDone = false;
-        m_counter++;
+        m_squareCounter++;
         m_readyButton.setState(ACTIVE);
         m_undoButton.setState(ACTIVE);
-        grid.SetIsClicked(true);
+        square.SetIsClicked(true);
         if (m_isPlayerOneOrTwo) {
-            grid.SetState(O);
+            square.SetState(O);
         }
         else
         {
-            grid.SetState(X);
+            square.SetState(X);
         }
         m_restartButton.setState(ACTIVE);
     }
 }
 
+
+
 void Game::Clean() {
-	std::cout << "cleaning game\n";
     SDL_DestroyWindow(m_window);
     SDL_DestroyRenderer(m_renderer);
 	SDL_Quit();
@@ -314,51 +334,92 @@ bool Game::IsGameOver()
 void Game::RestartGame()
 {
     InitGrid();
-    m_drawnShapes.clear(); // clears vector
+    m_drawnShapes.clear();
     m_restartButton.setState(INACTIVE);
     m_readyButton.setState(INACTIVE);
     m_undoButton.setState(INACTIVE);
     m_isPlayerOneOrTwo = true;
     m_isPlayerDone = true;
     m_result = NOWINNER;
-    m_counter = 0;
+    m_squareCounter = 0;
 }
 
 
-void Game::InitGrid(){
+void Game::InitGrid()
+{
     m_grid = {
-        new Square(55, 205, 55, 205, EMPTY),
-        new Square(225, 375, 55, 205, EMPTY),
-        new Square(390, 540, 55, 205, EMPTY),
-        new Square(55, 205, 225, 370, EMPTY),
-        new Square(225, 375, 225, 370, EMPTY),
-        new Square(390, 550, 225, 370, EMPTY),
-        new Square(50, 205, 390, 550, EMPTY),
-        new Square(225, 377, 390, 550, EMPTY),
-        new Square(390, 550, 390, 550, EMPTY)
+        new Square(50, 55, EMPTY),
+        new Square(225, 55, EMPTY),
+        new Square(390 , 55, EMPTY),
+        new Square(50, 225, EMPTY),
+        new Square(225, 225, EMPTY),
+        new Square(390, 225, EMPTY),
+        new Square(50, 390, EMPTY),
+        new Square(225, 390, EMPTY),
+        new Square(390, 390, EMPTY)
     };
 }
 
 
 void Game::DrawTextureXorO(int shape, int x, int y)
 {
-    if (m_grid.at(shape - 1)->GetState() == O) {
-        TextureManager::Instance()->DrawTexture("circle2", x, y, SIZE, SIZE, m_renderer);
+    if (m_grid.at(shape - 1)->GetState() == O)
+    {
+        TextureManager::Instance()->DrawTexture("circle2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
     }
-    else {
-        TextureManager::Instance()->DrawTexture("Ximage2", x, y, SIZE, SIZE, m_renderer);
+    else
+    {
+        TextureManager::Instance()->DrawTexture("Ximage2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
     }
 }
 
 
+// void Game::HoverShowTexture(int mouseX, int mouseY, int x, int y)
+// {
+//     for(const auto& square : m_grid){
+//         if(square->IsInside(mouseX, mouseY))
+//         {
+//             m_isSquareHovered = true;
+//         }
+//         else
+//         {
+//             m_isSquareHovered = false;
+//         }
+//     }
+//     if (m_isSquareHovered){
+//         if(m_isPlayerOneOrTwo)
+//         {
+//             TextureManager::Instance()->DrawTexture("circle2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
+//         }
+//         else
+//         {
+//             TextureManager::Instance()->DrawTexture("Ximage2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
+//         }
+//     }
+// }
+
+// void SquareIsHovered(int mouseX, int mouseY){
+//     for(const auto& square : m_grid){
+//         if(square->IsInside(mouseX, mouseY))
+//         {
+//             m_isSquareHovered = true;
+//             std::cout << m_isSquareHovered << std::endl;
+//         }
+//         else
+//         {
+//             m_isSquareHovered = false;
+//         }
+//     }
+// }
+
 void Game::UndoLast()
 {
-    if (!m_drawnShapes.empty() && m_counter != 9) {
+    if (!m_drawnShapes.empty() && m_squareCounter != 9) {
         int lastShape = m_drawnShapes.back();
         m_drawnShapes.pop_back();
 
         m_grid.at(lastShape - 1)->Clear();
-        m_counter--;
+        m_squareCounter--;
 
         m_isPlayerDone = true;
         SetIsClicked(false);

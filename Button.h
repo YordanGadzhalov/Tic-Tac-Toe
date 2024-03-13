@@ -15,7 +15,7 @@ public:
     Button();
     ~Button();
 	Button(int x, int y, int width, int height, ButtonState state);
-	bool contains(int mouseX, int mouseY);
+    bool contains(int mouseX, int mouseY) const;
 	void setState(ButtonState newState);
 	ButtonState getState();
 };

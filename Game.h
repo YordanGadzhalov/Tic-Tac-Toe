@@ -10,7 +10,7 @@
 
 enum GameState{P1WINS, P2WINS, DRAW, NOWINNER};
 
-class Game : public Square {
+class Game : Square {
 public:
     Game();
 	~Game();
@@ -26,14 +26,16 @@ public:
     void UndoLast();
     void HandleSquareEvent(Square& square, int index, int mouseX, int mouseY);
     void InitGrid();
-    void DeleteInit();
     void DrawTextureXorO(int shape, int x, int y);
+    void HoverShowTexture(int mouseX, int mouseY, int x, int y);
+    // void SquareIsHovered(int mouseX, int mouseY);
 
 private:
     SDL_Window* m_window = NULL;
     SDL_Renderer* m_renderer = NULL;
-    int m_counter;
+    int m_squareCounter;
     GameState m_result = NOWINNER;
+    bool m_isSquareHovered = false;
     bool m_isPlayerDone = true;
     bool m_running;
     bool m_isPlayerOneOrTwo = true;

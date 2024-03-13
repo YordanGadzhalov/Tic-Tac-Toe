@@ -26,6 +26,8 @@ void TextureManager::LoadImages(SDL_Renderer* ren){
     Instance()->LoadTexture("assets/gameover.png", "gameover", ren);
     Instance()->LoadTexture("assets/grid2.png", "grid2", ren);
     Instance()->LoadTexture("assets/Ximage2.png", "Ximage2", ren);
+    Instance()->LoadTexture("assets/Ximage2.png", "Ximage3", ren);
+    Instance()->LoadTexture("assets/circle2.png", "circle3", ren);
     Instance()->LoadTexture("assets/undo1.png", "undo1", ren);
     Instance()->LoadTexture("assets/undo2.png", "undo2", ren);
     Instance()->LoadTexture("assets/circle2.png", "circle2", ren);

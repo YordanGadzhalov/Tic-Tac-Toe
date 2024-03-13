@@ -13,7 +13,7 @@ Button::Button(int x, int y, int width, int height, ButtonState state)
     this->m_state = state;
 }
 
-bool Button::contains(int mouseX, int mouseY)
+bool Button::contains(int mouseX, int mouseY) const
 {
 	return (mouseX >= m_x && mouseX <= m_width &&
 			mouseY >= m_y && mouseY <= m_height);
