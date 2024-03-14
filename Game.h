@@ -27,7 +27,7 @@ public:
     void HandleSquareEvent(Square& square, int index, int mouseX, int mouseY);
     void InitGrid();
     void DrawTextureXorO(int shape, int x, int y);
-    void HoverShowTexture(int mouseX, int mouseY, int x, int y);
+    void HoverShowTexture(int x, int y);
     // void SquareIsHovered(int mouseX, int mouseY);
 
 private:
@@ -36,6 +36,7 @@ private:
     int m_squareCounter;
     GameState m_result = NOWINNER;
     bool m_isSquareHovered = false;
+    int m_lastSquareHoveredId;
     bool m_isPlayerDone = true;
     bool m_running;
     bool m_isPlayerOneOrTwo = true;
@@ -46,6 +47,22 @@ private:
     Button m_readyButton;
     Button m_infoButton;
     Button m_undoButton;
+
+
+    using Point = std::pair<int,int>;
+    std::vector<Point> m_shapePos = {
+        //offset
+            {65, 65},
+            {240, 65},
+            {410, 65},
+            {65, 235},
+            {240, 235},
+            {410, 235},
+            {65, 410},
+            {240, 410},
+            {410, 410}
+    };
+
 };
 
 //members start with m_

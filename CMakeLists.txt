@@ -9,4 +9,4 @@ file( GLOB SRCS *.cpp *.h *.hpp )
 include_directories(${SDL2_INCLUDE_DIRS})
 add_executable(app ${SRCS})
 target_link_libraries(app ${SDL2_LIBRARIES} SDL2_ttf SDL2_mixer SDL2_image)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter")
+

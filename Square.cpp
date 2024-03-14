@@ -11,7 +11,7 @@ Square::Square(int x, int y, SquareState state = EMPTY)
 {}
 
 bool Square::IsInside(int mouseX, int mouseY) {
-    if (mouseX <= m_x + SQUARE_WIDTH && mouseX > m_x && mouseY <= m_y + SQUARE_HEIGHT && mouseY > m_y) {
+    if (mouseX <= m_x + WIDTH && mouseX > m_x && mouseY <= m_y + HEIGHT && mouseY > m_y) {
         return true;
     }
     return false;

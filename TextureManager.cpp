@@ -6,7 +6,7 @@ bool TextureManager::LoadTexture(const char* fileName,
     SDL_Surface* tempSurface = IMG_Load(fileName); //Load the image
 
     if (tempSurface == 0)
-        return false; // something went wrong
+        return false;
 
 
     SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, tempSurface);
@@ -18,31 +18,31 @@ bool TextureManager::LoadTexture(const char* fileName,
         return true;
     }
 
-    return false; // something went wrong
+    return false;
 }
 
 
 void TextureManager::LoadImages(SDL_Renderer* ren){
-    Instance()->LoadTexture("assets/gameover.png", "gameover", ren);
-    Instance()->LoadTexture("assets/grid2.png", "grid2", ren);
-    Instance()->LoadTexture("assets/Ximage2.png", "Ximage2", ren);
-    Instance()->LoadTexture("assets/Ximage2.png", "Ximage3", ren);
-    Instance()->LoadTexture("assets/circle2.png", "circle3", ren);
-    Instance()->LoadTexture("assets/undo1.png", "undo1", ren);
-    Instance()->LoadTexture("assets/undo2.png", "undo2", ren);
-    Instance()->LoadTexture("assets/circle2.png", "circle2", ren);
-    Instance()->LoadTexture("assets/ButtonActive.png", "ButtonActive", ren);
-    Instance()->LoadTexture("assets/ButtonClicked.png", "restartButtonClicked", ren);
-    Instance()->LoadTexture("assets/ButtonInactive.png", "restartButtonInactive", ren);
-    Instance()->LoadTexture("assets/info2.png", "info2", ren);
-    Instance()->LoadTexture("assets/ReadyButtonStatic.png", "ReadyStatic", ren);
-    Instance()->LoadTexture("assets/ReadyButtonClicked.png", "ReadyClicked", ren);
-    Instance()->LoadTexture("assets/text2.png", "text2", ren);
-    Instance()->LoadTexture("assets/player1.png", "player1", ren);
-    Instance()->LoadTexture("assets/player2.png", "player2", ren);
-    Instance()->LoadTexture("assets/player1wins.png", "player1wins", ren);
-    Instance()->LoadTexture("assets/player2wins.png", "player2wins", ren);
-    Instance()->LoadTexture("assets/DRAW.png", "DRAW", ren);
+    LoadTexture("assets/gameover.png", "gameover", ren);
+    LoadTexture("assets/grid2.png", "grid2", ren);
+    LoadTexture("assets/Ximage2.png", "Ximage2", ren);
+    LoadTexture("assets/Ximage2.png", "Ximage3", ren);
+    LoadTexture("assets/circle2.png", "circle3", ren);
+    LoadTexture("assets/undo1.png", "undo1", ren);
+    LoadTexture("assets/undo2.png", "undo2", ren);
+    LoadTexture("assets/circle2.png", "circle2", ren);
+    LoadTexture("assets/ButtonActive.png", "ButtonActive", ren);
+    LoadTexture("assets/ButtonClicked.png", "restartButtonClicked", ren);
+    LoadTexture("assets/ButtonInactive.png", "restartButtonInactive", ren);
+    LoadTexture("assets/info2.png", "info2", ren);
+    LoadTexture("assets/ReadyButtonStatic.png", "ReadyStatic", ren);
+    LoadTexture("assets/ReadyButtonClicked.png", "ReadyClicked", ren);
+    LoadTexture("assets/text2.png", "text2", ren);
+    LoadTexture("assets/player1.png", "player1", ren);
+    LoadTexture("assets/player2.png", "player2", ren);
+    LoadTexture("assets/player1wins.png", "player1wins", ren);
+    LoadTexture("assets/player2wins.png", "player2wins", ren);
+    LoadTexture("assets/DRAW.png", "DRAW", ren);
 }
 
 

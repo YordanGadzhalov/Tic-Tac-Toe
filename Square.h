@@ -3,18 +3,8 @@
 #include "Button.h"
 
 enum SquareState { EMPTY, O, X };
-const int SHAPE_SIZE = 125;
-const int SQUARE_WIDTH = 155;
-const int SQUARE_HEIGHT = 155;
 
 class Square {
-
-private:
-    int m_x;
-    int m_y;
-    SquareState m_state;
-    bool m_isClicked = false;
-
 
 public:
     Square();
@@ -26,4 +16,16 @@ public:
     void SetIsClicked(bool isClicked);
     bool GetIsClicked();
     void Clear();
+
+    static const int SHAPE_SIZE = 125;
+
+private:
+    int m_x;
+    int m_y;
+    SquareState m_state;
+    bool m_isClicked = false;
+
+    static const int WIDTH = 155;
+    static const int HEIGHT = 155;
+
 };

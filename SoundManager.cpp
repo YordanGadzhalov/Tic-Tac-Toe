@@ -58,7 +58,7 @@ void SoundManager::ChangeVolume(int c) {
 }
 
 void SoundManager::PlayClickSound() {
-    SoundManager::Instance()->PlaySound("clicksound", 0, 0, 5);
+    PlaySound("clicksound", 0, 0, 5);
 }
 
 
