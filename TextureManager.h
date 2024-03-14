@@ -13,8 +13,7 @@ public:
 		string id, SDL_Renderer* ren);
 
     void DrawTexture(string id, int x, int y,
-		int width, int height, SDL_Renderer* ren,
-		SDL_RendererFlip flip = SDL_FLIP_NONE);
+        int width, int height, SDL_Renderer* ren);
 
 	static TextureManager* Instance() {
         if (m_instance == 0) {

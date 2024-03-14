@@ -9,11 +9,11 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, in
         std::cout << "SDL init success\n";
 
         m_window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
-        if(m_window != 0) // window init success
+        if(m_window != nullptr) // window init success
         {
             std::cout << "window creation success\n";
             m_renderer = SDL_CreateRenderer(m_window, -1, 0);
-            if(m_renderer != 0) // renderer init success
+            if(m_renderer != nullptr) // renderer init success
             {
                 std::cout << "renderer creation success\n";
                 SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
@@ -230,6 +230,7 @@ void Game::HandleEvents()
                 {
                     m_readyButton.setState(CLICKED);
                     m_isPlayerDone = true;
+                    m_undoButton.setState(INACTIVE);
                     m_isPlayerOneOrTwo = !m_isPlayerOneOrTwo;
                     SoundManager::Instance()->PlayClickSound();
                 }
@@ -397,12 +398,12 @@ void Game::HoverShowTexture(int x, int y)
 {
     if(m_isPlayerOneOrTwo)
     {
-        TextureManager::Instance()->DrawTexture("circle3", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
-        // SDL_SetTextureAlphaMod(circle3, 50);
+        TextureManager::Instance()->DrawTexture("circle2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
+        // SDL_SetTextureAlphaMod(circle2, 50);
     }
     else
     {
-        TextureManager::Instance()->DrawTexture("Ximage3", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
+        TextureManager::Instance()->DrawTexture("Ximage2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
     }
 }
 
@@ -428,9 +429,6 @@ Game::Game()
     m_infoButton = Button(935, 28, 980, 80, ACTIVE);
     m_undoButton = Button(920, 520, 980, 580, ACTIVE);
     InitGrid();
-    Game::m_window = NULL;
-    Game::m_renderer = NULL;
-    Game::m_running = true;
 }
 
 Game::~Game()

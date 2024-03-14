@@ -26,8 +26,6 @@ void TextureManager::LoadImages(SDL_Renderer* ren){
     LoadTexture("assets/gameover.png", "gameover", ren);
     LoadTexture("assets/grid2.png", "grid2", ren);
     LoadTexture("assets/Ximage2.png", "Ximage2", ren);
-    LoadTexture("assets/Ximage2.png", "Ximage3", ren);
-    LoadTexture("assets/circle2.png", "circle3", ren);
     LoadTexture("assets/undo1.png", "undo1", ren);
     LoadTexture("assets/undo2.png", "undo2", ren);
     LoadTexture("assets/circle2.png", "circle2", ren);
@@ -48,8 +46,7 @@ void TextureManager::LoadImages(SDL_Renderer* ren){
 
 
 void TextureManager::DrawTexture(string id, int x, int y,
-    int width, int height, SDL_Renderer* ren,
-    SDL_RendererFlip flip)
+    int width, int height, SDL_Renderer* ren)
 {
     SDL_Rect srcRect;
     SDL_Rect destRect;
@@ -59,7 +56,7 @@ void TextureManager::DrawTexture(string id, int x, int y,
     destRect.x = x;
     destRect.y = y;
 
-    SDL_RenderCopyEx(ren, m_textureMap[id], &srcRect, &destRect, 0, 0, flip);
+    SDL_RenderCopyEx(ren, m_textureMap[id], &srcRect, &destRect, 0, 0, SDL_FLIP_NONE);
 
 }
 

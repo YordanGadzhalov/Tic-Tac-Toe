@@ -31,14 +31,14 @@ public:
     // void SquareIsHovered(int mouseX, int mouseY);
 
 private:
-    SDL_Window* m_window = NULL;
-    SDL_Renderer* m_renderer = NULL;
+    SDL_Window* m_window = nullptr;
+    SDL_Renderer* m_renderer = nullptr;
     int m_squareCounter;
     GameState m_result = NOWINNER;
     bool m_isSquareHovered = false;
     int m_lastSquareHoveredId;
     bool m_isPlayerDone = true;
-    bool m_running;
+    bool m_running = true;
     bool m_isPlayerOneOrTwo = true;
     bool m_isInfoClicked = false;
     std::vector<int> m_drawnShapes;
