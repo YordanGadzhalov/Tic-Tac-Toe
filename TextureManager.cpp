@@ -60,5 +60,9 @@ void TextureManager::DrawTexture(string id, int x, int y,
 
 }
 
+SDL_Texture* TextureManager::getTexture(string id){
+    return m_textureMap[id];
+}
+
 
 TextureManager* TextureManager::m_instance = 0;

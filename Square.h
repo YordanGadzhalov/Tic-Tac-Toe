@@ -4,6 +4,7 @@
 
 enum SquareState { EMPTY, O, X };
 
+
 class Square {
 
 public:
@@ -16,8 +17,8 @@ public:
     void SetIsClicked(bool isClicked);
     bool GetIsClicked();
     void Clear();
-
     static const int SHAPE_SIZE = 125;
+    static const int OFFSET = 15;
 
 private:
     int m_x;
@@ -27,5 +28,8 @@ private:
 
     static const int WIDTH = 155;
     static const int HEIGHT = 155;
+
+
+
 
 };

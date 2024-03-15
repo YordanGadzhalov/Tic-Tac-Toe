@@ -23,9 +23,13 @@ public:
         return m_instance;
 	}
 
+     SDL_Texture* getTexture(string id);
+
 private:
     map <string, SDL_Texture*> m_textureMap;
 	TextureManager() {}
     static TextureManager* m_instance;
 };
+
+
 

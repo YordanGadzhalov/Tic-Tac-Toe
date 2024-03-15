@@ -9,6 +9,7 @@
 #include "SoundManager.h"
 
 enum GameState{P1WINS, P2WINS, DRAW, NOWINNER};
+const int UNUSED_SQUARE = -1;
 
 class Game : Square {
 public:
@@ -28,14 +29,16 @@ public:
     void InitGrid();
     void DrawTextureXorO(int shape, int x, int y);
     void HoverShowTexture(int x, int y);
-    // void SquareIsHovered(int mouseX, int mouseY);
+    void AutoFillLastSquare();
+    void IsSquareHovered(int mouseX, int mouseY);
+
 
 private:
     SDL_Window* m_window = nullptr;
     SDL_Renderer* m_renderer = nullptr;
-    int m_squareCounter;
     GameState m_result = NOWINNER;
-    bool m_isSquareHovered = false;
+    //hover with one param
+    // bool m_isSquareHovered = false;
     int m_lastSquareHoveredId;
     bool m_isPlayerDone = true;
     bool m_running = true;
@@ -49,9 +52,10 @@ private:
     Button m_undoButton;
 
 
+
     using Point = std::pair<int,int>;
     std::vector<Point> m_shapePos = {
-        //offset
+        //delete this vector and use offsets to draw shapes
             {65, 65},
             {240, 65},
             {410, 65},

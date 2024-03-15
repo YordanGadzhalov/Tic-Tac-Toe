@@ -146,7 +146,7 @@ void Game::Render()
         {
             TextureManager::Instance()->DrawTexture("undo2", 900, 500, 100, 100, m_renderer);
         }
-        if(!IsGameOver() && m_squareCounter == 9)
+        if(m_result == DRAW)
         {
             TextureManager::Instance()->DrawTexture("DRAW", 690, 20, 178, 103, m_renderer);
         }
@@ -155,7 +155,7 @@ void Game::Render()
     TextureManager::Instance()->DrawTexture("grid2", 50, 50, 500, 501, m_renderer);
     TextureManager::Instance()->DrawTexture("info2", 930, 20, 60, 60, m_renderer);
 
-    if(m_isSquareHovered)
+    if(m_lastSquareHoveredId <= m_grid.size())
     {
         for(int i = 0; i < m_grid.size(); i++)
         {
@@ -206,15 +206,8 @@ void Game::HandleEvents()
                     m_isInfoClicked = false;
                 }
 
-                for(int i = 0; i < m_grid.size(); i++)
-                {
-                    if(m_grid.at(i)->IsInside(mouseX, mouseY))
-                    {
-                        m_isSquareHovered = true;
-                        m_lastSquareHoveredId = i;
-                        break;
-                    }
-                }
+                IsSquareHovered(mouseX, mouseY);
+
                 break;
 
             case SDL_MOUSEBUTTONDOWN:
@@ -226,7 +219,7 @@ void Game::HandleEvents()
                     SoundManager::Instance()->PlayClickSound();
                 }
                 if(m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE && !IsGameOver() &&
-                   m_squareCounter != 9)
+                   m_drawnShapes.size() != 9)
                 {
                     m_readyButton.setState(CLICKED);
                     m_isPlayerDone = true;
@@ -234,7 +227,7 @@ void Game::HandleEvents()
                     m_isPlayerOneOrTwo = !m_isPlayerOneOrTwo;
                     SoundManager::Instance()->PlayClickSound();
                 }
-                if(m_undoButton.contains(mouseX, mouseY) && !IsGameOver() && m_squareCounter != 9 &&
+                if(m_undoButton.contains(mouseX, mouseY) && !IsGameOver() && m_drawnShapes.size() != 9 &&
                    m_undoButton.getState() != INACTIVE)
                 {
                     m_undoButton.setState(CLICKED);
@@ -272,11 +265,11 @@ void Game::HandleEvents()
 
 void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
 {
-    if(square.IsInside(mouseX, mouseY) && !square.GetIsClicked() && m_isPlayerDone == true)
+    if(square.IsInside(mouseX, mouseY)  && m_isPlayerDone == true)
     {
+        std::cout << "X " << mouseX << "Y " << mouseY << std::endl;
         m_drawnShapes.push_back(index);
         m_isPlayerDone = false;
-        m_squareCounter++;
         m_readyButton.setState(ACTIVE);
         m_undoButton.setState(ACTIVE);
         square.SetIsClicked(true);
@@ -289,7 +282,12 @@ void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
             square.SetState(X);
         }
         m_restartButton.setState(ACTIVE);
+        // if(m_drawnShapes.size() != 9)
+        // {
+        //     AutoFillLastSquare();
+        // }
     }
+    IsGameOver();
 }
 
 void Game::Clean()
@@ -353,7 +351,15 @@ bool Game::IsGameOver()
         return true;
     }
 
-    return false;
+    for(int i = 0; i < m_grid.size(); i++)
+    {
+        if(m_grid.at(i)->GetState() != EMPTY && m_drawnShapes.size() == 9)
+        {
+            m_result = DRAW;
+        }
+
+        return false;
+    }
 }
 
 void Game::RestartGame()
@@ -366,7 +372,6 @@ void Game::RestartGame()
     m_isPlayerOneOrTwo = true;
     m_isPlayerDone = true;
     m_result = NOWINNER;
-    m_squareCounter = 0;
 }
 
 void Game::InitGrid()
@@ -382,6 +387,22 @@ void Game::InitGrid()
               new Square(390, 390, EMPTY)};
 }
 
+void Game::IsSquareHovered(int mouseX, int mouseY)
+{
+    for(int i = 0; i < m_grid.size(); i++)
+    {
+        if(m_grid.at(i)->IsInside(mouseX, mouseY))
+        {
+            m_lastSquareHoveredId = i;
+            break;
+        }
+        else
+        {
+            m_lastSquareHoveredId = UNUSED_SQUARE;
+        }
+    }
+}
+
 void Game::DrawTextureXorO(int shape, int x, int y)
 {
     if(m_grid.at(shape - 1)->GetState() == O)
@@ -394,33 +415,49 @@ void Game::DrawTextureXorO(int shape, int x, int y)
     }
 }
 
+void Game::AutoFillLastSquare()
+{
+    for(int i = 0; i < 8; i++)
+    {
+        if(m_grid.at(i)->GetIsClicked() == false)
+        {
+            DrawTextureXorO(i + 1, m_shapePos.at(i).first, m_shapePos.at(i).second);
+        }
+    }
+}
+
 void Game::HoverShowTexture(int x, int y)
 {
     if(m_isPlayerOneOrTwo)
     {
+        SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("circle2"), 100);
         TextureManager::Instance()->DrawTexture("circle2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
-        // SDL_SetTextureAlphaMod(circle2, 50);
+        SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("circle2"), 255);
     }
     else
     {
+        SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("Ximage2"), 100);
         TextureManager::Instance()->DrawTexture("Ximage2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
+        SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("Ximage2"), 255);
     }
 }
 
 void Game::UndoLast()
 {
-    if(!m_drawnShapes.empty() && m_squareCounter != 9)
+    if(!m_drawnShapes.empty() && m_drawnShapes.size() != 9)
     {
         int lastShape = m_drawnShapes.back();
         m_drawnShapes.pop_back();
 
         m_grid.at(lastShape - 1)->Clear();
-        m_squareCounter--;
+        // m_squareCounter--;
 
         m_isPlayerDone = true;
         SetIsClicked(false);
     }
 }
+
+
 
 Game::Game()
 {
