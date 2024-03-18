@@ -163,7 +163,8 @@ void Game::Render()
             {
                 if(m_grid.at(i)->GetIsClicked() == false && m_readyButton.getState() == INACTIVE)
                 {
-                    HoverShowTexture(m_shapePos.at(i).first, m_shapePos.at(i).second);
+                    HoverShowTexture(m_grid.at(i)->GetSquareX() + SHAPE_OFFSET,
+                                     m_grid.at(i)->GetSquareY() + SHAPE_OFFSET);
                 }
             }
         }
@@ -171,11 +172,13 @@ void Game::Render()
 
     for(const auto& shape : m_drawnShapes)
     {
-        for(int i = 0; i < m_shapePos.size(); i++)
+        for(int i = 0; i < m_grid.size(); i++)
         {
             if(shape == i + 1)
             {
-                DrawTextureXorO(shape, m_shapePos.at(i).first, m_shapePos.at(i).second);
+                DrawTextureXorO(shape,
+                                m_grid.at(i)->GetSquareX() + SHAPE_OFFSET,
+                                m_grid.at(i)->GetSquareY() + SHAPE_OFFSET);
             }
         }
     }
@@ -236,6 +239,7 @@ void Game::HandleEvents()
 
                 for(int i = 0; i <= 8; i++)
                 {
+                    AutoFillLastSquare(*m_grid.at(i), i + 1);
                     HandleSquareEvent(*m_grid.at(i), i + 1, mouseX, mouseY);
                 }
                 break;
@@ -265,9 +269,8 @@ void Game::HandleEvents()
 
 void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
 {
-    if(square.IsInside(mouseX, mouseY)  && m_isPlayerDone == true)
+    if(square.IsInside(mouseX, mouseY) && m_isPlayerDone == true && square.GetIsClicked() == false)
     {
-        std::cout << "X " << mouseX << "Y " << mouseY << std::endl;
         m_drawnShapes.push_back(index);
         m_isPlayerDone = false;
         m_readyButton.setState(ACTIVE);
@@ -282,11 +285,8 @@ void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
             square.SetState(X);
         }
         m_restartButton.setState(ACTIVE);
-        // if(m_drawnShapes.size() != 9)
-        // {
-        //     AutoFillLastSquare();
-        // }
     }
+    // AutoFillLastSquare();
     IsGameOver();
 }
 
@@ -360,6 +360,7 @@ bool Game::IsGameOver()
 
         return false;
     }
+    return false;
 }
 
 void Game::RestartGame()
@@ -376,15 +377,15 @@ void Game::RestartGame()
 
 void Game::InitGrid()
 {
-    m_grid = {new Square(50, 55, EMPTY),
-              new Square(225, 55, EMPTY),
-              new Square(390, 55, EMPTY),
-              new Square(50, 225, EMPTY),
-              new Square(225, 225, EMPTY),
-              new Square(390, 225, EMPTY),
-              new Square(50, 390, EMPTY),
-              new Square(225, 390, EMPTY),
-              new Square(390, 390, EMPTY)};
+    m_grid = {new Square(50, 55),
+              new Square(225, 55),
+              new Square(390, 55),
+              new Square(50, 225),
+              new Square(225, 225),
+              new Square(390, 225),
+              new Square(50, 390),
+              new Square(225, 390),
+              new Square(390, 390)};
 }
 
 void Game::IsSquareHovered(int mouseX, int mouseY)
@@ -415,13 +416,24 @@ void Game::DrawTextureXorO(int shape, int x, int y)
     }
 }
 
-void Game::AutoFillLastSquare()
+void Game::AutoFillLastSquare(Square& square, int index)
 {
-    for(int i = 0; i < 8; i++)
+    if(m_drawnShapes.size() == 8 && !IsGameOver())
     {
-        if(m_grid.at(i)->GetIsClicked() == false)
+        for(int i = 0; i < m_grid.size(); i++)
         {
-            DrawTextureXorO(i + 1, m_shapePos.at(i).first, m_shapePos.at(i).second);
+            if(m_grid.at(i)->GetState() == EMPTY)
+            {
+                m_drawnShapes.push_back(i + 1);
+                if(m_isPlayerOneOrTwo)
+                {
+                    m_grid.at(i)->SetState(X);
+                }
+                else
+                {
+                    m_grid.at(i)->SetState(O);
+                }
+            }
         }
     }
 }
@@ -450,14 +462,11 @@ void Game::UndoLast()
         m_drawnShapes.pop_back();
 
         m_grid.at(lastShape - 1)->Clear();
-        // m_squareCounter--;
 
         m_isPlayerDone = true;
         SetIsClicked(false);
     }
 }
-
-
 
 Game::Game()
 {

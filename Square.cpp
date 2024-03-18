@@ -8,7 +8,7 @@ Square::~Square()
 {
 }
 
-Square::Square(int x, int y, SquareState state = EMPTY) : m_x(x), m_y(y), m_state(state)
+Square::Square(int x, int y, SquareState state) : m_x(x), m_y(y), m_state(state)
 {
 }
 
@@ -23,28 +23,36 @@ bool Square::IsInside(int mouseX, int mouseY)
 
 void Square::SetState(SquareState newState)
 {
-    this->m_state = newState;
+    m_state = newState;
 }
 
 SquareState Square::GetState()
 {
-    return this->m_state;
+    return m_state;
 }
 
 void Square::SetIsClicked(bool isClicked)
 {
-    this->m_isClicked = isClicked;
+    m_isClicked = isClicked;
 }
 
 bool Square::GetIsClicked()
 {
-    return this->m_isClicked;
+    return m_isClicked;
 }
-
-
 
 void Square::Clear()
 {
-    this->SetState(EMPTY);
-    this->m_isClicked = false;
+    SetState(EMPTY);
+    m_isClicked = false;
+}
+
+int Square::GetSquareX()
+{
+    return m_x;
+}
+
+int Square::GetSquareY()
+{
+    return m_y;
 }

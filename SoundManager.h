@@ -1,15 +1,17 @@
 #pragma once
+#include "Game.h"
 #include <iostream>
 #include <map>
-#include "Game.h"
 
 using namespace std;
 
-class SoundManager {
-
+class SoundManager
+{
 public:
-    static SoundManager* Instance() {
-        if (m_Instance == 0) {
+    static SoundManager* Instance()
+    {
+        if(m_Instance == 0)
+        {
             m_Instance = new SoundManager();
             return m_Instance;
         }
@@ -21,10 +23,7 @@ public:
     void PlayMusic(string id, int loop, int ms = 0);
     void ChangeVolume(int change);
 
-
-
     void PlayClickSound();
-
 
 private:
     static SoundManager* m_Instance;

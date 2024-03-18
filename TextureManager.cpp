@@ -1,28 +1,26 @@
 #include "TextureManager.h"
 
-bool TextureManager::LoadTexture(const char* fileName,
-    string id, SDL_Renderer* ren)
+bool TextureManager::LoadTexture(const char* fileName, string id, SDL_Renderer* ren)
 {
-    SDL_Surface* tempSurface = IMG_Load(fileName); //Load the image
+    SDL_Surface* tempSurface = IMG_Load(fileName); // Load the image
 
-    if (tempSurface == 0)
+    if(tempSurface == 0)
         return false;
-
 
     SDL_Texture* tex = SDL_CreateTextureFromSurface(ren, tempSurface);
     SDL_FreeSurface(tempSurface);
 
-
-    if (tex != 0) {
-        m_textureMap[id] = tex;  // Insert the texture into the map to have a list of all images
+    if(tex != 0)
+    {
+        m_textureMap[id] = tex; // Insert the texture into the map to have a list of all images
         return true;
     }
 
     return false;
 }
 
-
-void TextureManager::LoadImages(SDL_Renderer* ren){
+void TextureManager::LoadImages(SDL_Renderer* ren)
+{
     LoadTexture("assets/gameover.png", "gameover", ren);
     LoadTexture("assets/grid2.png", "grid2", ren);
     LoadTexture("assets/Ximage2.png", "Ximage2", ren);
@@ -43,10 +41,7 @@ void TextureManager::LoadImages(SDL_Renderer* ren){
     LoadTexture("assets/DRAW.png", "DRAW", ren);
 }
 
-
-
-void TextureManager::DrawTexture(string id, int x, int y,
-    int width, int height, SDL_Renderer* ren)
+void TextureManager::DrawTexture(string id, int x, int y, int width, int height, SDL_Renderer* ren)
 {
     SDL_Rect srcRect;
     SDL_Rect destRect;
@@ -57,12 +52,11 @@ void TextureManager::DrawTexture(string id, int x, int y,
     destRect.y = y;
 
     SDL_RenderCopyEx(ren, m_textureMap[id], &srcRect, &destRect, 0, 0, SDL_FLIP_NONE);
-
 }
 
-SDL_Texture* TextureManager::getTexture(string id){
+SDL_Texture* TextureManager::getTexture(string id)
+{
     return m_textureMap[id];
 }
-
 
 TextureManager* TextureManager::m_instance = 0;

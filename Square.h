@@ -1,24 +1,29 @@
 #pragma once
-#include <iostream>
 #include "Button.h"
 
-enum SquareState { EMPTY, O, X };
+enum SquareState
+{
+    EMPTY,
+    O,
+    X
+};
 
-
-class Square {
-
+class Square
+{
 public:
     Square();
     ~Square();
-    Square(int x, int y, SquareState state);
+    Square(int x, int y, SquareState state = EMPTY);
     bool IsInside(int mouseX, int mouseY);
     void SetState(SquareState newState);
     SquareState GetState();
     void SetIsClicked(bool isClicked);
     bool GetIsClicked();
     void Clear();
+    int GetSquareX();
+    int GetSquareY();
     static const int SHAPE_SIZE = 125;
-    static const int OFFSET = 15;
+    static const int SHAPE_OFFSET = 15;
 
 private:
     int m_x;
@@ -28,8 +33,4 @@ private:
 
     static const int WIDTH = 155;
     static const int HEIGHT = 155;
-
-
-
-
 };

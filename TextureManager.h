@@ -10,24 +10,24 @@ public:
     void LoadImages(SDL_Renderer* ren);
 
     bool LoadTexture(const char* fileName,
-		string id, SDL_Renderer* ren);
+        string id, SDL_Renderer* ren);
 
     void DrawTexture(string id, int x, int y,
         int width, int height, SDL_Renderer* ren);
 
-	static TextureManager* Instance() {
+    static TextureManager* Instance() {
         if (m_instance == 0) {
             m_instance = new TextureManager();
             return m_instance;
-		}
+        }
         return m_instance;
-	}
+    }
 
      SDL_Texture* getTexture(string id);
 
 private:
     map <string, SDL_Texture*> m_textureMap;
-	TextureManager() {}
+    TextureManager() {}
     static TextureManager* m_instance;
 };
 
