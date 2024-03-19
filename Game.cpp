@@ -79,7 +79,7 @@ void Game::InitGrid()
 }
 
 
-void Game::Clean()
+void Game::Clean() const
 {
     SDL_DestroyWindow(m_window);
     SDL_DestroyRenderer(m_renderer);
@@ -132,7 +132,7 @@ void Game::HandleEvents()
                 }
 
                 if(m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE &&
-                   !IsGameOver() && m_drawnShapes.size() != m_grid.size())
+                   !IsGameOver() && !IsNoEmptySquares())
                 {
                     m_readyButton.setState(CLICKED);
                     m_isPlayerDone = true;
@@ -142,7 +142,7 @@ void Game::HandleEvents()
                 }
 
                 if(m_undoButton.contains(mouseX, mouseY) && !IsGameOver() &&
-                   m_drawnShapes.size() != m_grid.size() && m_undoButton.getState() != INACTIVE)
+                   !IsNoEmptySquares() && m_undoButton.getState() != INACTIVE)
                 {
                     m_undoButton.setState(CLICKED);
                     SoundManager::Instance()->PlayClickSound();
@@ -399,7 +399,7 @@ bool Game::IsGameOver()
 }
 
 
-bool Game::CheckForWinner(SquareState state)
+bool Game::CheckForWinner(SquareState state) const
 {
     if(m_grid.at(0)->GetState() == state && m_grid.at(1)->GetState() == state && m_grid.at(2)->GetState() == state ||
        m_grid.at(3)->GetState() == state && m_grid.at(4)->GetState() == state && m_grid.at(5)->GetState() == state ||
@@ -423,11 +423,11 @@ bool Game::CheckForWinner(SquareState state)
 
 
 
-bool Game::IsGameDraw()
+bool Game::IsGameDraw() const
 {
     for(int i = 0; i < m_grid.size(); i++)
     {
-        if(m_grid.at(i)->GetState() != EMPTY && m_drawnShapes.size() == m_grid.size())
+        if(m_grid.at(i)->GetState() != EMPTY && IsNoEmptySquares())
         {
             return true;
         }
@@ -502,9 +502,14 @@ void Game::AutoFillLastSquare()
 }
 
 
-bool Game::IsLastEmptySquare()
+bool Game::IsLastEmptySquare() const
 {
     return (m_drawnShapes.size() == m_grid.size() - 1);
+}
+
+bool Game::IsNoEmptySquares() const
+{
+    return (m_drawnShapes.size() == m_grid.size());
 }
 
 
@@ -526,7 +531,7 @@ void Game::HoverShowTexture(int x, int y)
 
 void Game::UndoLast()
 {
-    if(!m_drawnShapes.empty() && m_drawnShapes.size() != m_grid.size())
+    if(!m_drawnShapes.empty() && !IsNoEmptySquares())
     {
         int lastShape = m_drawnShapes.back();
         m_drawnShapes.pop_back();

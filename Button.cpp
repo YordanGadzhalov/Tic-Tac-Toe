@@ -27,7 +27,7 @@ void Button::setState(ButtonState newState)
     m_state = newState;
 }
 
-ButtonState Button::getState()
+ButtonState Button::getState() const
 {
     return m_state;
 }

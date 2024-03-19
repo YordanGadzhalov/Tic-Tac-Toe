@@ -14,17 +14,16 @@ public:
     Square();
     ~Square();
     Square(int x, int y, SquareState state = EMPTY);
-    bool IsInside(int mouseX, int mouseY);
+    bool IsInside(int mouseX, int mouseY) const;
     void SetState(SquareState newState);
-    SquareState GetState();
+    SquareState GetState() const;
     void SetIsClicked(bool isClicked);
-    bool GetIsClicked();
+    bool GetIsClicked() const;
     void Clear();
-    int GetShapePosX();
-    int GetShapePosY();
-    int SHAPE_CENTER_Y();
-    int GetSquareCenterX();
-    int GetSquareCenterY();
+    int GetShapePosX() const;
+    int GetShapePosY() const;
+    int GetSquareCenterX() const;
+    int GetSquareCenterY() const;
     static const int SHAPE_SIZE = 125;
 
 

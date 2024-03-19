@@ -7,7 +7,6 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include "SoundManager.h"
-#include <utility>
 
 enum GameState{
     P1WINS,
@@ -27,7 +26,7 @@ public:
 
     void Render();
     void HandleEvents();
-    void Clean();
+    void Clean() const;
     bool IsRunning() const;
     void RestartGame();
     void UndoLast();
@@ -37,11 +36,11 @@ public:
     void HoverShowTexture(int x, int y);
     void AutoFillLastSquare();
     void IsSquareHovered(int mouseX, int mouseY);
-    bool IsLastEmptySquare();
-    bool CheckForWinner(SquareState state);
+    bool IsLastEmptySquare() const;
+    bool CheckForWinner(SquareState state) const;
     bool IsGameOver();
-    bool IsGameDraw();
-
+    bool IsGameDraw() const;
+    bool IsNoEmptySquares() const;
 
 
 private:
