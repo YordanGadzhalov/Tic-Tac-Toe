@@ -7,11 +7,17 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include "SoundManager.h"
+#include <utility>
 
-enum GameState{P1WINS, P2WINS, DRAW, NOWINNER};
+enum GameState{
+    P1WINS,
+    P2WINS,
+    DRAW,
+    NOWINNER};
+
 constexpr int UNUSED_SQUARE = -1;
-
-class Game : Square {
+class Game
+{
 public:
     Game();
     ~Game();
@@ -29,8 +35,9 @@ public:
     void InitGrid();
     void DrawTextureXorO(int shape, int x, int y);
     void HoverShowTexture(int x, int y);
-    void AutoFillLastSquare(Square& square, int index);
+    void AutoFillLastSquare();
     void IsSquareHovered(int mouseX, int mouseY);
+    bool IsLastEmptySquare();
 
 
 private:

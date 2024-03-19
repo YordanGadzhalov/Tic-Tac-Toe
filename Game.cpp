@@ -2,6 +2,23 @@
 #include "Square.h"
 #include <iostream>
 
+Game::Game()
+{
+    m_restartButton = Button(660, 440, 885, 507, INACTIVE);
+    m_readyButton = Button(690, 167, 850, 350, INACTIVE);
+    m_infoButton = Button(935, 28, 980, 80, ACTIVE);
+    m_undoButton = Button(920, 520, 980, 580, ACTIVE);
+    InitGrid();
+}
+
+Game::~Game()
+{
+    for(auto square : m_grid)
+    {
+        delete square;
+    }
+}
+
 bool Game::init(const char* title, int xpos, int ypos, int width, int height, int flags)
 {
     if(SDL_Init(SDL_INIT_EVERYTHING) == 0)
@@ -44,49 +61,193 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, in
     return true;
 }
 
+void Game::InitGrid()
+{
+    m_grid = {new Square(50, 55),
+              new Square(225, 55),
+              new Square(390, 55),
+              new Square(50, 225),
+              new Square(225, 225),
+              new Square(390, 225),
+              new Square(50, 390),
+              new Square(225, 390),
+              new Square(390, 390)};
+}
+
+void Game::Clean()
+{
+    SDL_DestroyWindow(m_window);
+    SDL_DestroyRenderer(m_renderer);
+    SDL_Quit();
+}
+
+bool Game::IsRunning() const
+{
+    return Game::m_running;
+}
+
+void Game::HandleEvents()
+{
+    SDL_Event event;
+    int mouseX = 0;
+    int mouseY = 0;
+    if(SDL_PollEvent(&event))
+    {
+        switch(event.type)
+        {
+            case SDL_QUIT:
+                m_running = false;
+                break;
+            case SDL_MOUSEMOTION:
+                mouseX = event.button.x;
+                mouseY = event.button.y;
+                if(m_infoButton.contains(mouseX, mouseY))
+                {
+                    m_isInfoClicked = true;
+                }
+                else
+                {
+                    m_isInfoClicked = false;
+                }
+
+                IsSquareHovered(mouseX, mouseY);
+
+                break;
+
+            case SDL_MOUSEBUTTONDOWN:
+                mouseX = event.button.x;
+                mouseY = event.button.y;
+                if(m_restartButton.contains(mouseX, mouseY) && m_restartButton.getState() == ACTIVE)
+                {
+                    m_restartButton.setState(CLICKED);
+                    SoundManager::Instance()->PlayClickSound();
+                }
+                if(m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE && !IsGameOver() &&
+                   m_drawnShapes.size() != m_grid.size())
+                {
+                    m_readyButton.setState(CLICKED);
+                    m_isPlayerDone = true;
+                    m_undoButton.setState(INACTIVE);
+                    m_isPlayerOneOrTwo = !m_isPlayerOneOrTwo;
+                    SoundManager::Instance()->PlayClickSound();
+                }
+                if(m_undoButton.contains(mouseX, mouseY) && !IsGameOver() && m_drawnShapes.size() != m_grid.size() &&
+                   m_undoButton.getState() != INACTIVE)
+                {
+                    m_undoButton.setState(CLICKED);
+                    SoundManager::Instance()->PlayClickSound();
+                }
+
+                if(IsLastEmptySquare())
+                {
+                    AutoFillLastSquare();
+                }
+
+                for(int i = 0; i < m_grid.size(); i++)
+                {
+                    HandleSquareEvent(*m_grid.at(i), i + 1, mouseX, mouseY);
+                }
+                break;
+
+            case SDL_MOUSEBUTTONUP:
+                if(m_restartButton.getState() == CLICKED)
+                {
+                    RestartGame();
+                }
+                if(m_readyButton.getState() == CLICKED)
+                {
+                    m_readyButton.setState(INACTIVE);
+                }
+                if(m_undoButton.getState() == CLICKED)
+                {
+                    m_readyButton.setState(INACTIVE);
+                    m_undoButton.setState(INACTIVE);
+                    UndoLast();
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+
 void Game::Render()
 {
     SDL_RenderClear(m_renderer);
     SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
+
     if(m_grid.at(0)->GetState() == m_grid.at(1)->GetState() && m_grid.at(1)->GetState() == m_grid.at(2)->GetState() &&
        m_grid.at(0)->GetState() != EMPTY)
     {
-        SDL_RenderDrawLine(m_renderer, 50, 125, 540, 125);
+        SDL_RenderDrawLine(m_renderer,
+                           m_grid.at(0)->GetSquareCenterX(),
+                           m_grid.at(0)->GetSquareCenterY(),
+                           m_grid.at(2)->GetSquareCenterX(),
+                           m_grid.at(2)->GetSquareCenterY());
     }
     else if(m_grid.at(3)->GetState() == m_grid.at(4)->GetState() &&
             m_grid.at(4)->GetState() == m_grid.at(5)->GetState() && m_grid.at(3)->GetState() != EMPTY)
     {
-        SDL_RenderDrawLine(m_renderer, 50, 300, 540, 300);
+        SDL_RenderDrawLine(m_renderer,
+                           m_grid.at(3)->GetSquareCenterX(),
+                           m_grid.at(3)->GetSquareCenterY(),
+                           m_grid.at(5)->GetSquareCenterX(),
+                           m_grid.at(5)->GetSquareCenterY());
     }
     else if(m_grid.at(6)->GetState() == m_grid.at(7)->GetState() &&
             m_grid.at(7)->GetState() == m_grid.at(8)->GetState() && m_grid.at(6)->GetState() != EMPTY)
     {
-        SDL_RenderDrawLine(m_renderer, 50, 470, 540, 470);
+        SDL_RenderDrawLine(m_renderer,
+                           m_grid.at(6)->GetSquareCenterX(),
+                           m_grid.at(6)->GetSquareCenterY(),
+                           m_grid.at(8)->GetSquareCenterX(),
+                           m_grid.at(8)->GetSquareCenterY());
     }
     else if(m_grid.at(0)->GetState() == m_grid.at(3)->GetState() &&
             m_grid.at(3)->GetState() == m_grid.at(6)->GetState() && m_grid.at(0)->GetState() != EMPTY)
     {
-        SDL_RenderDrawLine(m_renderer, 130, 50, 130, 540);
+        SDL_RenderDrawLine(m_renderer,
+                           m_grid.at(0)->GetSquareCenterX(),
+                           m_grid.at(0)->GetSquareCenterY(),
+                           m_grid.at(6)->GetSquareCenterX(),
+                           m_grid.at(6)->GetSquareCenterY());
     }
     else if(m_grid.at(1)->GetState() == m_grid.at(4)->GetState() &&
             m_grid.at(4)->GetState() == m_grid.at(7)->GetState() && m_grid.at(1)->GetState() != EMPTY)
     {
-        SDL_RenderDrawLine(m_renderer, 300, 50, 300, 540);
+        SDL_RenderDrawLine(m_renderer,
+                           m_grid.at(1)->GetSquareCenterX(),
+                           m_grid.at(1)->GetSquareCenterY(),
+                           m_grid.at(7)->GetSquareCenterX(),
+                           m_grid.at(7)->GetSquareCenterY());
     }
     else if(m_grid.at(2)->GetState() == m_grid.at(5)->GetState() &&
             m_grid.at(5)->GetState() == m_grid.at(8)->GetState() && m_grid.at(2)->GetState() != EMPTY)
     {
-        SDL_RenderDrawLine(m_renderer, 465, 50, 465, 540);
+        SDL_RenderDrawLine(m_renderer,
+                           m_grid.at(2)->GetSquareCenterX(),
+                           m_grid.at(2)->GetSquareCenterY(),
+                           m_grid.at(8)->GetSquareCenterX(),
+                           m_grid.at(8)->GetSquareCenterY());
     }
     else if(m_grid.at(0)->GetState() == m_grid.at(4)->GetState() &&
             m_grid.at(4)->GetState() == m_grid.at(8)->GetState() && m_grid.at(0)->GetState() != EMPTY)
     {
-        SDL_RenderDrawLine(m_renderer, 90, 70, 500, 500);
+        SDL_RenderDrawLine(m_renderer,
+                           m_grid.at(0)->GetSquareCenterX(),
+                           m_grid.at(0)->GetSquareCenterY(),
+                           m_grid.at(8)->GetSquareCenterX(),
+                           m_grid.at(8)->GetSquareCenterY());
     }
     else if(m_grid.at(2)->GetState() == m_grid.at(4)->GetState() &&
             m_grid.at(4)->GetState() == m_grid.at(6)->GetState() && m_grid.at(2)->GetState() != EMPTY)
     {
-        SDL_RenderDrawLine(m_renderer, 520, 70, 110, 500);
+        SDL_RenderDrawLine(m_renderer,
+                           m_grid.at(2)->GetSquareCenterX(),
+                           m_grid.at(2)->GetSquareCenterY(),
+                           m_grid.at(6)->GetSquareCenterX(),
+                           m_grid.at(6)->GetSquareCenterY());
     }
 
     // Shows image of which player won
@@ -155,17 +316,13 @@ void Game::Render()
     TextureManager::Instance()->DrawTexture("grid2", 50, 50, 500, 501, m_renderer);
     TextureManager::Instance()->DrawTexture("info2", 930, 20, 60, 60, m_renderer);
 
-    if(m_lastSquareHoveredId <= m_grid.size())
+    for(int i = 0; i < m_grid.size(); i++)
     {
-        for(int i = 0; i < m_grid.size(); i++)
+        if(i == m_lastSquareHoveredId)
         {
-            if(i == m_lastSquareHoveredId)
+            if(m_grid.at(i)->GetIsClicked() == false && m_readyButton.getState() == INACTIVE)
             {
-                if(m_grid.at(i)->GetIsClicked() == false && m_readyButton.getState() == INACTIVE)
-                {
-                    HoverShowTexture(m_grid.at(i)->GetSquareX() + SHAPE_OFFSET,
-                                     m_grid.at(i)->GetSquareY() + SHAPE_OFFSET);
-                }
+                HoverShowTexture(m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY());
             }
         }
     }
@@ -176,95 +333,11 @@ void Game::Render()
         {
             if(shape == i + 1)
             {
-                DrawTextureXorO(shape,
-                                m_grid.at(i)->GetSquareX() + SHAPE_OFFSET,
-                                m_grid.at(i)->GetSquareY() + SHAPE_OFFSET);
+                DrawTextureXorO(shape, m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY());
             }
         }
     }
     SDL_RenderPresent(m_renderer);
-}
-
-void Game::HandleEvents()
-{
-    SDL_Event event;
-    int mouseX = 0;
-    int mouseY = 0;
-    if(SDL_PollEvent(&event))
-    {
-        switch(event.type)
-        {
-            case SDL_QUIT:
-                m_running = false;
-                break;
-            case SDL_MOUSEMOTION:
-                mouseX = event.button.x;
-                mouseY = event.button.y;
-                if(m_infoButton.contains(mouseX, mouseY))
-                {
-                    m_isInfoClicked = true;
-                }
-                else
-                {
-                    m_isInfoClicked = false;
-                }
-
-                IsSquareHovered(mouseX, mouseY);
-
-                break;
-
-            case SDL_MOUSEBUTTONDOWN:
-                mouseX = event.button.x;
-                mouseY = event.button.y;
-                if(m_restartButton.contains(mouseX, mouseY) && m_restartButton.getState() == ACTIVE)
-                {
-                    m_restartButton.setState(CLICKED);
-                    SoundManager::Instance()->PlayClickSound();
-                }
-                if(m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE && !IsGameOver() &&
-                   m_drawnShapes.size() != 9)
-                {
-                    m_readyButton.setState(CLICKED);
-                    m_isPlayerDone = true;
-                    m_undoButton.setState(INACTIVE);
-                    m_isPlayerOneOrTwo = !m_isPlayerOneOrTwo;
-                    SoundManager::Instance()->PlayClickSound();
-                }
-                if(m_undoButton.contains(mouseX, mouseY) && !IsGameOver() && m_drawnShapes.size() != 9 &&
-                   m_undoButton.getState() != INACTIVE)
-                {
-                    m_undoButton.setState(CLICKED);
-                    SoundManager::Instance()->PlayClickSound();
-                }
-
-                for(int i = 0; i <= 8; i++)
-                {
-                    AutoFillLastSquare(*m_grid.at(i), i + 1);
-                    HandleSquareEvent(*m_grid.at(i), i + 1, mouseX, mouseY);
-                }
-                break;
-
-            case SDL_MOUSEBUTTONUP:
-                if(m_restartButton.getState() == CLICKED)
-                {
-                    RestartGame();
-                }
-                if(m_readyButton.getState() == CLICKED)
-                {
-                    m_readyButton.setState(INACTIVE);
-                }
-                if(m_undoButton.getState() == CLICKED)
-                {
-                    m_readyButton.setState(INACTIVE);
-                    m_undoButton.setState(INACTIVE);
-                    UndoLast();
-                }
-                break;
-
-            default:
-                break;
-        }
-    }
 }
 
 void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
@@ -286,20 +359,7 @@ void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
         }
         m_restartButton.setState(ACTIVE);
     }
-    // AutoFillLastSquare();
     IsGameOver();
-}
-
-void Game::Clean()
-{
-    SDL_DestroyWindow(m_window);
-    SDL_DestroyRenderer(m_renderer);
-    SDL_Quit();
-}
-
-bool Game::IsRunning() const
-{
-    return Game::m_running;
 }
 
 bool Game::IsGameOver()
@@ -353,7 +413,7 @@ bool Game::IsGameOver()
 
     for(int i = 0; i < m_grid.size(); i++)
     {
-        if(m_grid.at(i)->GetState() != EMPTY && m_drawnShapes.size() == 9)
+        if(m_grid.at(i)->GetState() != EMPTY && m_drawnShapes.size() == m_grid.size())
         {
             m_result = DRAW;
         }
@@ -373,19 +433,6 @@ void Game::RestartGame()
     m_isPlayerOneOrTwo = true;
     m_isPlayerDone = true;
     m_result = NOWINNER;
-}
-
-void Game::InitGrid()
-{
-    m_grid = {new Square(50, 55),
-              new Square(225, 55),
-              new Square(390, 55),
-              new Square(50, 225),
-              new Square(225, 225),
-              new Square(390, 225),
-              new Square(50, 390),
-              new Square(225, 390),
-              new Square(390, 390)};
 }
 
 void Game::IsSquareHovered(int mouseX, int mouseY)
@@ -408,17 +455,17 @@ void Game::DrawTextureXorO(int shape, int x, int y)
 {
     if(m_grid.at(shape - 1)->GetState() == O)
     {
-        TextureManager::Instance()->DrawTexture("circle2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
+        TextureManager::Instance()->DrawTexture("circle2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
     }
     else
     {
-        TextureManager::Instance()->DrawTexture("Ximage2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
+        TextureManager::Instance()->DrawTexture("Ximage2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
     }
 }
 
-void Game::AutoFillLastSquare(Square& square, int index)
+void Game::AutoFillLastSquare()
 {
-    if(m_drawnShapes.size() == 8 && !IsGameOver())
+    if(!IsGameOver())
     {
         for(int i = 0; i < m_grid.size(); i++)
         {
@@ -427,15 +474,20 @@ void Game::AutoFillLastSquare(Square& square, int index)
                 m_drawnShapes.push_back(i + 1);
                 if(m_isPlayerOneOrTwo)
                 {
-                    m_grid.at(i)->SetState(X);
+                    m_grid.at(i)->SetState(O);
                 }
                 else
                 {
-                    m_grid.at(i)->SetState(O);
+                    m_grid.at(i)->SetState(X);
                 }
             }
         }
     }
+}
+
+bool Game::IsLastEmptySquare()
+{
+    return (m_drawnShapes.size() == m_grid.size() - 1);
 }
 
 void Game::HoverShowTexture(int x, int y)
@@ -443,20 +495,20 @@ void Game::HoverShowTexture(int x, int y)
     if(m_isPlayerOneOrTwo)
     {
         SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("circle2"), 100);
-        TextureManager::Instance()->DrawTexture("circle2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
+        TextureManager::Instance()->DrawTexture("circle2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
         SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("circle2"), 255);
     }
     else
     {
         SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("Ximage2"), 100);
-        TextureManager::Instance()->DrawTexture("Ximage2", x, y, SHAPE_SIZE, SHAPE_SIZE, m_renderer);
+        TextureManager::Instance()->DrawTexture("Ximage2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
         SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("Ximage2"), 255);
     }
 }
 
 void Game::UndoLast()
 {
-    if(!m_drawnShapes.empty() && m_drawnShapes.size() != 9)
+    if(!m_drawnShapes.empty() && m_drawnShapes.size() != m_grid.size())
     {
         int lastShape = m_drawnShapes.back();
         m_drawnShapes.pop_back();
@@ -464,23 +516,9 @@ void Game::UndoLast()
         m_grid.at(lastShape - 1)->Clear();
 
         m_isPlayerDone = true;
-        SetIsClicked(false);
-    }
-}
-
-Game::Game()
-{
-    m_restartButton = Button(660, 440, 885, 507, INACTIVE);
-    m_readyButton = Button(690, 167, 850, 350, INACTIVE);
-    m_infoButton = Button(935, 28, 980, 80, ACTIVE);
-    m_undoButton = Button(920, 520, 980, 580, ACTIVE);
-    InitGrid();
-}
-
-Game::~Game()
-{
-    for(auto square : m_grid)
-    {
-        delete square;
+        for(const auto& square : m_grid)
+        {
+            square->SetIsClicked(false);
+        }
     }
 }

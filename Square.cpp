@@ -47,12 +47,24 @@ void Square::Clear()
     m_isClicked = false;
 }
 
-int Square::GetSquareX()
+int Square::GetShapePosX()
 {
-    return m_x;
+    return m_x + SHAPE_OFFSET;
 }
 
-int Square::GetSquareY()
+int Square::GetShapePosY()
 {
-    return m_y;
+    return m_y + SHAPE_OFFSET;
 }
+
+
+int Square::GetSquareCenterY()
+{
+    return m_y + (HEIGHT / 2);
+}
+
+int Square::GetSquareCenterX()
+{
+    return m_x + (WIDTH / 2);
+}
+

@@ -20,17 +20,20 @@ public:
     void SetIsClicked(bool isClicked);
     bool GetIsClicked();
     void Clear();
-    int GetSquareX();
-    int GetSquareY();
+    int GetShapePosX();
+    int GetShapePosY();
+    int SHAPE_CENTER_Y();
+    int GetSquareCenterX();
+    int GetSquareCenterY();
     static const int SHAPE_SIZE = 125;
-    static const int SHAPE_OFFSET = 15;
+
 
 private:
     int m_x;
     int m_y;
     SquareState m_state;
     bool m_isClicked = false;
-
     static const int WIDTH = 155;
     static const int HEIGHT = 155;
+    static const int SHAPE_OFFSET = 15;
 };
