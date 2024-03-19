@@ -122,7 +122,7 @@ void Game::HandleEvents()
                     m_restartButton.setState(CLICKED);
                     SoundManager::Instance()->PlayClickSound();
                 }
-                if(m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE && !IsGameOver() &&
+                if(m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE && m_result == NOWINNER &&
                    m_drawnShapes.size() != m_grid.size())
                 {
                     m_readyButton.setState(CLICKED);
@@ -131,7 +131,7 @@ void Game::HandleEvents()
                     m_isPlayerOneOrTwo = !m_isPlayerOneOrTwo;
                     SoundManager::Instance()->PlayClickSound();
                 }
-                if(m_undoButton.contains(mouseX, mouseY) && !IsGameOver() && m_drawnShapes.size() != m_grid.size() &&
+                if(m_undoButton.contains(mouseX, mouseY) && m_result == NOWINNER && m_drawnShapes.size() != m_grid.size() &&
                    m_undoButton.getState() != INACTIVE)
                 {
                     m_undoButton.setState(CLICKED);
@@ -359,69 +359,57 @@ void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
         }
         m_restartButton.setState(ACTIVE);
     }
-    IsGameOver();
+    if(IsGameOver(O))
+    {
+        m_result = P1WINS;
+    }
+    if(IsGameOver(X))
+    {
+        m_result = P2WINS;
+    }
+    if(IsGameDraw())
+    {
+        m_result = DRAW;
+    }
 }
 
-bool Game::IsGameOver()
-{
-    // Checking Horizontal winning condition for O
-    if(m_grid.at(0)->GetState() == O && m_grid.at(1)->GetState() == O && m_grid.at(2)->GetState() == O ||
-       m_grid.at(3)->GetState() == O && m_grid.at(4)->GetState() == O && m_grid.at(5)->GetState() == O ||
-       m_grid.at(6)->GetState() == O && m_grid.at(7)->GetState() == O && m_grid.at(8)->GetState() == O)
-    {
-        m_result = P1WINS;
-        return true;
-    }
-    // Checking Vertical winning condition for O
-    if(m_grid.at(0)->GetState() == O && m_grid.at(3)->GetState() == O && m_grid.at(6)->GetState() == O ||
-       m_grid.at(1)->GetState() == O && m_grid.at(4)->GetState() == O && m_grid.at(7)->GetState() == O ||
-       m_grid.at(2)->GetState() == O && m_grid.at(5)->GetState() == O && m_grid.at(8)->GetState() == O)
-    {
-        m_result = P1WINS;
-        return true;
-    }
-    // Checking Diagonal winning condition for O
-    if(m_grid.at(0)->GetState() == O && m_grid.at(4)->GetState() == O && m_grid.at(8)->GetState() == O ||
-       m_grid.at(2)->GetState() == O && m_grid.at(4)->GetState() == O && m_grid.at(6)->GetState() == O)
-    {
-        m_result = P1WINS;
-        return true;
-    }
-    // Checking Horizontal winning condition for X
-    if(m_grid.at(0)->GetState() == X && m_grid.at(1)->GetState() == X && m_grid.at(2)->GetState() == X ||
-       m_grid.at(3)->GetState() == X && m_grid.at(4)->GetState() == X && m_grid.at(5)->GetState() == X ||
-       m_grid.at(6)->GetState() == X && m_grid.at(7)->GetState() == X && m_grid.at(8)->GetState() == X)
-    {
-        m_result = P2WINS;
-        return true;
-    }
-    // Checking Vertical winning condition for X
-    if(m_grid.at(0)->GetState() == X && m_grid.at(3)->GetState() == X && m_grid.at(6)->GetState() == X ||
-       m_grid.at(1)->GetState() == X && m_grid.at(4)->GetState() == X && m_grid.at(7)->GetState() == X ||
-       m_grid.at(2)->GetState() == X && m_grid.at(5)->GetState() == X && m_grid.at(8)->GetState() == X)
-    {
-        m_result = P2WINS;
-        return true;
-    }
-    // Checking Diagonal winning condition for X
-    if(m_grid.at(0)->GetState() == X && m_grid.at(4)->GetState() == X && m_grid.at(8)->GetState() == X ||
-       m_grid.at(2)->GetState() == X && m_grid.at(4)->GetState() == X && m_grid.at(6)->GetState() == X)
-    {
-        m_result = P2WINS;
-        return true;
-    }
 
+bool Game::IsGameOver(SquareState state)
+{
+    if(m_grid.at(0)->GetState() == state && m_grid.at(1)->GetState() == state && m_grid.at(2)->GetState() == state ||
+       m_grid.at(3)->GetState() == state && m_grid.at(4)->GetState() == state && m_grid.at(5)->GetState() == state ||
+       m_grid.at(6)->GetState() == state && m_grid.at(7)->GetState() == state && m_grid.at(8)->GetState() == state)
+    {
+        return true;
+    }
+    if(m_grid.at(0)->GetState() == state && m_grid.at(3)->GetState() == state && m_grid.at(6)->GetState() == state ||
+       m_grid.at(1)->GetState() == state && m_grid.at(4)->GetState() == state && m_grid.at(7)->GetState() == state ||
+       m_grid.at(2)->GetState() == state && m_grid.at(5)->GetState() == state && m_grid.at(8)->GetState() == state)
+    {
+        return true;
+    }
+    if(m_grid.at(0)->GetState() == state && m_grid.at(4)->GetState() == state && m_grid.at(8)->GetState() == state ||
+       m_grid.at(2)->GetState() == state && m_grid.at(4)->GetState() == state && m_grid.at(6)->GetState() == state)
+    {
+        return true;
+    }
+    return false;
+}
+
+
+bool Game::IsGameDraw()
+{
     for(int i = 0; i < m_grid.size(); i++)
     {
         if(m_grid.at(i)->GetState() != EMPTY && m_drawnShapes.size() == m_grid.size())
         {
-            m_result = DRAW;
+            return true;
         }
-
-        return false;
     }
     return false;
 }
+
+
 
 void Game::RestartGame()
 {
@@ -465,7 +453,7 @@ void Game::DrawTextureXorO(int shape, int x, int y)
 
 void Game::AutoFillLastSquare()
 {
-    if(!IsGameOver())
+    if(m_result == NOWINNER)
     {
         for(int i = 0; i < m_grid.size(); i++)
         {

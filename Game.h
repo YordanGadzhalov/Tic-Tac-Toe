@@ -38,6 +38,9 @@ public:
     void AutoFillLastSquare();
     void IsSquareHovered(int mouseX, int mouseY);
     bool IsLastEmptySquare();
+    bool IsGameOver(SquareState state);
+    bool IsGameDraw();
+
 
 
 private:
