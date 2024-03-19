@@ -16,6 +16,7 @@ enum GameState{
     NOWINNER};
 
 constexpr int UNUSED_SQUARE = -1;
+
 class Game
 {
 public:
@@ -28,7 +29,6 @@ public:
     void HandleEvents();
     void Clean();
     bool IsRunning() const;
-    bool IsGameOver();
     void RestartGame();
     void UndoLast();
     void HandleSquareEvent(Square& square, int index, int mouseX, int mouseY);
@@ -38,7 +38,8 @@ public:
     void AutoFillLastSquare();
     void IsSquareHovered(int mouseX, int mouseY);
     bool IsLastEmptySquare();
-    bool IsGameOver(SquareState state);
+    bool CheckForWinner(SquareState state);
+    bool IsGameOver();
     bool IsGameDraw();
 
 

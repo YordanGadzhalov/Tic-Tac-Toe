@@ -2,6 +2,7 @@
 #include "Square.h"
 #include <iostream>
 
+
 Game::Game()
 {
     m_restartButton = Button(660, 440, 885, 507, INACTIVE);
@@ -11,6 +12,7 @@ Game::Game()
     InitGrid();
 }
 
+
 Game::~Game()
 {
     for(auto square : m_grid)
@@ -18,6 +20,7 @@ Game::~Game()
         delete square;
     }
 }
+
 
 bool Game::init(const char* title, int xpos, int ypos, int width, int height, int flags)
 {
@@ -61,6 +64,7 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, in
     return true;
 }
 
+
 void Game::InitGrid()
 {
     m_grid = {new Square(50, 55),
@@ -74,6 +78,7 @@ void Game::InitGrid()
               new Square(390, 390)};
 }
 
+
 void Game::Clean()
 {
     SDL_DestroyWindow(m_window);
@@ -81,10 +86,12 @@ void Game::Clean()
     SDL_Quit();
 }
 
+
 bool Game::IsRunning() const
 {
-    return Game::m_running;
+    return m_running;
 }
+
 
 void Game::HandleEvents()
 {
@@ -117,13 +124,15 @@ void Game::HandleEvents()
             case SDL_MOUSEBUTTONDOWN:
                 mouseX = event.button.x;
                 mouseY = event.button.y;
+
                 if(m_restartButton.contains(mouseX, mouseY) && m_restartButton.getState() == ACTIVE)
                 {
                     m_restartButton.setState(CLICKED);
                     SoundManager::Instance()->PlayClickSound();
                 }
-                if(m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE && m_result == NOWINNER &&
-                   m_drawnShapes.size() != m_grid.size())
+
+                if(m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE &&
+                   !IsGameOver() && m_drawnShapes.size() != m_grid.size())
                 {
                     m_readyButton.setState(CLICKED);
                     m_isPlayerDone = true;
@@ -131,8 +140,9 @@ void Game::HandleEvents()
                     m_isPlayerOneOrTwo = !m_isPlayerOneOrTwo;
                     SoundManager::Instance()->PlayClickSound();
                 }
-                if(m_undoButton.contains(mouseX, mouseY) && m_result == NOWINNER && m_drawnShapes.size() != m_grid.size() &&
-                   m_undoButton.getState() != INACTIVE)
+
+                if(m_undoButton.contains(mouseX, mouseY) && !IsGameOver() &&
+                   m_drawnShapes.size() != m_grid.size() && m_undoButton.getState() != INACTIVE)
                 {
                     m_undoButton.setState(CLICKED);
                     SoundManager::Instance()->PlayClickSound();
@@ -154,16 +164,19 @@ void Game::HandleEvents()
                 {
                     RestartGame();
                 }
+
                 if(m_readyButton.getState() == CLICKED)
                 {
                     m_readyButton.setState(INACTIVE);
                 }
+
                 if(m_undoButton.getState() == CLICKED)
                 {
                     m_readyButton.setState(INACTIVE);
                     m_undoButton.setState(INACTIVE);
                     UndoLast();
                 }
+
                 break;
 
             default:
@@ -313,6 +326,7 @@ void Game::Render()
         }
     }
 
+
     TextureManager::Instance()->DrawTexture("grid2", 50, 50, 500, 501, m_renderer);
     TextureManager::Instance()->DrawTexture("info2", 930, 20, 60, 60, m_renderer);
 
@@ -340,6 +354,7 @@ void Game::Render()
     SDL_RenderPresent(m_renderer);
 }
 
+
 void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
 {
     if(square.IsInside(mouseX, mouseY) && m_isPlayerDone == true && square.GetIsClicked() == false)
@@ -359,22 +374,32 @@ void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
         }
         m_restartButton.setState(ACTIVE);
     }
-    if(IsGameOver(O))
+    IsGameOver();
+}
+
+
+bool Game::IsGameOver()
+{
+    if(CheckForWinner(O))
     {
         m_result = P1WINS;
+        return true;
     }
-    if(IsGameOver(X))
+    if(CheckForWinner(X))
     {
         m_result = P2WINS;
+        return true;
     }
     if(IsGameDraw())
     {
         m_result = DRAW;
+        return true;
     }
+    return false;
 }
 
 
-bool Game::IsGameOver(SquareState state)
+bool Game::CheckForWinner(SquareState state)
 {
     if(m_grid.at(0)->GetState() == state && m_grid.at(1)->GetState() == state && m_grid.at(2)->GetState() == state ||
        m_grid.at(3)->GetState() == state && m_grid.at(4)->GetState() == state && m_grid.at(5)->GetState() == state ||
@@ -397,6 +422,7 @@ bool Game::IsGameOver(SquareState state)
 }
 
 
+
 bool Game::IsGameDraw()
 {
     for(int i = 0; i < m_grid.size(); i++)
@@ -410,7 +436,6 @@ bool Game::IsGameDraw()
 }
 
 
-
 void Game::RestartGame()
 {
     InitGrid();
@@ -422,6 +447,7 @@ void Game::RestartGame()
     m_isPlayerDone = true;
     m_result = NOWINNER;
 }
+
 
 void Game::IsSquareHovered(int mouseX, int mouseY)
 {
@@ -439,6 +465,7 @@ void Game::IsSquareHovered(int mouseX, int mouseY)
     }
 }
 
+
 void Game::DrawTextureXorO(int shape, int x, int y)
 {
     if(m_grid.at(shape - 1)->GetState() == O)
@@ -451,9 +478,10 @@ void Game::DrawTextureXorO(int shape, int x, int y)
     }
 }
 
+
 void Game::AutoFillLastSquare()
 {
-    if(m_result == NOWINNER)
+    if(!IsGameOver())
     {
         for(int i = 0; i < m_grid.size(); i++)
         {
@@ -473,10 +501,12 @@ void Game::AutoFillLastSquare()
     }
 }
 
+
 bool Game::IsLastEmptySquare()
 {
     return (m_drawnShapes.size() == m_grid.size() - 1);
 }
+
 
 void Game::HoverShowTexture(int x, int y)
 {
@@ -500,13 +530,7 @@ void Game::UndoLast()
     {
         int lastShape = m_drawnShapes.back();
         m_drawnShapes.pop_back();
-
         m_grid.at(lastShape - 1)->Clear();
-
         m_isPlayerDone = true;
-        for(const auto& square : m_grid)
-        {
-            square->SetIsClicked(false);
-        }
     }
 }
