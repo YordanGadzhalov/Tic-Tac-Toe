@@ -2,7 +2,6 @@
 #include "Square.h"
 #include <iostream>
 
-
 Game::Game()
 {
     m_restartButton = Button(660, 440, 885, 507, INACTIVE);
@@ -12,7 +11,6 @@ Game::Game()
     InitGrid();
 }
 
-
 Game::~Game()
 {
     for(auto square : m_grid)
@@ -20,7 +18,6 @@ Game::~Game()
         delete square;
     }
 }
-
 
 bool Game::init(const char* title, int xpos, int ypos, int width, int height, int flags)
 {
@@ -64,6 +61,20 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, in
     return true;
 }
 
+void Game::UpdateView()
+{
+    for(int i = 0; i < m_grid.size(); i++)
+    {
+        if(m_gameLogic.GetCurrentGridState().at(i) == PLAYER_1)
+        {
+            m_grid.at(i)->SetSymbol(m_gameLogic.GetPlayer(PLAYER_1).GetShapeId());
+        }
+        else if(m_gameLogic.GetCurrentGridState().at(i) == PLAYER_2)
+        {
+            m_grid.at(i)->SetSymbol(m_gameLogic.GetPlayer(PLAYER_2).GetShapeId());
+        }
+    }
+}
 
 void Game::InitGrid()
 {
@@ -78,7 +89,6 @@ void Game::InitGrid()
               new Square(390, 390)};
 }
 
-
 void Game::Clean() const
 {
     SDL_DestroyWindow(m_window);
@@ -86,12 +96,10 @@ void Game::Clean() const
     SDL_Quit();
 }
 
-
 bool Game::IsRunning() const
 {
     return m_running;
 }
-
 
 void Game::HandleEvents()
 {
@@ -132,30 +140,30 @@ void Game::HandleEvents()
                 }
 
                 if(m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE &&
-                   !IsGameOver() && !IsNoEmptySquares())
+                   !m_gameLogic.IsGameOver() /*&& !IsNoEmptySquares()*/)
                 {
                     m_readyButton.setState(CLICKED);
                     m_isPlayerDone = true;
                     m_undoButton.setState(INACTIVE);
-                    m_isPlayerOneOrTwo = !m_isPlayerOneOrTwo;
+                    m_gameLogic.SwitchPlayers();
                     SoundManager::Instance()->PlayClickSound();
                 }
 
-                if(m_undoButton.contains(mouseX, mouseY) && !IsGameOver() &&
-                   !IsNoEmptySquares() && m_undoButton.getState() != INACTIVE)
+                if(m_undoButton.contains(mouseX, mouseY) && !m_gameLogic.IsGameOver() && /*!IsNoEmptySquares() &&*/
+                   m_undoButton.getState() != INACTIVE)
                 {
                     m_undoButton.setState(CLICKED);
                     SoundManager::Instance()->PlayClickSound();
                 }
 
-                if(IsLastEmptySquare())
-                {
-                    AutoFillLastSquare();
-                }
+                // if(IsLastEmptySquare())
+                // {
+                //     AutoFillLastSquare();
+                // }
 
                 for(int i = 0; i < m_grid.size(); i++)
                 {
-                    HandleSquareEvent(*m_grid.at(i), i + 1, mouseX, mouseY);
+                    HandleSquareEvent(*m_grid.at(i), i, mouseX, mouseY);
                 }
                 break;
 
@@ -174,7 +182,7 @@ void Game::HandleEvents()
                 {
                     m_readyButton.setState(INACTIVE);
                     m_undoButton.setState(INACTIVE);
-                    UndoLast();
+                    m_gameLogic.Undo();
                 }
 
                 break;
@@ -190,8 +198,8 @@ void Game::Render()
     SDL_RenderClear(m_renderer);
     SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
 
-    if(m_grid.at(0)->GetState() == m_grid.at(1)->GetState() && m_grid.at(1)->GetState() == m_grid.at(2)->GetState() &&
-       m_grid.at(0)->GetState() != EMPTY)
+    if(m_grid.at(0)->GetSymbol() == m_grid.at(1)->GetSymbol() &&
+       m_grid.at(1)->GetSymbol() == m_grid.at(2)->GetSymbol() && m_grid.at(0)->GetSymbol() != "")
     {
         SDL_RenderDrawLine(m_renderer,
                            m_grid.at(0)->GetSquareCenterX(),
@@ -199,8 +207,8 @@ void Game::Render()
                            m_grid.at(2)->GetSquareCenterX(),
                            m_grid.at(2)->GetSquareCenterY());
     }
-    else if(m_grid.at(3)->GetState() == m_grid.at(4)->GetState() &&
-            m_grid.at(4)->GetState() == m_grid.at(5)->GetState() && m_grid.at(3)->GetState() != EMPTY)
+    else if(m_grid.at(3)->GetSymbol() == m_grid.at(4)->GetSymbol() &&
+            m_grid.at(4)->GetSymbol() == m_grid.at(5)->GetSymbol() && m_grid.at(3)->GetSymbol() != "")
     {
         SDL_RenderDrawLine(m_renderer,
                            m_grid.at(3)->GetSquareCenterX(),
@@ -208,8 +216,8 @@ void Game::Render()
                            m_grid.at(5)->GetSquareCenterX(),
                            m_grid.at(5)->GetSquareCenterY());
     }
-    else if(m_grid.at(6)->GetState() == m_grid.at(7)->GetState() &&
-            m_grid.at(7)->GetState() == m_grid.at(8)->GetState() && m_grid.at(6)->GetState() != EMPTY)
+    else if(m_grid.at(6)->GetSymbol() == m_grid.at(7)->GetSymbol() &&
+            m_grid.at(7)->GetSymbol() == m_grid.at(8)->GetSymbol() && m_grid.at(6)->GetSymbol() != "")
     {
         SDL_RenderDrawLine(m_renderer,
                            m_grid.at(6)->GetSquareCenterX(),
@@ -217,8 +225,8 @@ void Game::Render()
                            m_grid.at(8)->GetSquareCenterX(),
                            m_grid.at(8)->GetSquareCenterY());
     }
-    else if(m_grid.at(0)->GetState() == m_grid.at(3)->GetState() &&
-            m_grid.at(3)->GetState() == m_grid.at(6)->GetState() && m_grid.at(0)->GetState() != EMPTY)
+    else if(m_grid.at(0)->GetSymbol() == m_grid.at(3)->GetSymbol() &&
+            m_grid.at(3)->GetSymbol() == m_grid.at(6)->GetSymbol() && m_grid.at(0)->GetSymbol() != "")
     {
         SDL_RenderDrawLine(m_renderer,
                            m_grid.at(0)->GetSquareCenterX(),
@@ -226,8 +234,8 @@ void Game::Render()
                            m_grid.at(6)->GetSquareCenterX(),
                            m_grid.at(6)->GetSquareCenterY());
     }
-    else if(m_grid.at(1)->GetState() == m_grid.at(4)->GetState() &&
-            m_grid.at(4)->GetState() == m_grid.at(7)->GetState() && m_grid.at(1)->GetState() != EMPTY)
+    else if(m_grid.at(1)->GetSymbol() == m_grid.at(4)->GetSymbol() &&
+            m_grid.at(4)->GetSymbol() == m_grid.at(7)->GetSymbol() && m_grid.at(1)->GetSymbol() != "")
     {
         SDL_RenderDrawLine(m_renderer,
                            m_grid.at(1)->GetSquareCenterX(),
@@ -235,8 +243,8 @@ void Game::Render()
                            m_grid.at(7)->GetSquareCenterX(),
                            m_grid.at(7)->GetSquareCenterY());
     }
-    else if(m_grid.at(2)->GetState() == m_grid.at(5)->GetState() &&
-            m_grid.at(5)->GetState() == m_grid.at(8)->GetState() && m_grid.at(2)->GetState() != EMPTY)
+    else if(m_grid.at(2)->GetSymbol() == m_grid.at(5)->GetSymbol() &&
+            m_grid.at(5)->GetSymbol() == m_grid.at(8)->GetSymbol() && m_grid.at(2)->GetSymbol() != "")
     {
         SDL_RenderDrawLine(m_renderer,
                            m_grid.at(2)->GetSquareCenterX(),
@@ -244,8 +252,8 @@ void Game::Render()
                            m_grid.at(8)->GetSquareCenterX(),
                            m_grid.at(8)->GetSquareCenterY());
     }
-    else if(m_grid.at(0)->GetState() == m_grid.at(4)->GetState() &&
-            m_grid.at(4)->GetState() == m_grid.at(8)->GetState() && m_grid.at(0)->GetState() != EMPTY)
+    else if(m_grid.at(0)->GetSymbol() == m_grid.at(4)->GetSymbol() &&
+            m_grid.at(4)->GetSymbol() == m_grid.at(8)->GetSymbol() && m_grid.at(0)->GetSymbol() != "")
     {
         SDL_RenderDrawLine(m_renderer,
                            m_grid.at(0)->GetSquareCenterX(),
@@ -253,8 +261,8 @@ void Game::Render()
                            m_grid.at(8)->GetSquareCenterX(),
                            m_grid.at(8)->GetSquareCenterY());
     }
-    else if(m_grid.at(2)->GetState() == m_grid.at(4)->GetState() &&
-            m_grid.at(4)->GetState() == m_grid.at(6)->GetState() && m_grid.at(2)->GetState() != EMPTY)
+    else if(m_grid.at(2)->GetSymbol() == m_grid.at(4)->GetSymbol() &&
+            m_grid.at(4)->GetSymbol() == m_grid.at(6)->GetSymbol() && m_grid.at(2)->GetSymbol() != "")
     {
         SDL_RenderDrawLine(m_renderer,
                            m_grid.at(2)->GetSquareCenterX(),
@@ -265,21 +273,21 @@ void Game::Render()
 
     // Shows image of which player won
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-    if(m_result == P1WINS)
+    if(m_gameLogic.GetWinner() == PLAYER_1)
     {
         TextureManager::Instance()->DrawTexture("player1wins", 670, 50, 200, 31, m_renderer);
     }
-    if(m_result == P2WINS)
+    if(m_gameLogic.GetWinner() == PLAYER_2)
     {
         TextureManager::Instance()->DrawTexture("player2wins", 670, 50, 200, 29, m_renderer);
     }
 
     // Draws image of which player's turn it is
-    if(m_isPlayerOneOrTwo)
+    if(m_gameLogic.GetCurrentPlayer().GetId() == PLAYER_1)
     {
         TextureManager::Instance()->DrawTexture("player1", 233, 7, 135, 22, m_renderer);
     }
-    else
+    if(m_gameLogic.GetCurrentPlayer().GetId() == PLAYER_2)
     {
         TextureManager::Instance()->DrawTexture("player2", 233, 7, 135, 22, m_renderer);
     }
@@ -320,12 +328,11 @@ void Game::Render()
         {
             TextureManager::Instance()->DrawTexture("undo2", 900, 500, 100, 100, m_renderer);
         }
-        if(m_result == DRAW)
+        if(false)
         {
             TextureManager::Instance()->DrawTexture("DRAW", 690, 20, 178, 103, m_renderer);
         }
     }
-
 
     TextureManager::Instance()->DrawTexture("grid2", 50, 50, 500, 501, m_renderer);
     TextureManager::Instance()->DrawTexture("info2", 930, 20, 60, 60, m_renderer);
@@ -341,113 +348,45 @@ void Game::Render()
         }
     }
 
-    for(const auto& shape : m_drawnShapes)
+    for(int i = 0; i < m_grid.size(); i++)
     {
-        for(int i = 0; i < m_grid.size(); i++)
+        if(m_gameLogic.GetCurrentGridState().at(i) != NONE)
         {
-            if(shape == i + 1)
-            {
-                DrawTextureXorO(shape, m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY());
-            }
+            DrawTextureXorO(i, m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY());
         }
     }
+
     SDL_RenderPresent(m_renderer);
 }
-
 
 void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
 {
     if(square.IsInside(mouseX, mouseY) && m_isPlayerDone == true && square.GetIsClicked() == false)
     {
-        m_drawnShapes.push_back(index);
+        m_gameLogic.SetGridPositionState(index);
         m_isPlayerDone = false;
         m_readyButton.setState(ACTIVE);
         m_undoButton.setState(ACTIVE);
         square.SetIsClicked(true);
-        if(m_isPlayerOneOrTwo)
-        {
-            square.SetState(O);
-        }
-        else
-        {
-            square.SetState(X);
-        }
         m_restartButton.setState(ACTIVE);
     }
-    IsGameOver();
+    UpdateView();
+    m_gameLogic.IsGameOver();
 }
-
-
-bool Game::IsGameOver()
-{
-    if(CheckForWinner(O))
-    {
-        m_result = P1WINS;
-        return true;
-    }
-    if(CheckForWinner(X))
-    {
-        m_result = P2WINS;
-        return true;
-    }
-    if(IsGameDraw())
-    {
-        m_result = DRAW;
-        return true;
-    }
-    return false;
-}
-
-
-bool Game::CheckForWinner(SquareState state) const
-{
-    if(m_grid.at(0)->GetState() == state && m_grid.at(1)->GetState() == state && m_grid.at(2)->GetState() == state ||
-       m_grid.at(3)->GetState() == state && m_grid.at(4)->GetState() == state && m_grid.at(5)->GetState() == state ||
-       m_grid.at(6)->GetState() == state && m_grid.at(7)->GetState() == state && m_grid.at(8)->GetState() == state)
-    {
-        return true;
-    }
-    if(m_grid.at(0)->GetState() == state && m_grid.at(3)->GetState() == state && m_grid.at(6)->GetState() == state ||
-       m_grid.at(1)->GetState() == state && m_grid.at(4)->GetState() == state && m_grid.at(7)->GetState() == state ||
-       m_grid.at(2)->GetState() == state && m_grid.at(5)->GetState() == state && m_grid.at(8)->GetState() == state)
-    {
-        return true;
-    }
-    if(m_grid.at(0)->GetState() == state && m_grid.at(4)->GetState() == state && m_grid.at(8)->GetState() == state ||
-       m_grid.at(2)->GetState() == state && m_grid.at(4)->GetState() == state && m_grid.at(6)->GetState() == state)
-    {
-        return true;
-    }
-    return false;
-}
-
-
-
-bool Game::IsGameDraw() const
-{
-    for(int i = 0; i < m_grid.size(); i++)
-    {
-        if(m_grid.at(i)->GetState() != EMPTY && IsNoEmptySquares())
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 
 void Game::RestartGame()
 {
     InitGrid();
-    m_drawnShapes.clear();
+    for(const auto& square : m_grid)
+    {
+        square->Clear();
+    }
     m_restartButton.setState(INACTIVE);
     m_readyButton.setState(INACTIVE);
     m_undoButton.setState(INACTIVE);
-    m_isPlayerOneOrTwo = true;
     m_isPlayerDone = true;
-    m_result = NOWINNER;
+    m_gameLogic.Reset();
 }
-
 
 void Game::IsSquareHovered(int mouseX, int mouseY)
 {
@@ -465,10 +404,9 @@ void Game::IsSquareHovered(int mouseX, int mouseY)
     }
 }
 
-
 void Game::DrawTextureXorO(int shape, int x, int y)
 {
-    if(m_grid.at(shape - 1)->GetState() == O)
+    if(m_gameLogic.GetCurrentGridState().at(shape) == PLAYER_1)
     {
         TextureManager::Instance()->DrawTexture("circle2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
     }
@@ -478,44 +416,33 @@ void Game::DrawTextureXorO(int shape, int x, int y)
     }
 }
 
+// void Game::AutoFillLastSquare()
+// {
+//     if(!m_gameLogic.IsGameOver())
+//     {
+//         for(int i = 0; i < m_grid.size(); i++)
+//         {
+//             if(m_grid.at(i)->GetSymbol())
+//             {
+//                 m_drawnShapes.push_back(i + 1);
+//                 if(m_isPlayerOneOrTwo)
+//                 {
+//                     m_grid.at(i)->GetSymbol();
+//                 }
+//                 else
+//                 {
+//                     m_grid.at(i)->GetSymbol();
+//                 }
+//             }
+//         }
+//     }
+// }
 
-void Game::AutoFillLastSquare()
-{
-    if(!IsGameOver())
-    {
-        for(int i = 0; i < m_grid.size(); i++)
-        {
-            if(m_grid.at(i)->GetState() == EMPTY)
-            {
-                m_drawnShapes.push_back(i + 1);
-                if(m_isPlayerOneOrTwo)
-                {
-                    m_grid.at(i)->SetState(O);
-                }
-                else
-                {
-                    m_grid.at(i)->SetState(X);
-                }
-            }
-        }
-    }
-}
-
-
-bool Game::IsLastEmptySquare() const
-{
-    return (m_drawnShapes.size() == m_grid.size() - 1);
-}
-
-bool Game::IsNoEmptySquares() const
-{
-    return (m_drawnShapes.size() == m_grid.size());
-}
 
 
 void Game::HoverShowTexture(int x, int y)
 {
-    if(m_isPlayerOneOrTwo)
+    if(m_gameLogic.GetCurrentPlayer().GetId() == PLAYER_1)
     {
         SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("circle2"), 100);
         TextureManager::Instance()->DrawTexture("circle2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
@@ -529,13 +456,13 @@ void Game::HoverShowTexture(int x, int y)
     }
 }
 
-void Game::UndoLast()
-{
-    if(!m_drawnShapes.empty() && !IsNoEmptySquares())
-    {
-        int lastShape = m_drawnShapes.back();
-        m_drawnShapes.pop_back();
-        m_grid.at(lastShape - 1)->Clear();
-        m_isPlayerDone = true;
-    }
-}
+// void Game::UndoLast()
+// {
+//     if(!m_drawnShapes.empty() && !IsNoEmptySquares())
+//     {
+//         int lastShape = m_drawnShapes.back();
+//         m_drawnShapes.pop_back();
+//         m_grid.at(lastShape - 1)->Clear();
+//         m_isPlayerDone = true;
+//     }
+// }

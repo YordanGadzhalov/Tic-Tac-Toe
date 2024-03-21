@@ -1,22 +1,16 @@
 #pragma once
 #include "Button.h"
-
-enum SquareState
-{
-    EMPTY,
-    O,
-    X
-};
+#include <string>
 
 class Square
 {
 public:
     Square();
     ~Square();
-    Square(int x, int y, SquareState state = EMPTY);
+    Square(int x, int y, std::string symbol = "");
     bool IsInside(int mouseX, int mouseY) const;
-    void SetState(SquareState newState);
-    SquareState GetState() const;
+    void SetSymbol(const std::string& symbol);
+    std::string GetSymbol() const;
     void SetIsClicked(bool isClicked);
     bool GetIsClicked() const;
     void Clear();
@@ -30,7 +24,7 @@ public:
 private:
     int m_x;
     int m_y;
-    SquareState m_state;
+    std::string m_symbol;
     bool m_isClicked = false;
     static const int WIDTH = 155;
     static const int HEIGHT = 155;

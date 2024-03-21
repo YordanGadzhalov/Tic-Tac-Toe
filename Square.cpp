@@ -8,7 +8,7 @@ Square::~Square()
 {
 }
 
-Square::Square(int x, int y, SquareState state) : m_x(x), m_y(y), m_state(state)
+Square::Square(int x, int y, std::string symbol) : m_x(x), m_y(y), m_symbol(symbol)
 {
 }
 
@@ -21,14 +21,14 @@ bool Square::IsInside(int mouseX, int mouseY) const
     return false;
 }
 
-void Square::SetState(SquareState newState)
+void Square::SetSymbol(const std::string& symbol)
 {
-    m_state = newState;
+    m_symbol = symbol;
 }
 
-SquareState Square::GetState() const
+std::string Square::GetSymbol() const
 {
-    return m_state;
+    return m_symbol;
 }
 
 void Square::SetIsClicked(bool isClicked)
@@ -43,7 +43,6 @@ bool Square::GetIsClicked() const
 
 void Square::Clear()
 {
-    SetState(EMPTY);
     m_isClicked = false;
 }
 
