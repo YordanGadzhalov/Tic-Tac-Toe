@@ -9,6 +9,7 @@ Game::Game()
     m_infoButton = Button(935, 28, 980, 80, ACTIVE);
     m_undoButton = Button(920, 520, 980, 580, ACTIVE);
     InitGrid();
+    InitGameLogic();
 }
 
 Game::~Game()
@@ -17,6 +18,8 @@ Game::~Game()
     {
         delete square;
     }
+    delete m_gameLogic;
+    m_gameLogic = nullptr;
 }
 
 bool Game::init(const char* title, int xpos, int ypos, int width, int height, int flags)
@@ -61,21 +64,6 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, in
     return true;
 }
 
-void Game::UpdateView()
-{
-    for(int i = 0; i < m_grid.size(); i++)
-    {
-        if(m_gameLogic.GetCurrentGridState().at(i) == PLAYER_1)
-        {
-            m_grid.at(i)->SetSymbol(m_gameLogic.GetPlayer(PLAYER_1).GetShapeId());
-        }
-        else if(m_gameLogic.GetCurrentGridState().at(i) == PLAYER_2)
-        {
-            m_grid.at(i)->SetSymbol(m_gameLogic.GetPlayer(PLAYER_2).GetShapeId());
-        }
-    }
-}
-
 void Game::InitGrid()
 {
     m_grid = {new Square(50, 55),
@@ -87,6 +75,31 @@ void Game::InitGrid()
               new Square(50, 390),
               new Square(225, 390),
               new Square(390, 390)};
+}
+
+void Game::InitGameLogic()
+{
+    m_gameLogic = new GameLogic;
+}
+
+void Game::UpdateView()
+{
+    for(int i = 0; i < m_grid.size(); i++)
+    {
+        if(m_gameLogic->GetCurrentGridState().at(i) == PLAYER_1)
+        {
+            m_grid.at(i)->SetSymbol(m_gameLogic->GetPlayer(PLAYER_1).GetShapeId());
+        }
+        else if(m_gameLogic->GetCurrentGridState().at(i) == PLAYER_2)
+        {
+            m_grid.at(i)->SetSymbol(m_gameLogic->GetPlayer(PLAYER_2).GetShapeId());
+        }
+        else
+        {
+            m_grid.at(i)->SetSymbol("");
+            m_grid.at(i)->SetIsClicked(false);
+        }
+    }
 }
 
 void Game::Clean() const
@@ -136,30 +149,32 @@ void Game::HandleEvents()
                 if(m_restartButton.contains(mouseX, mouseY) && m_restartButton.getState() == ACTIVE)
                 {
                     m_restartButton.setState(CLICKED);
+                    UpdateView();
                     SoundManager::Instance()->PlayClickSound();
                 }
 
                 if(m_readyButton.contains(mouseX, mouseY) && m_readyButton.getState() != INACTIVE &&
-                   !m_gameLogic.IsGameOver() /*&& !IsNoEmptySquares()*/)
+                   !m_gameLogic->IsGameOver())
                 {
                     m_readyButton.setState(CLICKED);
-                    m_isPlayerDone = true;
                     m_undoButton.setState(INACTIVE);
-                    m_gameLogic.SwitchPlayers();
+                    m_gameLogic->SwitchPlayers();
+                    UpdateView();
                     SoundManager::Instance()->PlayClickSound();
                 }
 
-                if(m_undoButton.contains(mouseX, mouseY) && !m_gameLogic.IsGameOver() && /*!IsNoEmptySquares() &&*/
+                if(m_undoButton.contains(mouseX, mouseY) && !m_gameLogic->IsGameOver() &&
                    m_undoButton.getState() != INACTIVE)
                 {
                     m_undoButton.setState(CLICKED);
+                    m_gameLogic->Undo();
+                    UpdateView();
+                   // m_grid.at(LAST_CLICKED_SQUARE)->SetIsClicked(false);
                     SoundManager::Instance()->PlayClickSound();
                 }
 
-                // if(IsLastEmptySquare())
-                // {
-                //     AutoFillLastSquare();
-                // }
+                // m_gameLogic.AutoFillLastSquare();
+                // UpdateView();
 
                 for(int i = 0; i < m_grid.size(); i++)
                 {
@@ -182,9 +197,7 @@ void Game::HandleEvents()
                 {
                     m_readyButton.setState(INACTIVE);
                     m_undoButton.setState(INACTIVE);
-                    m_gameLogic.Undo();
                 }
-
                 break;
 
             default:
@@ -272,22 +285,27 @@ void Game::Render()
     }
 
     // Shows image of which player won
+    auto result = m_gameLogic->GetWinner();
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-    if(m_gameLogic.GetWinner() == PLAYER_1)
+    if(result == PLAYER_1)
     {
         TextureManager::Instance()->DrawTexture("player1wins", 670, 50, 200, 31, m_renderer);
     }
-    if(m_gameLogic.GetWinner() == PLAYER_2)
+    if(result == PLAYER_2)
     {
         TextureManager::Instance()->DrawTexture("player2wins", 670, 50, 200, 29, m_renderer);
     }
+    if(m_gameLogic->IsGameOver() && m_gameLogic->GetWinner() == NONE)
+    {
+        TextureManager::Instance()->DrawTexture("DRAW", 690, 20, 178, 103, m_renderer);
+    }
 
     // Draws image of which player's turn it is
-    if(m_gameLogic.GetCurrentPlayer().GetId() == PLAYER_1)
+    if(m_gameLogic->GetCurrentPlayer().GetId() == PLAYER_1)
     {
         TextureManager::Instance()->DrawTexture("player1", 233, 7, 135, 22, m_renderer);
     }
-    if(m_gameLogic.GetCurrentPlayer().GetId() == PLAYER_2)
+    if(m_gameLogic->GetCurrentPlayer().GetId() == PLAYER_2)
     {
         TextureManager::Instance()->DrawTexture("player2", 233, 7, 135, 22, m_renderer);
     }
@@ -296,8 +314,7 @@ void Game::Render()
     {
         TextureManager::Instance()->DrawTexture("text2", 650, 100, 250, 358, m_renderer);
     }
-
-    if(!m_isInfoClicked)
+    else
     {
         TextureManager::Instance()->DrawTexture("ReadyStatic", 665, 150, 220, 220, m_renderer);
         if(m_restartButton.getState() == INACTIVE)
@@ -328,10 +345,6 @@ void Game::Render()
         {
             TextureManager::Instance()->DrawTexture("undo2", 900, 500, 100, 100, m_renderer);
         }
-        if(false)
-        {
-            TextureManager::Instance()->DrawTexture("DRAW", 690, 20, 178, 103, m_renderer);
-        }
     }
 
     TextureManager::Instance()->DrawTexture("grid2", 50, 50, 500, 501, m_renderer);
@@ -341,7 +354,7 @@ void Game::Render()
     {
         if(i == m_lastSquareHoveredId)
         {
-            if(m_grid.at(i)->GetIsClicked() == false && m_readyButton.getState() == INACTIVE)
+            if(m_grid.at(i)->GetIsClicked() == false && !m_gameLogic->HasCurrentPlayerTurn())
             {
                 HoverShowTexture(m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY());
             }
@@ -350,7 +363,7 @@ void Game::Render()
 
     for(int i = 0; i < m_grid.size(); i++)
     {
-        if(m_gameLogic.GetCurrentGridState().at(i) != NONE)
+        if(m_gameLogic->GetCurrentGridState().at(i) != NONE)
         {
             DrawTextureXorO(i, m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY());
         }
@@ -361,17 +374,17 @@ void Game::Render()
 
 void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
 {
-    if(square.IsInside(mouseX, mouseY) && m_isPlayerDone == true && square.GetIsClicked() == false)
+    if(square.IsInside(mouseX, mouseY) && !m_gameLogic->HasCurrentPlayerTurn() && square.GetIsClicked() == false)
     {
-        m_gameLogic.SetGridPositionState(index);
-        m_isPlayerDone = false;
+        m_gameLogic->SetGridPositionState(index);
         m_readyButton.setState(ACTIVE);
         m_undoButton.setState(ACTIVE);
         square.SetIsClicked(true);
         m_restartButton.setState(ACTIVE);
+       // LAST_CLICKED_SQUARE = index;
     }
     UpdateView();
-    m_gameLogic.IsGameOver();
+    m_gameLogic->IsGameOver();
 }
 
 void Game::RestartGame()
@@ -384,8 +397,7 @@ void Game::RestartGame()
     m_restartButton.setState(INACTIVE);
     m_readyButton.setState(INACTIVE);
     m_undoButton.setState(INACTIVE);
-    m_isPlayerDone = true;
-    m_gameLogic.Reset();
+    m_gameLogic->Reset();
 }
 
 void Game::IsSquareHovered(int mouseX, int mouseY)
@@ -406,7 +418,7 @@ void Game::IsSquareHovered(int mouseX, int mouseY)
 
 void Game::DrawTextureXorO(int shape, int x, int y)
 {
-    if(m_gameLogic.GetCurrentGridState().at(shape) == PLAYER_1)
+    if(m_gameLogic->GetCurrentGridState().at(shape) == PLAYER_1)
     {
         TextureManager::Instance()->DrawTexture("circle2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
     }
@@ -416,33 +428,11 @@ void Game::DrawTextureXorO(int shape, int x, int y)
     }
 }
 
-// void Game::AutoFillLastSquare()
-// {
-//     if(!m_gameLogic.IsGameOver())
-//     {
-//         for(int i = 0; i < m_grid.size(); i++)
-//         {
-//             if(m_grid.at(i)->GetSymbol())
-//             {
-//                 m_drawnShapes.push_back(i + 1);
-//                 if(m_isPlayerOneOrTwo)
-//                 {
-//                     m_grid.at(i)->GetSymbol();
-//                 }
-//                 else
-//                 {
-//                     m_grid.at(i)->GetSymbol();
-//                 }
-//             }
-//         }
-//     }
-// }
-
 
 
 void Game::HoverShowTexture(int x, int y)
 {
-    if(m_gameLogic.GetCurrentPlayer().GetId() == PLAYER_1)
+    if(m_gameLogic->GetCurrentPlayer().GetId() == PLAYER_1)
     {
         SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("circle2"), 100);
         TextureManager::Instance()->DrawTexture("circle2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
@@ -455,14 +445,3 @@ void Game::HoverShowTexture(int x, int y)
         SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("Ximage2"), 255);
     }
 }
-
-// void Game::UndoLast()
-// {
-//     if(!m_drawnShapes.empty() && !IsNoEmptySquares())
-//     {
-//         int lastShape = m_drawnShapes.back();
-//         m_drawnShapes.pop_back();
-//         m_grid.at(lastShape - 1)->Clear();
-//         m_isPlayerDone = true;
-//     }
-// }

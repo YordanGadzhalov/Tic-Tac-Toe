@@ -9,8 +9,6 @@
 #include "SoundManager.h"
 #include "GameLogic.h"
 
-
-
 constexpr int UNUSED_SQUARE = -1;
 
 class Game
@@ -20,40 +18,32 @@ public:
     ~Game();
     bool init(const char* title, int xpos,
               int ypos, int width, int height, int flags);
-    void UpdateView();
+    void InitGrid();
+    void InitGameLogic();
 
+    void UpdateView();
     void Render();
     void HandleEvents();
     void Clean() const;
     bool IsRunning() const;
     void RestartGame();
-    //void UndoLast();
     void HandleSquareEvent(Square& square, int index, int mouseX, int mouseY);
-    void InitGrid();
     void DrawTextureXorO(int shape, int x, int y);
     void HoverShowTexture(int x, int y);
-    void AutoFillLastSquare();
     void IsSquareHovered(int mouseX, int mouseY);
-    bool IsLastEmptySquare() const;
-    bool CheckForWinner(std::string symbol) const;
-    bool IsNoEmptySquares() const;
-
 
 private:
-    GameLogic m_gameLogic;
+    GameLogic* m_gameLogic{nullptr};
     SDL_Window* m_window = nullptr;
     SDL_Renderer* m_renderer = nullptr;
-    int m_lastSquareHoveredId;
-    bool m_isPlayerDone = true;
     bool m_running = true;
-    bool m_isPlayerOneOrTwo = true;
+    int m_lastSquareHoveredId;
     bool m_isInfoClicked = false;
     std::vector<Square*> m_grid;
     Button m_restartButton;
     Button m_readyButton;
     Button m_infoButton;
     Button m_undoButton;
-
 };
 
 //members start with m_

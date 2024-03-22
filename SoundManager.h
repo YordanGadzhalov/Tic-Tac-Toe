@@ -10,7 +10,7 @@ class SoundManager
 public:
     static SoundManager* Instance()
     {
-        if(m_Instance == 0)
+        if(m_Instance == nullptr)
         {
             m_Instance = new SoundManager();
             return m_Instance;
