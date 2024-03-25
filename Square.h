@@ -7,9 +7,9 @@ class Square
 public:
     Square();
     ~Square();
-    Square(int x, int y, std::string symbol = "");
+    Square(int x, int y);
     bool IsInside(int mouseX, int mouseY) const;
-    void SetSymbol(const std::string& symbol);
+    void SetSymbol(const std::string& symbol = "");
     std::string GetSymbol() const;
     void SetIsClicked(bool isClicked);
     bool GetIsClicked() const;

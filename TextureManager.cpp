@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-bool TextureManager::LoadTexture(const char* fileName, string id, SDL_Renderer* ren)
+bool TextureManager::LoadTexture(const char* fileName, std::string id, SDL_Renderer* ren)
 {
     SDL_Surface* tempSurface = IMG_Load(fileName); // Load the image
 
@@ -41,7 +41,7 @@ void TextureManager::LoadImages(SDL_Renderer* ren)
     LoadTexture("assets/DRAW.png", "DRAW", ren);
 }
 
-void TextureManager::DrawTexture(string id, int x, int y, int width, int height, SDL_Renderer* ren)
+void TextureManager::DrawTexture(std::string id, int x, int y, int width, int height, SDL_Renderer* ren)
 {
     SDL_Rect srcRect;
     SDL_Rect destRect;
@@ -54,7 +54,7 @@ void TextureManager::DrawTexture(string id, int x, int y, int width, int height,
     SDL_RenderCopyEx(ren, m_textureMap[id], &srcRect, &destRect, 0, 0, SDL_FLIP_NONE);
 }
 
-SDL_Texture* TextureManager::getTexture(string id)
+SDL_Texture* TextureManager::getTexture(std::string id)
 {
     return m_textureMap[id];
 }

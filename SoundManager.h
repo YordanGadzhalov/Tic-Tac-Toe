@@ -3,8 +3,6 @@
 #include <iostream>
 #include <map>
 
-using namespace std;
-
 class SoundManager
 {
 public:
@@ -17,18 +15,18 @@ public:
         }
         return m_Instance;
     }
-    bool LoadChunk(const char* fileName, string id);
-    bool LoadMusic(const char* fileName, string id);
-    void PlaySound(string id, int loop, int ms, int volume);
-    void PlayMusic(string id, int loop, int ms = 0);
+    bool LoadChunk(const char* fileName, std::string id);
+    bool LoadMusic(const char* fileName, std::string id);
+    void PlaySound(std::string id, int loop, int ms, int volume);
+    void PlayMusic(std::string id, int loop, int ms = 0);
     void ChangeVolume(int change);
 
     void PlayClickSound();
 
 private:
     static SoundManager* m_Instance;
-    map<string, Mix_Chunk*> m_Sfxs;
-    map<string, Mix_Music*> m_Music;
+    std::map<std::string, Mix_Chunk*> m_Sfxs;
+    std::map<std::string, Mix_Music*> m_Music;
     SoundManager();
     ~SoundManager();
 };

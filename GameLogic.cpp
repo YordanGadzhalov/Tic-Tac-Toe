@@ -1,12 +1,12 @@
 #include "GameLogic.h"
 
-GameLogic::GameLogic()
+GameLogic::GameLogic(Notifier event)
 {
     m_currentPlayer = new Player(PlayerID::PLAYER_1, "circle2");
-    m_nextPlayer = new Player(PlayerID::PLAYER_2, "imageX2");
-    // 9 - constexpr grid size
-    m_currGridState.resize(9, PlayerID::NONE);
-    m_prevGridState.resize(9, PlayerID::NONE);
+    m_nextPlayer = new Player(PlayerID::PLAYER_2, "Ximage2");
+    m_currGridState.resize(grid_Size, PlayerID::NONE);
+    m_prevGridState.resize(grid_Size, PlayerID::NONE);
+    on_grid_state_changed = event;
 }
 
 GameLogic::~GameLogic()
@@ -75,6 +75,7 @@ bool GameLogic::IsGameOver() const
 void GameLogic::Undo()
 {
     m_currGridState = m_prevGridState;
+    on_grid_state_changed();
 }
 
 void GameLogic::Reset()
@@ -84,6 +85,8 @@ void GameLogic::Reset()
         m_currGridState.at(i) = NONE;
         m_prevGridState.at(i) = NONE;
     }
+    on_grid_state_changed();
+
     if(GetCurrentPlayer().GetId() == PLAYER_2)
     {
         SwitchPlayers();
@@ -93,6 +96,7 @@ void GameLogic::Reset()
 void GameLogic::SetGridPositionState(int index)
 {
     m_currGridState.at(index) = m_currentPlayer->GetId();
+    on_grid_state_changed();
 }
 
 GridState GameLogic::GetCurrentGridState() const
@@ -168,6 +172,7 @@ void GameLogic::autoFillLastSquare()
             if(m_currGridState.at(i) == NONE)
             {
                 m_currGridState.at(i) = m_currentPlayer->GetId();
+                on_grid_state_changed();
                 return;
             }
         }

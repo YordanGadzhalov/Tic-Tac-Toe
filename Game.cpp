@@ -2,6 +2,7 @@
 #include "Square.h"
 #include <iostream>
 
+
 Game::Game()
 {
     m_restartButton = Button(660, 440, 885, 507, INACTIVE);
@@ -12,6 +13,7 @@ Game::Game()
     InitGameLogic();
 }
 
+
 Game::~Game()
 {
     for(auto square : m_grid)
@@ -21,6 +23,7 @@ Game::~Game()
     delete m_gameLogic;
     m_gameLogic = nullptr;
 }
+
 
 bool Game::init(const char* title, int xpos, int ypos, int width, int height, int flags)
 {
@@ -79,24 +82,25 @@ void Game::InitGrid()
 
 void Game::InitGameLogic()
 {
-    m_gameLogic = new GameLogic;
+    m_gameLogic = new GameLogic(
+        [this]()
+        {
+            UpdateView();
+        });
 }
 
 void Game::UpdateView()
 {
     for(int i = 0; i < m_grid.size(); i++)
     {
-        if(m_gameLogic->GetCurrentGridState().at(i) == PLAYER_1)
+        const auto playerID = m_gameLogic->GetCurrentGridState().at(i);
+        if(playerID != NONE)
         {
-            m_grid.at(i)->SetSymbol(m_gameLogic->GetPlayer(PLAYER_1).GetShapeId());
-        }
-        else if(m_gameLogic->GetCurrentGridState().at(i) == PLAYER_2)
-        {
-            m_grid.at(i)->SetSymbol(m_gameLogic->GetPlayer(PLAYER_2).GetShapeId());
+            m_grid.at(i)->SetSymbol(m_gameLogic->GetPlayer(playerID).GetShapeId());
         }
         else
         {
-            m_grid.at(i)->SetSymbol("");
+            m_grid.at(i)->SetSymbol();
             m_grid.at(i)->SetIsClicked(false);
         }
     }
@@ -149,7 +153,6 @@ void Game::HandleEvents()
                 if(m_restartButton.contains(mouseX, mouseY) && m_restartButton.getState() == ACTIVE)
                 {
                     m_restartButton.setState(CLICKED);
-                    UpdateView();
                     SoundManager::Instance()->PlayClickSound();
                 }
 
@@ -159,7 +162,6 @@ void Game::HandleEvents()
                     m_readyButton.setState(CLICKED);
                     m_undoButton.setState(INACTIVE);
                     m_gameLogic->SwitchPlayers();
-                    UpdateView();
                     SoundManager::Instance()->PlayClickSound();
                 }
 
@@ -168,13 +170,8 @@ void Game::HandleEvents()
                 {
                     m_undoButton.setState(CLICKED);
                     m_gameLogic->Undo();
-                    UpdateView();
-                   // m_grid.at(LAST_CLICKED_SQUARE)->SetIsClicked(false);
                     SoundManager::Instance()->PlayClickSound();
                 }
-
-                // m_gameLogic.AutoFillLastSquare();
-                // UpdateView();
 
                 for(int i = 0; i < m_grid.size(); i++)
                 {
@@ -356,7 +353,8 @@ void Game::Render()
         {
             if(m_grid.at(i)->GetIsClicked() == false && !m_gameLogic->HasCurrentPlayerTurn())
             {
-                HoverShowTexture(m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY());
+                auto shapeID = m_gameLogic->GetCurrentPlayer().GetShapeId();
+                DrawTexture(shapeID, m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY(), 100);
             }
         }
     }
@@ -365,7 +363,8 @@ void Game::Render()
     {
         if(m_gameLogic->GetCurrentGridState().at(i) != NONE)
         {
-            DrawTextureXorO(i, m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY());
+            auto shapeID = m_grid.at(i)->GetSymbol();
+            DrawTexture(shapeID, m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY(), 255);
         }
     }
 
@@ -381,9 +380,7 @@ void Game::HandleSquareEvent(Square& square, int index, int mouseX, int mouseY)
         m_undoButton.setState(ACTIVE);
         square.SetIsClicked(true);
         m_restartButton.setState(ACTIVE);
-       // LAST_CLICKED_SQUARE = index;
     }
-    UpdateView();
     m_gameLogic->IsGameOver();
 }
 
@@ -411,37 +408,16 @@ void Game::IsSquareHovered(int mouseX, int mouseY)
         }
         else
         {
-            m_lastSquareHoveredId = UNUSED_SQUARE;
+            m_lastSquareHoveredId = unused_Square;
         }
     }
 }
 
-void Game::DrawTextureXorO(int shape, int x, int y)
+void Game::DrawTexture(const std::string& shapeID, int x, int y, int alpha)
 {
-    if(m_gameLogic->GetCurrentGridState().at(shape) == PLAYER_1)
-    {
-        TextureManager::Instance()->DrawTexture("circle2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
-    }
-    else
-    {
-        TextureManager::Instance()->DrawTexture("Ximage2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
-    }
+    SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture(shapeID), alpha);
+    TextureManager::Instance()->DrawTexture(shapeID, x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
+    SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture(shapeID), 255);
 }
 
 
-
-void Game::HoverShowTexture(int x, int y)
-{
-    if(m_gameLogic->GetCurrentPlayer().GetId() == PLAYER_1)
-    {
-        SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("circle2"), 100);
-        TextureManager::Instance()->DrawTexture("circle2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
-        SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("circle2"), 255);
-    }
-    else
-    {
-        SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("Ximage2"), 100);
-        TextureManager::Instance()->DrawTexture("Ximage2", x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
-        SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture("Ximage2"), 255);
-    }
-}

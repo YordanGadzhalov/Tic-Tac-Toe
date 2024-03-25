@@ -2,13 +2,16 @@
 #include "Player.h"
 #include <iostream>
 #include <vector>
+#include <functional>
 
 using GridState = std::vector<PlayerID>;
+using Notifier = std::function<void()>;
+constexpr int grid_Size = 9;
 
 class GameLogic
 {
 public:
-    GameLogic();
+    GameLogic(Notifier event);
     ~GameLogic();
 
     auto GetCurrentPlayer() const -> const Player&;
@@ -37,4 +40,5 @@ private:
     Player* m_nextPlayer{nullptr};
     GridState m_currGridState;
     GridState m_prevGridState;
+    Notifier on_grid_state_changed;
 };

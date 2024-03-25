@@ -9,7 +9,7 @@
 #include "SoundManager.h"
 #include "GameLogic.h"
 
-constexpr int UNUSED_SQUARE = -1;
+constexpr int unused_Square = -1;
 
 class Game
 {
@@ -28,8 +28,7 @@ public:
     bool IsRunning() const;
     void RestartGame();
     void HandleSquareEvent(Square& square, int index, int mouseX, int mouseY);
-    void DrawTextureXorO(int shape, int x, int y);
-    void HoverShowTexture(int x, int y);
+    void DrawTexture(const std::string& shapeID, int x, int y, int alpha);
     void IsSquareHovered(int mouseX, int mouseY);
 
 private:

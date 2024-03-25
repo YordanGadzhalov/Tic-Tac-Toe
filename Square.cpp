@@ -8,7 +8,7 @@ Square::~Square()
 {
 }
 
-Square::Square(int x, int y, std::string symbol) : m_x(x), m_y(y), m_symbol(symbol)
+Square::Square(int x, int y) : m_x(x), m_y(y)
 {
 }
 
