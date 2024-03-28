@@ -2,6 +2,11 @@
 #include "Square.h"
 #include <iostream>
 
+namespace
+{
+int  asd = 5;
+}
+
 
 Game::Game()
 {
@@ -13,7 +18,6 @@ Game::Game()
     InitGameLogic();
 }
 
-
 Game::~Game()
 {
     for(auto square : m_grid)
@@ -23,7 +27,6 @@ Game::~Game()
     delete m_gameLogic;
     m_gameLogic = nullptr;
 }
-
 
 bool Game::init(const char* title, int xpos, int ypos, int width, int height, int flags)
 {
@@ -208,91 +211,32 @@ void Game::Render()
     SDL_RenderClear(m_renderer);
     SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
 
-    if(m_grid.at(0)->GetSymbol() == m_grid.at(1)->GetSymbol() &&
-       m_grid.at(1)->GetSymbol() == m_grid.at(2)->GetSymbol() && m_grid.at(0)->GetSymbol() != "")
+
+    auto result = m_gameLogic->GetWinner();
+    if(m_gameLogic->IsGameOver() && result.winner != NONE)
     {
+        const auto startSquare = m_grid.at(m_gameLogic->GetWinner().line.first);
+        const auto endSquare = m_grid.at(m_gameLogic->GetWinner().line.second);
         SDL_RenderDrawLine(m_renderer,
-                           m_grid.at(0)->GetSquareCenterX(),
-                           m_grid.at(0)->GetSquareCenterY(),
-                           m_grid.at(2)->GetSquareCenterX(),
-                           m_grid.at(2)->GetSquareCenterY());
-    }
-    else if(m_grid.at(3)->GetSymbol() == m_grid.at(4)->GetSymbol() &&
-            m_grid.at(4)->GetSymbol() == m_grid.at(5)->GetSymbol() && m_grid.at(3)->GetSymbol() != "")
-    {
-        SDL_RenderDrawLine(m_renderer,
-                           m_grid.at(3)->GetSquareCenterX(),
-                           m_grid.at(3)->GetSquareCenterY(),
-                           m_grid.at(5)->GetSquareCenterX(),
-                           m_grid.at(5)->GetSquareCenterY());
-    }
-    else if(m_grid.at(6)->GetSymbol() == m_grid.at(7)->GetSymbol() &&
-            m_grid.at(7)->GetSymbol() == m_grid.at(8)->GetSymbol() && m_grid.at(6)->GetSymbol() != "")
-    {
-        SDL_RenderDrawLine(m_renderer,
-                           m_grid.at(6)->GetSquareCenterX(),
-                           m_grid.at(6)->GetSquareCenterY(),
-                           m_grid.at(8)->GetSquareCenterX(),
-                           m_grid.at(8)->GetSquareCenterY());
-    }
-    else if(m_grid.at(0)->GetSymbol() == m_grid.at(3)->GetSymbol() &&
-            m_grid.at(3)->GetSymbol() == m_grid.at(6)->GetSymbol() && m_grid.at(0)->GetSymbol() != "")
-    {
-        SDL_RenderDrawLine(m_renderer,
-                           m_grid.at(0)->GetSquareCenterX(),
-                           m_grid.at(0)->GetSquareCenterY(),
-                           m_grid.at(6)->GetSquareCenterX(),
-                           m_grid.at(6)->GetSquareCenterY());
-    }
-    else if(m_grid.at(1)->GetSymbol() == m_grid.at(4)->GetSymbol() &&
-            m_grid.at(4)->GetSymbol() == m_grid.at(7)->GetSymbol() && m_grid.at(1)->GetSymbol() != "")
-    {
-        SDL_RenderDrawLine(m_renderer,
-                           m_grid.at(1)->GetSquareCenterX(),
-                           m_grid.at(1)->GetSquareCenterY(),
-                           m_grid.at(7)->GetSquareCenterX(),
-                           m_grid.at(7)->GetSquareCenterY());
-    }
-    else if(m_grid.at(2)->GetSymbol() == m_grid.at(5)->GetSymbol() &&
-            m_grid.at(5)->GetSymbol() == m_grid.at(8)->GetSymbol() && m_grid.at(2)->GetSymbol() != "")
-    {
-        SDL_RenderDrawLine(m_renderer,
-                           m_grid.at(2)->GetSquareCenterX(),
-                           m_grid.at(2)->GetSquareCenterY(),
-                           m_grid.at(8)->GetSquareCenterX(),
-                           m_grid.at(8)->GetSquareCenterY());
-    }
-    else if(m_grid.at(0)->GetSymbol() == m_grid.at(4)->GetSymbol() &&
-            m_grid.at(4)->GetSymbol() == m_grid.at(8)->GetSymbol() && m_grid.at(0)->GetSymbol() != "")
-    {
-        SDL_RenderDrawLine(m_renderer,
-                           m_grid.at(0)->GetSquareCenterX(),
-                           m_grid.at(0)->GetSquareCenterY(),
-                           m_grid.at(8)->GetSquareCenterX(),
-                           m_grid.at(8)->GetSquareCenterY());
-    }
-    else if(m_grid.at(2)->GetSymbol() == m_grid.at(4)->GetSymbol() &&
-            m_grid.at(4)->GetSymbol() == m_grid.at(6)->GetSymbol() && m_grid.at(2)->GetSymbol() != "")
-    {
-        SDL_RenderDrawLine(m_renderer,
-                           m_grid.at(2)->GetSquareCenterX(),
-                           m_grid.at(2)->GetSquareCenterY(),
-                           m_grid.at(6)->GetSquareCenterX(),
-                           m_grid.at(6)->GetSquareCenterY());
+                           startSquare->GetSquareCenterX(),
+                           startSquare->GetSquareCenterY(),
+                           endSquare->GetSquareCenterX(),
+                           endSquare->GetSquareCenterY());
     }
 
+
     // Shows image of which player won
-    auto result = m_gameLogic->GetWinner();
+
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-    if(result == PLAYER_1)
+    if(result.winner == PLAYER_1)
     {
         TextureManager::Instance()->DrawTexture("player1wins", 670, 50, 200, 31, m_renderer);
     }
-    if(result == PLAYER_2)
+    if(result.winner == PLAYER_2)
     {
         TextureManager::Instance()->DrawTexture("player2wins", 670, 50, 200, 29, m_renderer);
     }
-    if(m_gameLogic->IsGameOver() && m_gameLogic->GetWinner() == NONE)
+    if(m_gameLogic->IsGameOver() && m_gameLogic->GetWinner().winner == NONE)
     {
         TextureManager::Instance()->DrawTexture("DRAW", 690, 20, 178, 103, m_renderer);
     }
@@ -419,5 +363,3 @@ void Game::DrawTexture(const std::string& shapeID, int x, int y, int alpha)
     TextureManager::Instance()->DrawTexture(shapeID, x, y, Square::SHAPE_SIZE, Square::SHAPE_SIZE, m_renderer);
     SDL_SetTextureAlphaMod(TextureManager::Instance()->getTexture(shapeID), 255);
 }
-
-

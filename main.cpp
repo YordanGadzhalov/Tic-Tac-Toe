@@ -5,6 +5,7 @@ using namespace std;
 const int WINDOW_WIDTH = 1000;
 const int WINDOW_HEIGHT = 600;
 
+
 int main(int argc, char* argv[])
 {
     Game game;

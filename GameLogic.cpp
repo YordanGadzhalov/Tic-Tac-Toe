@@ -34,20 +34,9 @@ auto GameLogic::GetPlayer(PlayerID id) const -> const Player&
     }
 }
 
-PlayerID GameLogic::GetWinner() const
+WinInfo GameLogic::GetWinner() const
 {
-    if(IsGameOver())
-    {
-        if(checkForWinner(PLAYER_1))
-        {
-            return PLAYER_1;
-        }
-        else if(checkForWinner(PLAYER_2))
-        {
-            return PLAYER_2;
-        }
-    }
-    return NONE;
+    return m_winInfo;
 }
 
 auto GameLogic::HasCurrentPlayerTurn() -> bool
@@ -64,7 +53,7 @@ void GameLogic::SwitchPlayers()
 
 bool GameLogic::IsGameOver() const
 {
-    if(checkForWinner(PLAYER_1) || checkForWinner(PLAYER_2) || isGameDraw())
+    if(checkForWinner().winner != NONE || isGameDraw())
     {
         return true;
     }
@@ -85,6 +74,8 @@ void GameLogic::Reset()
         m_currGridState.at(i) = NONE;
         m_prevGridState.at(i) = NONE;
     }
+
+    m_winInfo = {};
     on_grid_state_changed();
 
     if(GetCurrentPlayer().GetId() == PLAYER_2)
@@ -96,6 +87,7 @@ void GameLogic::Reset()
 void GameLogic::SetGridPositionState(int index)
 {
     m_currGridState.at(index) = m_currentPlayer->GetId();
+    calculateWinner();
     on_grid_state_changed();
 }
 
@@ -104,34 +96,64 @@ GridState GameLogic::GetCurrentGridState() const
     return m_currGridState;
 }
 
-bool GameLogic::checkForWinner(PlayerID id) const
+void GameLogic::calculateWinner()
 {
-    if(m_currGridState.at(0) == id && m_currGridState.at(1) == id && m_currGridState.at(2) == id &&
-           m_currGridState.at(0) != NONE ||
-       m_currGridState.at(3) == id && m_currGridState.at(4) == id && m_currGridState.at(5) == id &&
-           m_currGridState.at(3) != NONE ||
-       m_currGridState.at(6) == id && m_currGridState.at(7) == id && m_currGridState.at(8) == id &&
-           m_currGridState.at(6) != NONE)
+    m_winInfo = checkForWinner();
+}
+
+WinInfo GameLogic::checkForWinner() const
+{
+    WinInfo result;
+    if(m_currGridState.at(0) == m_currGridState.at(1) && m_currGridState.at(1) == m_currGridState.at(2) &&
+       m_currGridState.at(0) != NONE)
     {
-        return true;
+        result = {m_currGridState.at(0), {0, 2}};
+        return result;
     }
-    if(m_currGridState.at(0) == id && m_currGridState.at(3) == id && m_currGridState.at(6) == id &&
-           m_currGridState.at(0) != NONE ||
-       m_currGridState.at(1) == id && m_currGridState.at(4) == id && m_currGridState.at(7) == id &&
-           m_currGridState.at(1) != NONE ||
-       m_currGridState.at(2) == id && m_currGridState.at(5) == id && m_currGridState.at(8) == id &&
-           m_currGridState.at(2) != NONE)
+    if(m_currGridState.at(3) == m_currGridState.at(4) && m_currGridState.at(4) == m_currGridState.at(5) &&
+       m_currGridState.at(3) != NONE)
     {
-        return true;
+        result = {m_currGridState.at(3), {3, 5}};
+        return result;
     }
-    if(m_currGridState.at(0) == id && m_currGridState.at(4) == id && m_currGridState.at(8) == id &&
-           m_currGridState.at(0) != NONE ||
-       m_currGridState.at(2) == id && m_currGridState.at(4) == id && m_currGridState.at(6) == id &&
-           m_currGridState.at(2) != NONE)
+    if(m_currGridState.at(6) == m_currGridState.at(7) && m_currGridState.at(7) == m_currGridState.at(8) &&
+       m_currGridState.at(6) != NONE)
     {
-        return true;
+        result = {m_currGridState.at(6), {6, 8}};
+        return result;
     }
-    return false;
+    if(m_currGridState.at(0) == m_currGridState.at(3) && m_currGridState.at(3) == m_currGridState.at(6) &&
+       m_currGridState.at(0) != NONE)
+    {
+        result = {m_currGridState.at(0), {0, 6}};
+        return result;
+    }
+    if(m_currGridState.at(1) == m_currGridState.at(4) && m_currGridState.at(4) == m_currGridState.at(7) &&
+       m_currGridState.at(1) != NONE)
+    {
+        result = {m_currGridState.at(1), {1, 7}};
+        return result;
+    }
+    if(m_currGridState.at(2) == m_currGridState.at(5) && m_currGridState.at(5) == m_currGridState.at(8) &&
+       m_currGridState.at(2) != NONE)
+    {
+        result = {m_currGridState.at(2), {2, 8}};
+        return result;
+    }
+    if(m_currGridState.at(0) == m_currGridState.at(4) && m_currGridState.at(4) == m_currGridState.at(8) &&
+       m_currGridState.at(0) != NONE)
+    {
+        result = {m_currGridState.at(0), {0, 8}};
+        return result;
+    }
+    if(m_currGridState.at(2) == m_currGridState.at(4) && m_currGridState.at(4) == m_currGridState.at(6) &&
+       m_currGridState.at(2) != NONE)
+    {
+        result = {m_currGridState.at(2), {2, 6}};
+        return result;
+    }
+
+    return result;
 }
 
 bool GameLogic::isGameDraw() const

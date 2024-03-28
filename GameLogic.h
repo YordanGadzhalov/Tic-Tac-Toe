@@ -16,11 +16,11 @@ public:
 
     auto GetCurrentPlayer() const -> const Player&;
     auto GetPlayer(PlayerID id) const -> const Player&;
-    auto GetWinner() const -> PlayerID;
+    auto GetWinner() const -> WinInfo; // change implementation to use m_winInfo
     auto HasCurrentPlayerTurn() -> bool;
     void SwitchPlayers();
 
-    auto IsGameOver() const -> bool;
+    auto IsGameOver() const -> bool; // change implementation WinInfo, remains const !
 
     void Undo();
     void Reset();
@@ -29,7 +29,8 @@ public:
     auto GetCurrentGridState() const -> GridState;
 
 private:
-    auto checkForWinner(PlayerID id) const -> bool;
+    void calculateWinner(); // calculate winner info in m_winInfo on SetGridPositionState
+    auto checkForWinner() const -> WinInfo;
     auto isGameDraw() const -> bool;
     auto isNoEmptySquares() const -> bool;
     auto isOneEmptySquareLeft() const -> bool;
@@ -41,4 +42,5 @@ private:
     GridState m_currGridState;
     GridState m_prevGridState;
     Notifier on_grid_state_changed;
+    WinInfo m_winInfo;
 };
