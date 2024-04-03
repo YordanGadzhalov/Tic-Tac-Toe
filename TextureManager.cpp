@@ -39,6 +39,10 @@ void TextureManager::LoadImages(SDL_Renderer* ren)
     LoadTexture("assets/player1wins.png", "player1wins", ren);
     LoadTexture("assets/player2wins.png", "player2wins", ren);
     LoadTexture("assets/DRAW.png", "DRAW", ren);
+    LoadTexture("assets/backArrow.png", "backArrow", ren);
+    LoadTexture("assets/forwardArrow.png", "forwardArrow", ren);
+    LoadTexture("assets/historyButton.png", "historyButton", ren);
+    LoadTexture("assets/gameHistory.png", "gameHistory", ren);
 }
 
 void TextureManager::DrawTexture(std::string id, int x, int y, int width, int height, SDL_Renderer* ren)

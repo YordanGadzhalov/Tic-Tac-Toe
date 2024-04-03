@@ -39,7 +39,7 @@ WinInfo GameLogic::GetWinner() const
     return m_winInfo;
 }
 
-auto GameLogic::HasCurrentPlayerTurn() -> bool
+auto GameLogic::HasCurrentPlayerTurn() const -> bool
 {
     return m_currGridState != m_prevGridState;
 }
@@ -49,34 +49,40 @@ void GameLogic::SwitchPlayers()
     std::swap(m_currentPlayer, m_nextPlayer);
     m_prevGridState = m_currGridState;
     autoFillLastSquare();
+    saveGameHistoryStates();
 }
 
-bool GameLogic::IsGameOver() const
+bool GameLogic::IsGameOver()
 {
     if(checkForWinner().winner != NONE || isGameDraw())
     {
         return true;
     }
-
     return false;
+}
+
+bool GameLogic::GetHistoryMode() const
+{
+    return m_isHistoryMode;
 }
 
 void GameLogic::Undo()
 {
     m_currGridState = m_prevGridState;
-    on_grid_state_changed();
+    on_grid_state_changed(getCurrentGridState());
 }
 
 void GameLogic::Reset()
 {
-    for(int i = 0; i < GetCurrentGridState().size(); i++)
+    for(int i = 0; i < getCurrentGridState().size(); i++)
     {
         m_currGridState.at(i) = NONE;
         m_prevGridState.at(i) = NONE;
     }
 
+    m_gameHistory.clear();
     m_winInfo = {};
-    on_grid_state_changed();
+    on_grid_state_changed(getCurrentGridState());
 
     if(GetCurrentPlayer().GetId() == PLAYER_2)
     {
@@ -84,16 +90,67 @@ void GameLogic::Reset()
     }
 }
 
+
+void GameLogic::ToggleHistoryMode()
+{
+    m_isHistoryMode = !m_isHistoryMode;
+    if(m_isHistoryMode)
+    {
+        m_historyIndex = m_gameHistory.size() - 1;
+        on_grid_state_changed(m_gameHistory.back());
+    }
+    else
+    {
+        on_grid_state_changed(getCurrentGridState());
+    }
+}
+
+
+void GameLogic::ForwardHistory()
+{
+    if(m_historyIndex == (m_gameHistory.size() - 1))
+    {
+        m_historyIndex = 0;
+    }
+    else
+    {
+        m_historyIndex++;
+    }
+    on_grid_state_changed(m_gameHistory.at(m_historyIndex));
+}
+
+void GameLogic::BackwardHistory()
+{
+    if(m_historyIndex == 0)
+    {
+       m_historyIndex = (m_gameHistory.size() - 1);
+    }
+    else
+    {
+        m_historyIndex--;
+    }
+    on_grid_state_changed(m_gameHistory.at(m_historyIndex));
+}
+
 void GameLogic::SetGridPositionState(int index)
 {
     m_currGridState.at(index) = m_currentPlayer->GetId();
     calculateWinner();
-    on_grid_state_changed();
+    if(IsGameOver())
+    {
+        saveGameHistoryStates();
+    }
+    on_grid_state_changed(getCurrentGridState());
 }
 
-GridState GameLogic::GetCurrentGridState() const
+const GridState& GameLogic::getCurrentGridState() const
 {
     return m_currGridState;
+}
+
+void GameLogic::saveGameHistoryStates()
+{
+    m_gameHistory.push_back(m_currGridState);
 }
 
 void GameLogic::calculateWinner()
@@ -194,7 +251,7 @@ void GameLogic::autoFillLastSquare()
             if(m_currGridState.at(i) == NONE)
             {
                 m_currGridState.at(i) = m_currentPlayer->GetId();
-                on_grid_state_changed();
+                on_grid_state_changed(getCurrentGridState());
                 return;
             }
         }

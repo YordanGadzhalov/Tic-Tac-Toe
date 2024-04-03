@@ -21,7 +21,7 @@ public:
     void InitGrid();
     void InitGameLogic();
 
-    void UpdateView();
+    void UpdateView(const GridState& state);
     void Render();
     void HandleEvents();
     void Clean() const;
@@ -39,6 +39,9 @@ private:
     int m_lastSquareHoveredId;
     bool m_isInfoClicked = false;
     std::vector<Square*> m_grid;
+    Button m_forwardButton;
+    Button m_backButton;
+    Button m_historyButton;
     Button m_restartButton;
     Button m_readyButton;
     Button m_infoButton;

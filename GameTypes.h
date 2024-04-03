@@ -8,10 +8,12 @@ enum PlayerID
     PLAYER_2
 };
 
-using WinLine = std::pair<int, int>; // startIdx, endIndx in grid
+using WinLine = std::pair<int, int>;
 
 struct WinInfo
 {
     PlayerID winner{NONE};
     WinLine line{0, 0};
 };
+
+

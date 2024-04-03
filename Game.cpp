@@ -2,18 +2,15 @@
 #include "Square.h"
 #include <iostream>
 
-namespace
-{
-int  asd = 5;
-}
-
-
 Game::Game()
 {
     m_restartButton = Button(660, 440, 885, 507, INACTIVE);
     m_readyButton = Button(690, 167, 850, 350, INACTIVE);
     m_infoButton = Button(935, 28, 980, 80, ACTIVE);
     m_undoButton = Button(920, 520, 980, 580, ACTIVE);
+    m_historyButton = Button(940, 100, 985, 145, INACTIVE);
+    m_forwardButton = Button(550, 560, 580, 590, INACTIVE);
+    m_backButton = Button(28, 560, 60, 590, INACTIVE);
     InitGrid();
     InitGameLogic();
 }
@@ -86,17 +83,17 @@ void Game::InitGrid()
 void Game::InitGameLogic()
 {
     m_gameLogic = new GameLogic(
-        [this]()
+        [this](const GridState& state)
         {
-            UpdateView();
+            UpdateView(state);
         });
 }
 
-void Game::UpdateView()
+void Game::UpdateView(const GridState& state)
 {
     for(int i = 0; i < m_grid.size(); i++)
     {
-        const auto playerID = m_gameLogic->GetCurrentGridState().at(i);
+        const auto playerID = state.at(i);
         if(playerID != NONE)
         {
             m_grid.at(i)->SetSymbol(m_gameLogic->GetPlayer(playerID).GetShapeId());
@@ -153,6 +150,26 @@ void Game::HandleEvents()
                 mouseX = event.button.x;
                 mouseY = event.button.y;
 
+                if(m_forwardButton.contains(mouseX, mouseY))
+                {
+                    m_gameLogic->ForwardHistory();
+                }
+                if(m_backButton.contains(mouseX, mouseY))
+                {
+                    m_gameLogic->BackwardHistory();
+                }
+                if(m_historyButton.contains(mouseX, mouseY) && m_gameLogic->IsGameOver())
+                {
+                    m_gameLogic->ToggleHistoryMode();
+                    if(m_gameLogic->GetHistoryMode())
+                    {
+                        m_restartButton.setState(INACTIVE);
+                    }
+                    else
+                    {
+                        m_restartButton.setState(ACTIVE);
+                    }
+                }
                 if(m_restartButton.contains(mouseX, mouseY) && m_restartButton.getState() == ACTIVE)
                 {
                     m_restartButton.setState(CLICKED);
@@ -211,9 +228,10 @@ void Game::Render()
     SDL_RenderClear(m_renderer);
     SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
 
-
+    auto isHistoryMode = m_gameLogic->GetHistoryMode();
     auto result = m_gameLogic->GetWinner();
-    if(m_gameLogic->IsGameOver() && result.winner != NONE)
+
+    if(m_gameLogic->IsGameOver() && result.winner != NONE && isHistoryMode == false)
     {
         const auto startSquare = m_grid.at(m_gameLogic->GetWinner().line.first);
         const auto endSquare = m_grid.at(m_gameLogic->GetWinner().line.second);
@@ -224,29 +242,32 @@ void Game::Render()
                            endSquare->GetSquareCenterY());
     }
 
-
     // Shows image of which player won
-
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-    if(result.winner == PLAYER_1)
+    if(result.winner == PLAYER_1 && isHistoryMode == false)
     {
         TextureManager::Instance()->DrawTexture("player1wins", 670, 50, 200, 31, m_renderer);
     }
-    if(result.winner == PLAYER_2)
+    if(result.winner == PLAYER_2 && isHistoryMode == false)
     {
         TextureManager::Instance()->DrawTexture("player2wins", 670, 50, 200, 29, m_renderer);
     }
-    if(m_gameLogic->IsGameOver() && m_gameLogic->GetWinner().winner == NONE)
+    if(m_gameLogic->IsGameOver() && m_gameLogic->GetWinner().winner == NONE && isHistoryMode == false)
     {
         TextureManager::Instance()->DrawTexture("DRAW", 690, 20, 178, 103, m_renderer);
     }
 
+    if(isHistoryMode)
+    {
+        TextureManager::Instance()->DrawTexture("gameHistory", 480, 15, 380, 55, m_renderer);
+    }
+
     // Draws image of which player's turn it is
-    if(m_gameLogic->GetCurrentPlayer().GetId() == PLAYER_1)
+    if(m_gameLogic->GetCurrentPlayer().GetId() == PLAYER_1 && isHistoryMode == false)
     {
         TextureManager::Instance()->DrawTexture("player1", 233, 7, 135, 22, m_renderer);
     }
-    if(m_gameLogic->GetCurrentPlayer().GetId() == PLAYER_2)
+    if(m_gameLogic->GetCurrentPlayer().GetId() == PLAYER_2 && isHistoryMode == false)
     {
         TextureManager::Instance()->DrawTexture("player2", 233, 7, 135, 22, m_renderer);
     }
@@ -288,6 +309,15 @@ void Game::Render()
         }
     }
 
+    if(isHistoryMode == true)
+    {
+        TextureManager::Instance()->DrawTexture("backArrow", 20, 550, 48, 48, m_renderer);
+        TextureManager::Instance()->DrawTexture("forwardArrow", 540, 550, 48, 48, m_renderer);
+    }
+    if(m_gameLogic->IsGameOver())
+    {
+        TextureManager::Instance()->DrawTexture("historyButton", 930, 90, 64, 64, m_renderer);
+    }
     TextureManager::Instance()->DrawTexture("grid2", 50, 50, 500, 501, m_renderer);
     TextureManager::Instance()->DrawTexture("info2", 930, 20, 60, 60, m_renderer);
 
@@ -305,9 +335,9 @@ void Game::Render()
 
     for(int i = 0; i < m_grid.size(); i++)
     {
-        if(m_gameLogic->GetCurrentGridState().at(i) != NONE)
+        auto shapeID = m_grid.at(i)->GetSymbol();
+        if(!shapeID.empty())
         {
-            auto shapeID = m_grid.at(i)->GetSymbol();
             DrawTexture(shapeID, m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY(), 255);
         }
     }
@@ -338,6 +368,7 @@ void Game::RestartGame()
     m_restartButton.setState(INACTIVE);
     m_readyButton.setState(INACTIVE);
     m_undoButton.setState(INACTIVE);
+    m_historyButton.setState(INACTIVE);
     m_gameLogic->Reset();
 }
 
