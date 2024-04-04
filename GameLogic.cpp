@@ -48,8 +48,8 @@ void GameLogic::SwitchPlayers()
 {
     std::swap(m_currentPlayer, m_nextPlayer);
     m_prevGridState = m_currGridState;
-    autoFillLastSquare();
     saveGameHistoryStates();
+    autoFillLastSquare();
 }
 
 bool GameLogic::IsGameOver()
@@ -90,7 +90,6 @@ void GameLogic::Reset()
     }
 }
 
-
 void GameLogic::ToggleHistoryMode()
 {
     m_isHistoryMode = !m_isHistoryMode;
@@ -104,7 +103,6 @@ void GameLogic::ToggleHistoryMode()
         on_grid_state_changed(getCurrentGridState());
     }
 }
-
 
 void GameLogic::ForwardHistory()
 {
@@ -123,7 +121,7 @@ void GameLogic::BackwardHistory()
 {
     if(m_historyIndex == 0)
     {
-       m_historyIndex = (m_gameHistory.size() - 1);
+        m_historyIndex = (m_gameHistory.size() - 1);
     }
     else
     {
@@ -135,12 +133,12 @@ void GameLogic::BackwardHistory()
 void GameLogic::SetGridPositionState(int index)
 {
     m_currGridState.at(index) = m_currentPlayer->GetId();
-    calculateWinner();
+    on_grid_state_changed(getCurrentGridState());
     if(IsGameOver())
     {
         saveGameHistoryStates();
     }
-    on_grid_state_changed(getCurrentGridState());
+    calculateWinner();
 }
 
 const GridState& GameLogic::getCurrentGridState() const
@@ -209,7 +207,6 @@ WinInfo GameLogic::checkForWinner() const
         result = {m_currGridState.at(2), {2, 6}};
         return result;
     }
-
     return result;
 }
 
@@ -252,6 +249,8 @@ void GameLogic::autoFillLastSquare()
             {
                 m_currGridState.at(i) = m_currentPlayer->GetId();
                 on_grid_state_changed(getCurrentGridState());
+                saveGameHistoryStates();
+                calculateWinner();
                 return;
             }
         }

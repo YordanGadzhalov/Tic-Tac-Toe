@@ -259,7 +259,7 @@ void Game::Render()
 
     if(isHistoryMode)
     {
-        TextureManager::Instance()->DrawTexture("gameHistory", 480, 15, 380, 55, m_renderer);
+        TextureManager::Instance()->DrawTexture("gameHistory", 200, 15, 205, 33, m_renderer);
     }
 
     // Draws image of which player's turn it is
