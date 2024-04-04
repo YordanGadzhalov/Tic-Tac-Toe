@@ -15,21 +15,27 @@ public:
     GameLogic(Notifier event);
     ~GameLogic();
 
+    void StartGame(std::string player1 , std::string player2);
     auto GetCurrentPlayer() const -> const Player&;
     auto GetPlayer(PlayerID id) const -> const Player&;
     auto GetWinner() const -> WinInfo;
     auto HasCurrentPlayerTurn() const -> bool;
     void SwitchPlayers();
 
+    void test(int * ptr);
+
     auto IsGameOver() -> bool;
 
     void Undo();
     void Reset();
 
+    // history
     void ToggleHistoryMode();
     auto GetHistoryMode() const -> bool;
     void ForwardHistory();
     void BackwardHistory();
+
+    // void SetPlayerSymbol(std::string symbol);
 
     void SetGridPositionState(int index);
 
@@ -40,8 +46,9 @@ private:
     auto isNoEmptySquares() const -> bool;
     auto isOneEmptySquareLeft() const -> bool;
     void autoFillLastSquare();
-    auto getCurrentGridState() const -> const GridState&;
     void saveGameHistoryStates();
+    auto getCurrentGridState() const -> const GridState&;
+    // auto getPlayerSymbol() const -> std::string;
 
 private:
     Player* m_currentPlayer{nullptr};
@@ -52,5 +59,6 @@ private:
     Notifier on_grid_state_changed;
     WinInfo m_winInfo;
     int m_historyIndex{0};
+    // std::string m_playerSymbol;
     bool m_isHistoryMode = false;
 };

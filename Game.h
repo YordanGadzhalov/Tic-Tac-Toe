@@ -22,23 +22,32 @@ public:
     void InitGameLogic();
 
     void UpdateView(const GridState& state);
-    void Render();
-    void HandleEvents();
     void Clean() const;
-    bool IsRunning() const;
     void RestartGame();
+    void Render();
+
+    void HandleEvents();
     void HandleSquareEvent(Square& square, int index, int mouseX, int mouseY);
     void DrawTexture(const std::string& shapeID, int x, int y, int alpha);
+
+    bool IsRunning() const;
     void IsSquareHovered(int mouseX, int mouseY);
 
 private:
+    std::pair<std::string, std::string> m_selectedShapes;
     GameLogic* m_gameLogic{nullptr};
     SDL_Window* m_window = nullptr;
     SDL_Renderer* m_renderer = nullptr;
+    bool m_homeScreen = true;
     bool m_running = true;
+    bool m_isXSelected = false;
+    bool m_isCircleSelected = false;
     int m_lastSquareHoveredId;
     bool m_isInfoClicked = false;
     std::vector<Square*> m_grid;
+    Button m_okButton;
+    Button m_circleSymbolButton;
+    Button m_xSymbolButton;
     Button m_forwardButton;
     Button m_backButton;
     Button m_historyButton;

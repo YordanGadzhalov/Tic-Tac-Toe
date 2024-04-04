@@ -43,6 +43,11 @@ void TextureManager::LoadImages(SDL_Renderer* ren)
     LoadTexture("assets/forwardArrow.png", "forwardArrow", ren);
     LoadTexture("assets/historyButton.png", "historyButton", ren);
     LoadTexture("assets/gameHistory.png", "gameHistory", ren);
+    LoadTexture("assets/circle2_big.png", "bigCircle", ren);
+    LoadTexture("assets/Ximage2_big.png", "bigXimage", ren);
+    LoadTexture("assets/HomeScreenText.png", "HomeScreenText", ren);
+    LoadTexture("assets/border.png", "border", ren);
+    LoadTexture("assets/okButton.png", "okButton", ren);
 }
 
 void TextureManager::DrawTexture(std::string id, int x, int y, int width, int height, SDL_Renderer* ren)

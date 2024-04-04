@@ -2,8 +2,6 @@
 
 GameLogic::GameLogic(Notifier event)
 {
-    m_currentPlayer = new Player(PlayerID::PLAYER_1, "circle2");
-    m_nextPlayer = new Player(PlayerID::PLAYER_2, "Ximage2");
     m_currGridState.resize(grid_Size, PlayerID::NONE);
     m_prevGridState.resize(grid_Size, PlayerID::NONE);
     on_grid_state_changed = event;
@@ -128,6 +126,17 @@ void GameLogic::BackwardHistory()
         m_historyIndex--;
     }
     on_grid_state_changed(m_gameHistory.at(m_historyIndex));
+}
+
+// void GameLogic::SetPlayerSymbol(std::string symbol)
+// {
+//     m_playerSymbol = symbol;
+// }
+
+void GameLogic::StartGame(std::string player1 , std::string player2)
+{
+    m_currentPlayer = new Player(PlayerID::PLAYER_1, player1);
+    m_nextPlayer = new Player(PlayerID::PLAYER_2, player2);
 }
 
 void GameLogic::SetGridPositionState(int index)
