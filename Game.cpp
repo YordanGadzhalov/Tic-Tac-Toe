@@ -185,6 +185,7 @@ void Game::HandleEvents()
                         m_circleSymbolButton.setState(INACTIVE);
                     }
                 }
+
                 else
                 {
                     if(m_forwardButton.contains(mouseX, mouseY))
@@ -198,8 +199,8 @@ void Game::HandleEvents()
 
                     if(m_historyButton.contains(mouseX, mouseY) && m_gameLogic->IsGameOver())
                     {
-                        m_gameLogic->ToggleHistoryMode();
-                        if(m_gameLogic->GetHistoryMode())
+                        m_gameLogic->ToggleModes();
+                        if(m_gameLogic->GetGameHistory().GetHistoryMode())
                         {
                             m_restartButton.setState(INACTIVE);
                         }
@@ -268,7 +269,7 @@ void Game::Render()
     SDL_RenderClear(m_renderer);
     SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
 
-    auto isHistoryMode = m_gameLogic->GetHistoryMode();
+    auto isHistoryMode = m_gameLogic->GetGameHistory().GetHistoryMode();
     auto result = m_gameLogic->GetWinner();
 
     if(m_gameLogic->IsGameOver() && result.winner != NONE && isHistoryMode == false)

@@ -4,6 +4,7 @@ GameLogic::GameLogic(Notifier event)
 {
     m_currGridState.resize(grid_Size, PlayerID::NONE);
     m_prevGridState.resize(grid_Size, PlayerID::NONE);
+    m_gameHistory = new GameHistory();
     on_grid_state_changed = event;
 }
 
@@ -13,6 +14,8 @@ GameLogic::~GameLogic()
     m_currentPlayer = nullptr;
     delete m_nextPlayer;
     m_nextPlayer = nullptr;
+    delete m_gameHistory;
+    m_gameHistory = nullptr;
 }
 
 auto GameLogic::GetCurrentPlayer() const -> const Player&
@@ -32,6 +35,12 @@ auto GameLogic::GetPlayer(PlayerID id) const -> const Player&
     }
 }
 
+GameHistory& GameLogic::GetGameHistory() const
+{
+    return *m_gameHistory;
+}
+
+
 WinInfo GameLogic::GetWinner() const
 {
     return m_winInfo;
@@ -46,7 +55,7 @@ void GameLogic::SwitchPlayers()
 {
     std::swap(m_currentPlayer, m_nextPlayer);
     m_prevGridState = m_currGridState;
-    saveGameHistoryStates();
+    m_gameHistory->SaveGameHistoryStates(m_currGridState);
     autoFillLastSquare();
 }
 
@@ -57,11 +66,6 @@ bool GameLogic::IsGameOver()
         return true;
     }
     return false;
-}
-
-bool GameLogic::GetHistoryMode() const
-{
-    return m_isHistoryMode;
 }
 
 void GameLogic::Undo()
@@ -78,7 +82,7 @@ void GameLogic::Reset()
         m_prevGridState.at(i) = NONE;
     }
 
-    m_gameHistory.clear();
+    m_gameHistory->Reset();
     m_winInfo = {};
     on_grid_state_changed(getCurrentGridState());
 
@@ -88,52 +92,9 @@ void GameLogic::Reset()
     }
 }
 
-void GameLogic::ToggleHistoryMode()
-{
-    m_isHistoryMode = !m_isHistoryMode;
-    if(m_isHistoryMode)
-    {
-        m_historyIndex = m_gameHistory.size() - 1;
-        on_grid_state_changed(m_gameHistory.back());
-    }
-    else
-    {
-        on_grid_state_changed(getCurrentGridState());
-    }
-}
 
-void GameLogic::ForwardHistory()
-{
-    if(m_historyIndex == (m_gameHistory.size() - 1))
-    {
-        m_historyIndex = 0;
-    }
-    else
-    {
-        m_historyIndex++;
-    }
-    on_grid_state_changed(m_gameHistory.at(m_historyIndex));
-}
 
-void GameLogic::BackwardHistory()
-{
-    if(m_historyIndex == 0)
-    {
-        m_historyIndex = (m_gameHistory.size() - 1);
-    }
-    else
-    {
-        m_historyIndex--;
-    }
-    on_grid_state_changed(m_gameHistory.at(m_historyIndex));
-}
-
-// void GameLogic::SetPlayerSymbol(std::string symbol)
-// {
-//     m_playerSymbol = symbol;
-// }
-
-void GameLogic::StartGame(std::string player1 , std::string player2)
+void GameLogic::StartGame(const std::string& player1 , const std::string& player2)
 {
     m_currentPlayer = new Player(PlayerID::PLAYER_1, player1);
     m_nextPlayer = new Player(PlayerID::PLAYER_2, player2);
@@ -145,7 +106,7 @@ void GameLogic::SetGridPositionState(int index)
     on_grid_state_changed(getCurrentGridState());
     if(IsGameOver())
     {
-        saveGameHistoryStates();
+      m_gameHistory->SaveGameHistoryStates(m_currGridState);
     }
     calculateWinner();
 }
@@ -153,11 +114,6 @@ void GameLogic::SetGridPositionState(int index)
 const GridState& GameLogic::getCurrentGridState() const
 {
     return m_currGridState;
-}
-
-void GameLogic::saveGameHistoryStates()
-{
-    m_gameHistory.push_back(m_currGridState);
 }
 
 void GameLogic::calculateWinner()
@@ -258,10 +214,33 @@ void GameLogic::autoFillLastSquare()
             {
                 m_currGridState.at(i) = m_currentPlayer->GetId();
                 on_grid_state_changed(getCurrentGridState());
-                saveGameHistoryStates();
+                m_gameHistory->SaveGameHistoryStates(m_currGridState);
                 calculateWinner();
                 return;
             }
         }
     }
+}
+
+void GameLogic::ToggleModes()
+{
+    m_gameHistory->ToggleMode();
+    if(m_gameHistory->GetHistoryMode() == true)
+    {
+        on_grid_state_changed(m_gameHistory->GetCurrentTurn());
+    }
+    else
+    {
+        on_grid_state_changed(getCurrentGridState());
+    }
+}
+
+void GameLogic::ForwardHistory()
+{
+    on_grid_state_changed(m_gameHistory->NextTurn());
+}
+
+void GameLogic::BackwardHistory()
+{
+    on_grid_state_changed(m_gameHistory->PreviousTurn());
 }

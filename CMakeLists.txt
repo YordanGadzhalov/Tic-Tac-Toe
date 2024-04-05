@@ -7,6 +7,7 @@ find_package(SDL2 REQUIRED)
 file( GLOB SRCS *.cpp *.h *.hpp )
 
 include_directories(${SDL2_INCLUDE_DIRS})
-add_executable(app ${SRCS})
+add_executable(app ${SRCS}
+    GameHistory.h GameHistory.cpp)
 target_link_libraries(app ${SDL2_LIBRARIES} SDL2_ttf SDL2_mixer SDL2_image)
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <utility>
+#include <vector>
 
 enum PlayerID
 {
@@ -16,4 +17,4 @@ struct WinInfo
     WinLine line{0, 0};
 };
 
-
+using GridState = std::vector<PlayerID>;

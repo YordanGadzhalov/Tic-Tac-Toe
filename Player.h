@@ -1,5 +1,4 @@
 #pragma once
-
 #include "GameTypes.h"
 #include <string>
 
