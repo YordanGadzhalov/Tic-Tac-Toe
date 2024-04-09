@@ -1,4 +1,5 @@
 #include "GameLogic.h"
+#include <algorithm>
 
 GameLogic::GameLogic(Notifier event)
 {
@@ -39,7 +40,6 @@ GameHistory& GameLogic::GetGameHistory() const
 {
     return *m_gameHistory;
 }
-
 
 WinInfo GameLogic::GetWinner() const
 {
@@ -92,9 +92,7 @@ void GameLogic::Reset()
     }
 }
 
-
-
-void GameLogic::StartGame(const std::string& player1 , const std::string& player2)
+void GameLogic::StartGame(const std::string& player1, const std::string& player2)
 {
     m_currentPlayer = new Player(PlayerID::PLAYER_1, player1);
     m_nextPlayer = new Player(PlayerID::PLAYER_2, player2);
@@ -106,7 +104,7 @@ void GameLogic::SetGridPositionState(int index)
     on_grid_state_changed(getCurrentGridState());
     if(IsGameOver())
     {
-      m_gameHistory->SaveGameHistoryStates(m_currGridState);
+        m_gameHistory->SaveGameHistoryStates(m_currGridState);
     }
     calculateWinner();
 }
@@ -175,31 +173,25 @@ WinInfo GameLogic::checkForWinner() const
     return result;
 }
 
+
 bool GameLogic::isGameDraw() const
 {
-    for(int i = 0; i < m_currGridState.size(); i++)
+    auto it = std::find(m_currGridState.begin(), m_currGridState.end(), NONE);
+    if(it != m_currGridState.end())
     {
-        if(m_currGridState.at(i) == NONE)
-        {
-            return false;
-        }
+        return false;
     }
+
     return true;
 }
 
+
 bool GameLogic::isOneEmptySquareLeft() const
 {
-    int square_counter = 0;
-    for(const auto& square : m_currGridState)
+    auto count = std::count(m_currGridState.begin(), m_currGridState.end(), NONE);
+    if(count == 1)
     {
-        if(square != NONE)
-        {
-            square_counter++;
-        }
-        if(square_counter == m_currGridState.size() - 1)
-        {
-            return true;
-        }
+        return true;
     }
     return false;
 }
