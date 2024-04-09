@@ -11,7 +11,7 @@ Game::Game()
     m_historyButton = Button(940, 100, 985, 145, INACTIVE);
     m_forwardButton = Button(550, 560, 580, 590, INACTIVE);
     m_backButton = Button(28, 560, 60, 590, INACTIVE);
-    m_okButton = Button(355, 460, 610, 570, ACTIVE);
+    m_okButton = Button(355, 460, 610, 570, INACTIVE);
     m_circleSymbolButton = Button(200, 180, 440, 420, ACTIVE);
     m_xSymbolButton = Button(530, 180, 770, 420, ACTIVE);
     InitGrid();
@@ -160,6 +160,7 @@ void Game::HandleEvents()
                         m_selectedShapes.first = "circle2";
                         m_selectedShapes.second = "Ximage2";
                         m_isCircleSelected = true;
+                        m_okButton.setState(ACTIVE);
                     }
                     else
                     {
@@ -171,12 +172,13 @@ void Game::HandleEvents()
                         m_selectedShapes.first = "Ximage2";
                         m_selectedShapes.second = "circle2";
                         m_isXSelected = true;
+                        m_okButton.setState(ACTIVE);
                     }
                     else
                     {
                         m_isXSelected = false;
                     }
-                    if(m_okButton.contains(mouseX, mouseY) && m_okButton.getState() != INACTIVE)
+                    if(m_okButton.contains(mouseX, mouseY) && m_okButton.getState() == ACTIVE)
                     {
                         m_gameLogic->StartGame(m_selectedShapes.first, m_selectedShapes.second);
                         m_homeScreen = false;
