@@ -1,6 +1,8 @@
 #pragma once
 #include <utility>
 #include <vector>
+#include <memory>
+#include <algorithm>
 
 enum PlayerID
 {

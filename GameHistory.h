@@ -1,6 +1,5 @@
 #pragma once
 #include "GameTypes.h"
-#include <vector>
 
 using TurnHistory = std::vector<GridState>;
 
@@ -18,6 +17,5 @@ public:
 private:
     TurnHistory m_turnsHistory;
     int m_historyIndex{0};
-    TurnHistory::iterator m_iter;
     bool m_isHistoryMode = false;
 };

@@ -5,18 +5,12 @@ GameLogic::GameLogic(Notifier event)
 {
     m_currGridState.resize(grid_Size, PlayerID::NONE);
     m_prevGridState.resize(grid_Size, PlayerID::NONE);
-    m_gameHistory = new GameHistory();
+    m_gameHistory = std::make_shared<GameHistory>();
     on_grid_state_changed = event;
 }
 
 GameLogic::~GameLogic()
 {
-    delete m_currentPlayer;
-    m_currentPlayer = nullptr;
-    delete m_nextPlayer;
-    m_nextPlayer = nullptr;
-    delete m_gameHistory;
-    m_gameHistory = nullptr;
 }
 
 auto GameLogic::GetCurrentPlayer() const -> const Player&
@@ -94,8 +88,8 @@ void GameLogic::Reset()
 
 void GameLogic::StartGame(const std::string& player1, const std::string& player2)
 {
-    m_currentPlayer = new Player(PlayerID::PLAYER_1, player1);
-    m_nextPlayer = new Player(PlayerID::PLAYER_2, player2);
+    m_currentPlayer = std::make_shared<Player>(PlayerID::PLAYER_1, player1);
+    m_nextPlayer = std::make_shared<Player>(PlayerID::PLAYER_2, player2);
 }
 
 void GameLogic::SetGridPositionState(int index)
@@ -173,7 +167,6 @@ WinInfo GameLogic::checkForWinner() const
     return result;
 }
 
-
 bool GameLogic::isGameDraw() const
 {
     auto it = std::find(m_currGridState.begin(), m_currGridState.end(), NONE);
@@ -184,7 +177,6 @@ bool GameLogic::isGameDraw() const
 
     return true;
 }
-
 
 bool GameLogic::isOneEmptySquareLeft() const
 {

@@ -20,12 +20,6 @@ Game::Game()
 
 Game::~Game()
 {
-    for(auto square : m_grid)
-    {
-        delete square;
-    }
-    delete m_gameLogic;
-    m_gameLogic = nullptr;
 }
 
 bool Game::init(const char* title, int xpos, int ypos, int width, int height, int flags)
@@ -72,20 +66,20 @@ bool Game::init(const char* title, int xpos, int ypos, int width, int height, in
 
 void Game::InitGrid()
 {
-    m_grid = {new Square(50, 55),
-              new Square(225, 55),
-              new Square(390, 55),
-              new Square(50, 225),
-              new Square(225, 225),
-              new Square(390, 225),
-              new Square(50, 390),
-              new Square(225, 390),
-              new Square(390, 390)};
+    m_grid = {std::make_shared<Square>(50, 55),
+              std::make_shared<Square>(225, 55),
+              std::make_shared<Square>(390, 55),
+              std::make_shared<Square>(50, 225),
+              std::make_shared<Square>(225, 225),
+              std::make_shared<Square>(390, 225),
+              std::make_shared<Square>(50, 390),
+              std::make_shared<Square>(225, 390),
+              std::make_shared<Square>(390, 390)};
 }
 
 void Game::InitGameLogic()
 {
-    m_gameLogic = new GameLogic(
+    m_gameLogic = std::make_shared<GameLogic>(
         [this](const GridState& state)
         {
             UpdateView(state);
@@ -394,15 +388,17 @@ void Game::Render()
             }
         }
 
-        for(int i = 0; i < m_grid.size(); i++)
-        {
-            auto shapeID = m_grid.at(i)->GetSymbol();
-            if(!shapeID.empty())
-            {
-                DrawTexture(shapeID, m_grid.at(i)->GetShapePosX(), m_grid.at(i)->GetShapePosY(), 255);
-            }
-        }
+
+
+        std::for_each(m_grid.begin(),
+                      m_grid.end(),
+                      [this](const std::shared_ptr<Square>& shape)
+                      {
+                          auto shapeID = shape->GetSymbol();
+                          DrawTexture(shapeID, shape->GetShapePosX(), shape->GetShapePosY(), 255);
+                      });
     }
+
     SDL_RenderPresent(m_renderer);
 }
 

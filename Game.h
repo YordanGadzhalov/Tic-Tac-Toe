@@ -1,7 +1,6 @@
 #pragma once
 #include <SDL_image.h>
 #include "TextureManager.h"
-#include <vector>
 #include "Square.h"
 #include "Button.h"
 #include <SDL.h>
@@ -35,7 +34,7 @@ public:
 
 private:
     std::pair<std::string, std::string> m_selectedShapes;
-    GameLogic* m_gameLogic{nullptr};
+    std::shared_ptr<GameLogic> m_gameLogic{nullptr};
     SDL_Window* m_window = nullptr;
     SDL_Renderer* m_renderer = nullptr;
     bool m_homeScreen = true;
@@ -44,7 +43,7 @@ private:
     bool m_isCircleSelected = false;
     int m_lastSquareHoveredId;
     bool m_isInfoClicked = false;
-    std::vector<Square*> m_grid;
+    std::vector<std::shared_ptr<Square>> m_grid;
     Button m_okButton;
     Button m_circleSymbolButton;
     Button m_xSymbolButton;

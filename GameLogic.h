@@ -1,9 +1,8 @@
 #pragma once
-#include "Player.h"
 #include "GameHistory.h"
+#include "Player.h"
 #include <functional>
 #include <iostream>
-#include <vector>
 
 using Notifier = std::function<void(const GridState& state)>;
 constexpr int grid_Size = 9;
@@ -14,7 +13,7 @@ public:
     GameLogic(Notifier event);
     ~GameLogic();
 
-    void StartGame(const std::string& player1 , const std::string& player2);
+    void StartGame(const std::string& player1, const std::string& player2);
     auto GetCurrentPlayer() const -> const Player&;
     auto GetPlayer(PlayerID id) const -> const Player&;
     auto GetGameHistory() const -> GameHistory&;
@@ -23,7 +22,6 @@ public:
     void SwitchPlayers();
 
     auto IsGameOver() -> bool;
-
 
     void ToggleModes();
     void ForwardHistory();
@@ -44,9 +42,9 @@ private:
     auto getCurrentGridState() const -> const GridState&;
 
 private:
-    Player* m_currentPlayer{nullptr};
-    Player* m_nextPlayer{nullptr};
-    GameHistory* m_gameHistory{nullptr};
+    std::shared_ptr<Player> m_currentPlayer{nullptr};
+    std::shared_ptr<Player> m_nextPlayer{nullptr};
+    std::shared_ptr<GameHistory> m_gameHistory{nullptr};
     GridState m_currGridState;
     GridState m_prevGridState;
     Notifier on_grid_state_changed;
